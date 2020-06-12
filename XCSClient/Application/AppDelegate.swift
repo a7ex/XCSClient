@@ -24,10 +24,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         window.center()
         window.setFrameAutosaveName("Main Window")
         
-        // Create the SwiftUI view that provides the window contents.
+        let connector = XCSConnector(server: Server(xcodeServerAddress: "10.172.200.20", sshEndpoint: "adafranca@10.175.31.236"))
+        
         let contentView = ContentView(myWindow: window)
         
-        window.contentView = NSHostingView(rootView: contentView)
+        window.contentView = NSHostingView(rootView: contentView.environmentObject(connector))
         window.makeKeyAndOrderFront(nil)
     }
 

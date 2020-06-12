@@ -10,46 +10,33 @@ import SwiftUI
 
 struct BotList: View {
     let myWindow: NSWindow?
-    let server: Server
-    
-    @State private var bots = [Bot]()
-    @State private var hasError = false
-    @State private var errorMessage = ""
+    let bots: [Bot]
     
     var body: some View {
         NavigationView {
             VStack {
                 ForEach(bots, id: \.tinyID) { bot in
-                    NavigationLink(destination: BotDetailView()) {
+                    NavigationLink(destination: BotDetailView(bot: bot)) {
                         Text(bot.name)
                             .frame(minWidth: 240, alignment: .trailing)
                     }
+                    .buttonStyle(BorderlessButtonStyle())
                 }
+                Spacer()
             }
             .padding(.all)
-        }
-        .onAppear {
-            self.loadBots()
-        }
-        .alert(isPresented: $hasError) {
-            Alert(title: Text(errorMessage))
-        }
-    }
-    
-    private func loadBots() {
-        let rslt = server.getBotList()
-        switch rslt {
-        case .success(let bots):
-            self.bots = bots
-        case .failure(let error):
-            errorMessage = "Error occurred: \(error.localizedDescription)"
-            hasError = true
         }
     }
 }
 
 struct BotList_Previews: PreviewProvider {
     static var previews: some View {
-        BotList(myWindow: nil, server: Server(xcodeServerAddress: "10.172.200.20", sshEndpoint: "adafranca@10.175.31.236"))
+        BotList(myWindow: nil, bots: [
+            Bot(id: UUID().uuidString, name: "DHLPaket_GIT_Testflight", tinyID: "1"),
+            Bot(id: UUID().uuidString, name: "DHLPaket_GIT_Testflight_Beta", tinyID: "2"),
+            Bot(id: UUID().uuidString, name: "DHLPaket_GIT_Fabric_DeviceCloud", tinyID: "3"),
+            Bot(id: UUID().uuidString, name: "LPS (Mock) Bot", tinyID: "4"),
+            Bot(id: UUID().uuidString, name: "XCS DHL Paket Dev Unit-Tests", tinyID: "5")
+        ])
     }
 }
