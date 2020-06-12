@@ -13,7 +13,6 @@
 		FA5636CD2493BC56002457DF /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FA5636CC2493BC56002457DF /* Preview Assets.xcassets */; };
 		FA5636D02493BC56002457DF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FA5636CE2493BC56002457DF /* Main.storyboard */; };
 		FA5636D92493BDB0002457DF /* BotList.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5636D82493BDB0002457DF /* BotList.swift */; };
-		FA5636DF2493BE60002457DF /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = FA5636DE2493BE60002457DF /* .gitignore */; };
 		FA5636F52493BEC7002457DF /* IntegrationAssets.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5636E12493BEC7002457DF /* IntegrationAssets.swift */; };
 		FA5636F62493BEC7002457DF /* TriggerConditions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5636E22493BEC7002457DF /* TriggerConditions.swift */; };
 		FA5636F72493BEC7002457DF /* LogFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5636E32493BEC7002457DF /* LogFile.swift */; };
@@ -48,7 +47,6 @@
 		FA5636CF2493BC56002457DF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		FA5636D12493BC56002457DF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FA5636D82493BDB0002457DF /* BotList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BotList.swift; sourceTree = "<group>"; };
-		FA5636DE2493BE60002457DF /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		FA5636E12493BEC7002457DF /* IntegrationAssets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntegrationAssets.swift; sourceTree = "<group>"; };
 		FA5636E22493BEC7002457DF /* TriggerConditions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TriggerConditions.swift; sourceTree = "<group>"; };
 		FA5636E32493BEC7002457DF /* LogFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogFile.swift; sourceTree = "<group>"; };
@@ -74,6 +72,7 @@
 		FA7B8A442493C3C300C26B50 /* XCSClientDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = XCSClientDebug.entitlements; sourceTree = "<group>"; };
 		FA7B8A452493C49300C26B50 /* XCSClient.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = XCSClient.entitlements; sourceTree = "<group>"; };
 		FA7B8A462493D10900C26B50 /* BotDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BotDetailView.swift; sourceTree = "<group>"; };
+		FA7B8A482493D57600C26B50 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -159,7 +158,7 @@
 				FA7B8A442493C3C300C26B50 /* XCSClientDebug.entitlements */,
 				FA5636C52493BC55002457DF /* AppDelegate.swift */,
 				FA5636D12493BC56002457DF /* Info.plist */,
-				FA5636DE2493BE60002457DF /* .gitignore */,
+				FA7B8A482493D57600C26B50 /* .gitignore */,
 			);
 			name = SupportingFiles;
 			sourceTree = "<group>";
@@ -257,7 +256,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FA5636DF2493BE60002457DF /* .gitignore in Resources */,
 				FA5636D02493BC56002457DF /* Main.storyboard in Resources */,
 				FA5636CD2493BC56002457DF /* Preview Assets.xcassets in Resources */,
 				FA5636CA2493BC56002457DF /* Assets.xcassets in Resources */,
