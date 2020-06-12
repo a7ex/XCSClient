@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  BotDetailView.swift
 //  XCSClient
 //
 //  Created by Alex da Franca on 12.06.20.
@@ -8,16 +8,14 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct BotDetailView: View {
     var body: some View {
-        Text("Hello, World!")
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
     }
 }
 
-
-struct ContentView_Previews: PreviewProvider {
+struct BotDetailView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        BotDetailView()
     }
 }

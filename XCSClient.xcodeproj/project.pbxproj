@@ -12,6 +12,31 @@
 		FA5636CA2493BC56002457DF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FA5636C92493BC56002457DF /* Assets.xcassets */; };
 		FA5636CD2493BC56002457DF /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FA5636CC2493BC56002457DF /* Preview Assets.xcassets */; };
 		FA5636D02493BC56002457DF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FA5636CE2493BC56002457DF /* Main.storyboard */; };
+		FA5636D92493BDB0002457DF /* BotList.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5636D82493BDB0002457DF /* BotList.swift */; };
+		FA5636DF2493BE60002457DF /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = FA5636DE2493BE60002457DF /* .gitignore */; };
+		FA5636F52493BEC7002457DF /* IntegrationAssets.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5636E12493BEC7002457DF /* IntegrationAssets.swift */; };
+		FA5636F62493BEC7002457DF /* TriggerConditions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5636E22493BEC7002457DF /* TriggerConditions.swift */; };
+		FA5636F72493BEC7002457DF /* LogFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5636E32493BEC7002457DF /* LogFile.swift */; };
+		FA5636F82493BEC7002457DF /* BotConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5636E42493BEC7002457DF /* BotConfiguration.swift */; };
+		FA5636F92493BEC7002457DF /* DeleteResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5636E52493BEC7002457DF /* DeleteResponse.swift */; };
+		FA5636FA2493BEC7002457DF /* ProvisioningConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5636E62493BEC7002457DF /* ProvisioningConfiguration.swift */; };
+		FA5636FB2493BEC7002457DF /* EmailConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5636E72493BEC7002457DF /* EmailConfiguration.swift */; };
+		FA5636FC2493BEC7002457DF /* Trigger.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5636E82493BEC7002457DF /* Trigger.swift */; };
+		FA5636FD2493BEC7002457DF /* IntegrationsQueryResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5636E92493BEC7002457DF /* IntegrationsQueryResponse.swift */; };
+		FA5636FE2493BEC7002457DF /* RemoteRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5636EA2493BEC7002457DF /* RemoteRepository.swift */; };
+		FA5636FF2493BEC7002457DF /* Integration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5636EB2493BEC7002457DF /* Integration.swift */; };
+		FA5637002493BEC7002457DF /* Bot.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5636EC2493BEC7002457DF /* Bot.swift */; };
+		FA5637012493BEC7002457DF /* BotsQueryResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5636ED2493BEC7002457DF /* BotsQueryResponse.swift */; };
+		FA5637022493BEC7002457DF /* SourceControlLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5636EE2493BEC7002457DF /* SourceControlLocation.swift */; };
+		FA5637032493BEC7002457DF /* BuildResultSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5636EF2493BEC7002457DF /* BuildResultSummary.swift */; };
+		FA5637042493BEC7002457DF /* TestDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5636F02493BEC7002457DF /* TestDevice.swift */; };
+		FA5637052493BEC7002457DF /* ErrorResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5636F12493BEC7002457DF /* ErrorResponse.swift */; };
+		FA5637062493BEC7002457DF /* TestDeviceSpecification.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5636F22493BEC7002457DF /* TestDeviceSpecification.swift */; };
+		FA5637072493BEC7002457DF /* SourceControlBlueprint.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5636F32493BEC7002457DF /* SourceControlBlueprint.swift */; };
+		FA5637082493BEC7002457DF /* TestDeviceFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5636F42493BEC7002457DF /* TestDeviceFilter.swift */; };
+		FA56370A2493BEDC002457DF /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5637092493BEDC002457DF /* Server.swift */; };
+		FA56370C2493BEED002457DF /* NSError+ConvenienceInit.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA56370B2493BEED002457DF /* NSError+ConvenienceInit.swift */; };
+		FA7B8A472493D10900C26B50 /* BotDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7B8A462493D10900C26B50 /* BotDetailView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,7 +47,33 @@
 		FA5636CC2493BC56002457DF /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		FA5636CF2493BC56002457DF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		FA5636D12493BC56002457DF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		FA5636D22493BC56002457DF /* XCSClient.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = XCSClient.entitlements; sourceTree = "<group>"; };
+		FA5636D82493BDB0002457DF /* BotList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BotList.swift; sourceTree = "<group>"; };
+		FA5636DE2493BE60002457DF /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		FA5636E12493BEC7002457DF /* IntegrationAssets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntegrationAssets.swift; sourceTree = "<group>"; };
+		FA5636E22493BEC7002457DF /* TriggerConditions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TriggerConditions.swift; sourceTree = "<group>"; };
+		FA5636E32493BEC7002457DF /* LogFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogFile.swift; sourceTree = "<group>"; };
+		FA5636E42493BEC7002457DF /* BotConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BotConfiguration.swift; sourceTree = "<group>"; };
+		FA5636E52493BEC7002457DF /* DeleteResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeleteResponse.swift; sourceTree = "<group>"; };
+		FA5636E62493BEC7002457DF /* ProvisioningConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProvisioningConfiguration.swift; sourceTree = "<group>"; };
+		FA5636E72493BEC7002457DF /* EmailConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailConfiguration.swift; sourceTree = "<group>"; };
+		FA5636E82493BEC7002457DF /* Trigger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Trigger.swift; sourceTree = "<group>"; };
+		FA5636E92493BEC7002457DF /* IntegrationsQueryResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntegrationsQueryResponse.swift; sourceTree = "<group>"; };
+		FA5636EA2493BEC7002457DF /* RemoteRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteRepository.swift; sourceTree = "<group>"; };
+		FA5636EB2493BEC7002457DF /* Integration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Integration.swift; sourceTree = "<group>"; };
+		FA5636EC2493BEC7002457DF /* Bot.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bot.swift; sourceTree = "<group>"; };
+		FA5636ED2493BEC7002457DF /* BotsQueryResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BotsQueryResponse.swift; sourceTree = "<group>"; };
+		FA5636EE2493BEC7002457DF /* SourceControlLocation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SourceControlLocation.swift; sourceTree = "<group>"; };
+		FA5636EF2493BEC7002457DF /* BuildResultSummary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BuildResultSummary.swift; sourceTree = "<group>"; };
+		FA5636F02493BEC7002457DF /* TestDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestDevice.swift; sourceTree = "<group>"; };
+		FA5636F12493BEC7002457DF /* ErrorResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorResponse.swift; sourceTree = "<group>"; };
+		FA5636F22493BEC7002457DF /* TestDeviceSpecification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestDeviceSpecification.swift; sourceTree = "<group>"; };
+		FA5636F32493BEC7002457DF /* SourceControlBlueprint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SourceControlBlueprint.swift; sourceTree = "<group>"; };
+		FA5636F42493BEC7002457DF /* TestDeviceFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestDeviceFilter.swift; sourceTree = "<group>"; };
+		FA5637092493BEDC002457DF /* Server.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
+		FA56370B2493BEED002457DF /* NSError+ConvenienceInit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSError+ConvenienceInit.swift"; sourceTree = "<group>"; };
+		FA7B8A442493C3C300C26B50 /* XCSClientDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = XCSClientDebug.entitlements; sourceTree = "<group>"; };
+		FA7B8A452493C49300C26B50 /* XCSClient.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = XCSClient.entitlements; sourceTree = "<group>"; };
+		FA7B8A462493D10900C26B50 /* BotDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BotDetailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,12 +106,10 @@
 		FA5636C42493BC55002457DF /* XCSClient */ = {
 			isa = PBXGroup;
 			children = (
-				FA5636C52493BC55002457DF /* AppDelegate.swift */,
-				FA5636C72493BC55002457DF /* ContentView.swift */,
-				FA5636C92493BC56002457DF /* Assets.xcassets */,
-				FA5636CE2493BC56002457DF /* Main.storyboard */,
-				FA5636D12493BC56002457DF /* Info.plist */,
-				FA5636D22493BC56002457DF /* XCSClient.entitlements */,
+				FA5636DC2493BDD8002457DF /* Application */,
+				FA5636DB2493BDCD002457DF /* Business */,
+				FA5636DA2493BDB8002457DF /* Presentation */,
+				FA5636DD2493BE0A002457DF /* SupportingFiles */,
 				FA5636CB2493BC56002457DF /* Preview Content */,
 			);
 			path = XCSClient;
@@ -72,6 +121,82 @@
 				FA5636CC2493BC56002457DF /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		FA5636DA2493BDB8002457DF /* Presentation */ = {
+			isa = PBXGroup;
+			children = (
+				FA5636C72493BC55002457DF /* ContentView.swift */,
+				FA5636D82493BDB0002457DF /* BotList.swift */,
+				FA5636CE2493BC56002457DF /* Main.storyboard */,
+				FA5636C92493BC56002457DF /* Assets.xcassets */,
+				FA7B8A462493D10900C26B50 /* BotDetailView.swift */,
+			);
+			path = Presentation;
+			sourceTree = "<group>";
+		};
+		FA5636DB2493BDCD002457DF /* Business */ = {
+			isa = PBXGroup;
+			children = (
+				FA5636E02493BEC7002457DF /* Models */,
+			);
+			path = Business;
+			sourceTree = "<group>";
+		};
+		FA5636DC2493BDD8002457DF /* Application */ = {
+			isa = PBXGroup;
+			children = (
+				FA5637092493BEDC002457DF /* Server.swift */,
+				FA56370D2493C16E002457DF /* Extensions */,
+			);
+			path = Application;
+			sourceTree = "<group>";
+		};
+		FA5636DD2493BE0A002457DF /* SupportingFiles */ = {
+			isa = PBXGroup;
+			children = (
+				FA7B8A452493C49300C26B50 /* XCSClient.entitlements */,
+				FA7B8A442493C3C300C26B50 /* XCSClientDebug.entitlements */,
+				FA5636C52493BC55002457DF /* AppDelegate.swift */,
+				FA5636D12493BC56002457DF /* Info.plist */,
+				FA5636DE2493BE60002457DF /* .gitignore */,
+			);
+			name = SupportingFiles;
+			sourceTree = "<group>";
+		};
+		FA5636E02493BEC7002457DF /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				FA5636ED2493BEC7002457DF /* BotsQueryResponse.swift */,
+				FA5636EC2493BEC7002457DF /* Bot.swift */,
+				FA5636E12493BEC7002457DF /* IntegrationAssets.swift */,
+				FA5636E22493BEC7002457DF /* TriggerConditions.swift */,
+				FA5636E32493BEC7002457DF /* LogFile.swift */,
+				FA5636E42493BEC7002457DF /* BotConfiguration.swift */,
+				FA5636E52493BEC7002457DF /* DeleteResponse.swift */,
+				FA5636E62493BEC7002457DF /* ProvisioningConfiguration.swift */,
+				FA5636E72493BEC7002457DF /* EmailConfiguration.swift */,
+				FA5636E82493BEC7002457DF /* Trigger.swift */,
+				FA5636E92493BEC7002457DF /* IntegrationsQueryResponse.swift */,
+				FA5636EA2493BEC7002457DF /* RemoteRepository.swift */,
+				FA5636EB2493BEC7002457DF /* Integration.swift */,
+				FA5636EE2493BEC7002457DF /* SourceControlLocation.swift */,
+				FA5636EF2493BEC7002457DF /* BuildResultSummary.swift */,
+				FA5636F02493BEC7002457DF /* TestDevice.swift */,
+				FA5636F12493BEC7002457DF /* ErrorResponse.swift */,
+				FA5636F22493BEC7002457DF /* TestDeviceSpecification.swift */,
+				FA5636F32493BEC7002457DF /* SourceControlBlueprint.swift */,
+				FA5636F42493BEC7002457DF /* TestDeviceFilter.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		FA56370D2493C16E002457DF /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				FA56370B2493BEED002457DF /* NSError+ConvenienceInit.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -132,6 +257,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA5636DF2493BE60002457DF /* .gitignore in Resources */,
 				FA5636D02493BC56002457DF /* Main.storyboard in Resources */,
 				FA5636CD2493BC56002457DF /* Preview Assets.xcassets in Resources */,
 				FA5636CA2493BC56002457DF /* Assets.xcassets in Resources */,
@@ -145,8 +271,32 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA5636F72493BEC7002457DF /* LogFile.swift in Sources */,
+				FA7B8A472493D10900C26B50 /* BotDetailView.swift in Sources */,
+				FA5636F92493BEC7002457DF /* DeleteResponse.swift in Sources */,
+				FA5636FF2493BEC7002457DF /* Integration.swift in Sources */,
+				FA5636FD2493BEC7002457DF /* IntegrationsQueryResponse.swift in Sources */,
+				FA5636FE2493BEC7002457DF /* RemoteRepository.swift in Sources */,
+				FA56370C2493BEED002457DF /* NSError+ConvenienceInit.swift in Sources */,
+				FA5636D92493BDB0002457DF /* BotList.swift in Sources */,
+				FA5636F52493BEC7002457DF /* IntegrationAssets.swift in Sources */,
 				FA5636C82493BC55002457DF /* ContentView.swift in Sources */,
+				FA5636FB2493BEC7002457DF /* EmailConfiguration.swift in Sources */,
+				FA5637002493BEC7002457DF /* Bot.swift in Sources */,
+				FA5636FC2493BEC7002457DF /* Trigger.swift in Sources */,
+				FA5636F82493BEC7002457DF /* BotConfiguration.swift in Sources */,
+				FA5636F62493BEC7002457DF /* TriggerConditions.swift in Sources */,
+				FA5637022493BEC7002457DF /* SourceControlLocation.swift in Sources */,
+				FA5637072493BEC7002457DF /* SourceControlBlueprint.swift in Sources */,
+				FA5637032493BEC7002457DF /* BuildResultSummary.swift in Sources */,
+				FA5637052493BEC7002457DF /* ErrorResponse.swift in Sources */,
+				FA5637082493BEC7002457DF /* TestDeviceFilter.swift in Sources */,
+				FA5636FA2493BEC7002457DF /* ProvisioningConfiguration.swift in Sources */,
 				FA5636C62493BC55002457DF /* AppDelegate.swift in Sources */,
+				FA5637062493BEC7002457DF /* TestDeviceSpecification.swift in Sources */,
+				FA5637042493BEC7002457DF /* TestDevice.swift in Sources */,
+				FA56370A2493BEDC002457DF /* Server.swift in Sources */,
+				FA5637012493BEC7002457DF /* BotsQueryResponse.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -281,7 +431,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = XCSClient/XCSClient.entitlements;
+				CODE_SIGN_ENTITLEMENTS = XCSClient/XCSClientDebug.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"XCSClient/Preview Content\"";
