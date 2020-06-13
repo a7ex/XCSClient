@@ -1,5 +1,5 @@
 //
-//  BotList.swift
+//  BotListView.swift
 //  XCSApiClient
 //
 //  Created by Alex da Franca on 06.06.20.
@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct BotList: View {
+struct BotListView: View {
     let myWindow: NSWindow?
     let bots: [Bot]
     
@@ -31,7 +31,7 @@ struct BotList: View {
 
 struct BotList_Previews: PreviewProvider {
     static var previews: some View {
-        BotList(myWindow: nil, bots: [
+        BotListView(myWindow: nil, bots: [
             Bot(id: UUID().uuidString, name: "DHLPaket_GIT_Testflight", tinyID: "1"),
             Bot(id: UUID().uuidString, name: "DHLPaket_GIT_Testflight_Beta", tinyID: "2"),
             Bot(id: UUID().uuidString, name: "DHLPaket_GIT_Fabric_DeviceCloud", tinyID: "3"),

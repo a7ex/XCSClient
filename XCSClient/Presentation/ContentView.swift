@@ -10,7 +10,6 @@ import SwiftUI
 
 struct ContentView: View {
     let myWindow: NSWindow?
-    @EnvironmentObject var connector: XCSConnector
     
     @State private var xcsServerAddress = "10.172.200.20"
     @State private var sshAddress = "10.175.31.236"
@@ -46,34 +45,41 @@ struct ContentView: View {
                 Text("Login and load bots")
             }
         }
+        .frame(minWidth: 400)
         .padding()
         .alert(isPresented: $hasError) {
             Alert(title: Text(errorMessage))
         }
     }
     
-    private func showWindow(with bots: [Bot]) {
-        var windowRef:NSWindow
-        windowRef = NSWindow(
-        contentRect: NSRect(x: 0, y: 0, width: 480, height: 300),
-        styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
-        backing: .buffered, defer: false)
-        let botlist = BotList(myWindow: windowRef, bots: bots)
-        windowRef.contentView = NSHostingView(rootView: botlist)
-        windowRef.makeKeyAndOrderFront(nil)
-        myWindow?.close()
-    }
-    
     private func loadBots() {
+        let connector = XCSConnector(
+            server: Server(
+                xcodeServerAddress: xcsServerAddress,
+                sshEndpoint: "\(sshUser)@\(sshAddress)"
+            )
+        )
         connector.getBotList() { result in
             switch result {
             case .success(let bots):
-                self.showWindow(with: bots)
+                self.openWindow(with: bots.sorted(by: { $0.name < $1.name }), connector: connector)
             case .failure(let error):
                 self.errorMessage = "Error occurred: \(error.localizedDescription)"
                 self.hasError = true
             }
         }
+    }
+    
+    private func openWindow(with bots: [Bot], connector: XCSConnector) {
+        var windowRef:NSWindow
+        windowRef = NSWindow(
+        contentRect: NSRect(x: 0, y: 0, width: 480, height: 300),
+        styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
+        backing: .buffered, defer: false)
+        let botlist = BotListView(myWindow: windowRef, bots: bots).environmentObject(connector)
+        windowRef.contentView = NSHostingView(rootView: botlist)
+        windowRef.makeKeyAndOrderFront(nil)
+        myWindow?.close()
     }
 }
 

@@ -10,6 +10,8 @@ import SwiftUI
 
 struct BotDetailView: View {
     let bot: Bot
+    let integrations: [Integration]
+    @EnvironmentObject var connection: XCSConnector
     
     var body: some View {
         VStack {
@@ -30,40 +32,46 @@ struct BotDetailView: View {
                     InfoLabel(content: "Integration Counter")
                     Text(String(bot.integrationCounter ?? 0))
                 }
-                HStack(alignment: .top) {
-                    InfoLabel(content: "Performs Analyze Action")
-                    Text(String(bot.configuration?.performsAnalyzeAction ?? false))
-                }
-                HStack(alignment: .top) {
-                    InfoLabel(content: "Performs Test Action")
-                    Text(String(bot.configuration?.performsTestAction ?? false))
-                }
-                HStack(alignment: .top) {
-                    InfoLabel(content: "Performs Archive Action")
-                    Text(String(bot.configuration?.performsArchiveAction ?? false))
-                }
-                HStack(alignment: .top) {
-                    InfoLabel(content: "Performs Upgrade Integration")
-                    Text(String(bot.configuration?.performsUpgradeIntegration ?? false))
-                }
+                
+                BooleanValue(content: "Performs Analyze Action", value: bot.configuration?.performsAnalyzeAction ?? false)
+                BooleanValue(content: "Performs Test Action", value: bot.configuration?.performsTestAction ?? false)
+                BooleanValue(content: "Performs Archive Action", value: bot.configuration?.performsArchiveAction ?? false)
+                BooleanValue(content: "Performs Upgrade Integration", value: bot.configuration?.performsUpgradeIntegration ?? false)
+                
                 Spacer()
+                InfoLabel(content: "Integrations:")
+                IntegrationListView(integrations: integrations)
+                    .frame(minWidth: 240, alignment: .leading)
+                    .background(Color.white)
             }
-            .frame(width: 400, height: 300)
+            .frame(minWidth: 300)
         }
     }
-    
-    struct BotDetailView_Previews: PreviewProvider {
-        static var previews: some View {
-            let bot = Bot(id: UUID().uuidString, name: "DHLPaket_GIT_Fabric_DeviceCloud", tinyID: "3")
-            return BotDetailView(bot: bot)
-        }
+}
+
+struct InfoLabel: View {
+    let content: String
+    var body: some View {
+        Text(content)
+            .fontWeight(.bold)
     }
+}
+
+struct BotDetailView_Previews: PreviewProvider {
+    static var previews: some View {
+        let bot = Bot(id: UUID().uuidString, name: "DHLPaket_GIT_Fabric_DeviceCloud", tinyID: "3")
+        return BotDetailView(bot: bot, integrations: [Integration]())
+    }
+}
+
+struct BooleanValue: View {
+    let content: String
+    let value: Bool
     
-    struct InfoLabel: View {
-        let content: String
-        var body: some View {
-            Text(content)
-                .fontWeight(.bold)
+    var body: some View {
+        HStack(alignment: .top) {
+            InfoLabel(content: content)
+            Text(value ? "✅": "❌")
         }
     }
 }

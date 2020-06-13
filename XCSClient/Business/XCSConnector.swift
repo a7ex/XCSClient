@@ -23,4 +23,17 @@ class XCSConnector: ObservableObject {
             }
         }
     }
+    
+    func getIntegrationsList(for botId: String, last: Int = 3, completion: @escaping (Result<[Integration], Error>) -> Void) {
+        DispatchQueue.global(qos: .background).async {
+            let rslt = self.server.getIntegrations(for: botId, last: last)
+            DispatchQueue.main.async {
+                completion(rslt)
+            }
+        }
+    }
+    
+    func delete(_ bot: Bot, completion: @escaping (Result<Bot, Error>) -> Void) {
+        
+    }
 }
