@@ -27,7 +27,7 @@ struct Integration: Codable {
     let number: Int? // 94,
 //    let perfMetricKeyPaths: String // [],
 //    let perfMetricNames: String // [],
-//    let queuedDate: String // "2020-05-28T07:42:04.909Z",
+    let queuedDate: Date? // "2020-05-28T07:42:04.909Z",
     let result: IntegrationResult? // "warnings",
 //    let revisionBlueprint: SourceControlBlueprint
     
@@ -55,7 +55,8 @@ struct Integration: Codable {
 //        case endedTimeDate
         case number
 //        case perfMetricKeyPaths
-//        case perfMetricNames, queuedDate
+//        case perfMetricNames
+        case queuedDate
         case result
 //        case revisionBlueprint
         case startedTime

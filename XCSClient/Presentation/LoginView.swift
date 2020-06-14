@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  LoginView.swift
 //  XCSClient
 //
 //  Created by Alex da Franca on 12.06.20.
@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct LoginView: View {
     let myWindow: NSWindow?
     
     @State private var xcsServerAddress = "10.172.200.20"
@@ -20,36 +20,19 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
-            HStack {
-                Text("Xcode Server Address:")
-                    .frame(minWidth: 200, alignment: .trailing)
-                TextField("Enter Xcode Server Address", text: $xcsServerAddress)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-            }
-            HStack {
-                Text("SSH Jumphost Address:")
-                    .frame(minWidth: 200, alignment: .trailing)
-                TextField("Enter Jumphost Address", text: $sshAddress)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-            }
-            HStack {
-                Text("SSH Username:")
-                    .frame(minWidth: 200, alignment: .trailing)
-                TextField("Enter SSH Username", text: $sshUser)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-            }
+            LabeledTextInput(label: "Xcode Server Address", content: $xcsServerAddress)
+            LabeledTextInput(label: "SSH Jumphost Address", content: $sshAddress)
+            LabeledTextInput(label: "SSH Username", content: $sshUser)
             
-            Button(action: {
-                self.loadBots()
-            }) {
+            Button(action: { self.loadBots() }) {
                 Text("Login and load bots")
+            }
+            .alert(isPresented: $hasError) {
+                Alert(title: Text(errorMessage))
             }
         }
         .frame(minWidth: 400)
         .padding()
-        .alert(isPresented: $hasError) {
-            Alert(title: Text(errorMessage))
-        }
     }
     
     private func loadBots() {
@@ -76,8 +59,9 @@ struct ContentView: View {
         contentRect: NSRect(x: 0, y: 0, width: 480, height: 300),
         styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
         backing: .buffered, defer: false)
-        let botlist = BotListView(myWindow: windowRef, bots: bots).environmentObject(connector)
+        let botlist = BotListView(window: windowRef, bots: bots.map { BotVM(bot: $0) }).environmentObject(connector)
         windowRef.contentView = NSHostingView(rootView: botlist)
+        windowRef.setFrame(NSRect(x: 0, y: 0, width: 640, height: 480), display: true)
         windowRef.makeKeyAndOrderFront(nil)
         myWindow?.close()
     }
@@ -86,6 +70,6 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
          let connector = XCSConnector(server: Server(xcodeServerAddress: "10.172.200.20", sshEndpoint: "adafranca@10.175.31.236"))
-        return ContentView(myWindow: nil).environmentObject(connector)
+        return LoginView(myWindow: nil).environmentObject(connector)
     }
 }

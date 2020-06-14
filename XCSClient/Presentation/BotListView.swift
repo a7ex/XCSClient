@@ -8,130 +8,141 @@
 
 import SwiftUI
 
-struct IntegrationsData {
-    let botId: String
-    let integrations: [Integration]
-}
-
-protocol ListTitleProviding {
-    var title: String { get }
-    var isExpandable: Bool { get }
-    var isExpanded: Bool { get }
-}
-
-struct BotListViewModel: ListTitleProviding {
-    let bot: Bot
-    let isExpandable = true
-    let isExpanded: Bool
-    
-    var title: String {
-        return bot.name
-    }
-}
-
-struct IntegrationListViewModel: ListTitleProviding {
-    let integration: Integration
-    let isExpandable = false
-    let isExpanded = false
-    
-    var title: String {
-        return integration.tinyID ?? UUID().uuidString
-    }
-}
-
 struct BotListView: View {
     let myWindow: NSWindow?
-    let bots: [Bot]
     @EnvironmentObject var connector: XCSConnector
-    @State var botIntegrations = [IntegrationsData]()
-    @State var viewModels = [ListTitleProviding]()
+    @ObservedObject var viewModel = BotListVM()
+    
+    init(window: NSWindow?, bots: [BotVM]) {
+        myWindow = window
+        viewModel.items = bots.map { BotListItemVM(bot: $0, isExpanded: false) }
+    }
     
     var body: some View {
         NavigationView {
-            List(bots, id: \.tinyID) { bot in
-                VStack(alignment: .leading) {
-                    HStack {
-                        Button(action: {
-                            self.toggleExpandedState(of: bot.id ?? UUID().uuidString)
-                        }) {
-                            Text("▼")
-                        }
-                        .buttonStyle(BorderlessButtonStyle())
-                        .rotationEffect(Angle(degrees: (self.botIntegrations.first(where: { $0.botId == bot.id }) != nil) ? 0: -90))
-                        
-                        NavigationLink(destination: BotDetailView(bot: bot, integrations: self.botIntegrations.first(where: { $0.botId == bot.id})?.integrations ?? [Integration]())) {
-                            Text(bot.name)
-                        }
-                        .contextMenu {
-                            Button(action: { self.delete(bot) }) {
-                                Text("Delete Bot")
+            VStack(alignment: .leading) {
+                Text("Bots")
+                    .font(.headline)
+                    .padding([.leading, .top])
+                List(viewModel.items, id: \.id) { item in
+                    VStack(alignment: .leading) {
+                        HStack {
+                            if item.isExpandable {
+                                Button(action: {
+                                    self.toggleExpandedState(of: item.id)
+                                }) {
+                                    Text("▼")
+                                }
+                                .buttonStyle(BorderlessButtonStyle())
+                                .rotationEffect(Angle(degrees: item.isExpanded ? 0: -90))
                             }
-                            Button(action: { self.duplicate(bot) }) {
-                                Text("Duplicate Bot")
+                            NavigationLink(destination: item.destination) {
+                                Text(item.title)
+                                    .padding(.leading, item.isExpandable ? 0: 30)
                             }
-                            Button(action: { self.exportSettings(of: bot) }) {
-                                Text("Export settings…")
-                            }
-                            Button(action: { self.applySettings(to: bot) }) {
-                                Text("Apply settings…")
-                            }
-                        }
-                    }
-                    Section {
-                        ForEach(self.botIntegrations.first(where: { $0.botId == bot.id})?.integrations ?? [Integration](), id: \.id) { thisInt in
-                            NavigationLink(destination: IntegrationDetailView(integration: thisInt)) {
-                                Text("\(thisInt.tinyID ?? thisInt.id)")
-                                    .foregroundColor(.black)
-                                    .padding(.leading, 24)
-                                    .background(Color.white)
+                            .contextMenu {
+                                if item.type == .bot {
+                                    Button(action: { self.integrate(item) }) {
+                                        Text("Integrate")
+                                    }
+                                    Button(action: { self.delete(item) }) {
+                                        Text("Delete Bot")
+                                    }
+                                    Button(action: { self.duplicate(item) }) {
+                                        Text("Duplicate Bot")
+                                    }
+                                    Button(action: { self.export(item) }) {
+                                        Text("Export settings…")
+                                    }
+                                    Button(action: { self.apply(to: item) }) {
+                                        Text("Apply settings…")
+                                    }
+                                } else {
+                                    Button(action: { self.export(item) }) {
+                                        Text("Export results…")
+                                    }
+                                }
                             }
                         }
                     }
                 }
+                .listStyle(SidebarListStyle())
             }
-            .listStyle(SidebarListStyle())
-            .frame(minWidth: 200, minHeight: 200)
+            .frame(minWidth: 100, maxWidth: .infinity, maxHeight: .infinity)
         }
         .navigationViewStyle(DoubleColumnNavigationViewStyle())
     }
     
     private func toggleExpandedState(of botId: String) {
-        if botIntegrations.first(where: { $0.botId == botId }) != nil {
-            self.botIntegrations = self.botIntegrations.filter { $0.botId != botId }
+        guard let bot = viewModel.items.first(where: { $0.id == botId }) else {
+            return
+        }
+        if bot.isExpanded {
+            viewModel.removeIntegrations(of: botId)
         } else {
+            viewModel.addIntegrations(for: botId, integrations: [loadingPlaceholder])
             connector.getIntegrationsList(for: botId, last: 3) { (result) in
                 if case let .success(integrations) = result {
-                    self.botIntegrations = self.botIntegrations + [IntegrationsData(botId: botId, integrations: integrations)]
+                    self.viewModel.addIntegrations(for: botId, integrations: integrations.map { IntegrationVM(integration: $0) })
                 }
             }
         }
     }
     
-    private func delete(_ bot: Bot) {
+    private var loadingPlaceholder: IntegrationVM {
+        let integration = Integration(id: "", rev: nil, assets: nil, bot: nil, buildResultSummary: nil, buildServiceFingerprint: nil, ccPercentage: nil, ccPercentageDelta: nil, currentStep: nil, docType: nil, duration: nil, endedTime: nil, number: nil, queuedDate: nil, result: nil, startedTime: nil, testedDevices: nil, tinyID: "Loading integrations…")
+        return IntegrationVM(integration: integration)
+    }
+    
+    private func integrate(_ item: Any) {
+        guard let bot = item as? BotVM else {
+            return
+        }
         
     }
     
-    private func duplicate(_ bot: Bot) {
-        
+    private func delete(_ item: Any) {
+        guard let bot = item as? BotVM else {
+            return
+        }
     }
     
-    private func exportSettings(of bot: Bot) {
-        
+    private func duplicate(_ item: Any) {
+        guard let bot = item as? BotVM else {
+            return
+        }
     }
     
-    private func applySettings(to bot: Bot) {
-        
+    private func export(_ item: Any) {
+        switch item {
+        case let bot as BotVM:
+            connector.exportBotSettings(of: bot.botModel) { (result) in
+                
+            }
+        case let integration as IntegrationVM:
+            connector.exportIntegrationAssets(of: integration.integrationModel) { (result) in
+                
+            }
+        default:
+            break
+        }
+    }
+    
+    private func apply(to item: Any) {
+        guard let bot = item as? BotVM else {
+            return
+        }
     }
 }
 
 struct BotList_Previews: PreviewProvider {
     static var previews: some View {
-        BotListView(myWindow: nil, bots: [
+        BotListView(window: nil, bots: [
             Bot(id: UUID().uuidString, name: "DHLPaket_GIT_Testflight", tinyID: "1"),
             Bot(id: UUID().uuidString, name: "DHLPaket_GIT_Testflight_Beta", tinyID: "2"),
             Bot(id: UUID().uuidString, name: "DHLPaket_GIT_Fabric_DeviceCloud", tinyID: "3"),
             Bot(id: UUID().uuidString, name: "LPS (Mock) Bot", tinyID: "4"),
             Bot(id: UUID().uuidString, name: "XCS DHL Paket Dev Unit-Tests", tinyID: "5")
-        ])
+            ].map { BotVM(bot: $0) })
     }
 }

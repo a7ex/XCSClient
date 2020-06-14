@@ -36,4 +36,16 @@ class XCSConnector: ObservableObject {
     func delete(_ bot: Bot, completion: @escaping (Result<Bot, Error>) -> Void) {
         
     }
+    
+    func exportBotSettings(of bot: Bot, completion: @escaping (Result<String, Error>) -> Void) {
+        
+    }
+    
+    func applySettings(to bot: Bot, completion: @escaping (Result<Bot, Error>) -> Void) {
+        
+    }
+    
+    func exportIntegrationAssets(of integration: Integration, completion: @escaping (Result<Bool, Error>) -> Void) {
+        
+    }
 }

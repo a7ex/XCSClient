@@ -9,14 +9,19 @@
 import Foundation
 
 struct Server {
+    
+    // MARK: - Types
+    
     enum ServerError: Error {
         case executionError(code: Int)
         case jsonDecodingError(_ error: Error)
         case noResult
     }
     
-    private let sshEndpoint: String // = "adafranca@10.175.31.236"
-    private let xcodeServerAddress: String // "10.172.200.20"
+    // MARK: - Private instance variables
+    
+    private let sshEndpoint: String
+    private let xcodeServerAddress: String
     
     private let sshClient = "/usr/bin/ssh"
     private let secureCopy = "/usr/bin/scp"
@@ -28,11 +33,15 @@ struct Server {
     }
     private let decoder = JSONDecoder()
     
+    // MARK: - Initialization
+    
     init(xcodeServerAddress: String, sshEndpoint: String) {
         self.xcodeServerAddress = xcodeServerAddress
         self.sshEndpoint = sshEndpoint
         decoder.dateDecodingStrategy = .formatted(DateFormatter.backendDate)
     }
+    
+    // MARK: - Public interface
     
     func getBotList() -> Result<[Bot], Error> {
         let arguments = defaultArguments + ["--request", "GET", "\(apiUrl)/bots"]
@@ -87,7 +96,7 @@ struct Server {
         let rslt = execute(program: sshClient, with: newArguments)
         switch rslt {
         case .success:
-            let newRslt = execute(program: secureCopy, with: ["adafranca@10.175.31.236:logResults.tgz", "logResults.tgz"])
+            let newRslt = execute(program: secureCopy, with: ["\(sshEndpoint):logResults.tgz", "logResults.tgz"])
             switch newRslt {
             case .success:
                 return .success(true)
@@ -182,7 +191,7 @@ struct Server {
             .map { _ in true }
     }
     
-    // MARK: - Private
+    // MARK: - Private interface
     
     private func executeJSONTask<T: Codable>(with arguments: [String]) -> Result<T, Error> {
         let rslt = execute(program: sshClient, with: arguments)
@@ -190,21 +199,6 @@ struct Server {
             try? data.write(to: URL(fileURLWithPath: "/Users/alex/Desktop/intgerations.json"))
             let rslt = Result { try decoder.decode(T.self, from: data) }
             return rslt
-        }
-    }
-    
-    func testCLI() {
-        if let url = Bundle.main.url(forResource: "xcodeserverclient", withExtension: nil) {
-        
-            let rslt = execute(program: url.path, with: ["botlist"])
-        switch rslt {
-        case .success(let data):
-            print(String(decoding: data, as: UTF8.self))
-        case .failure(let error):
-            print(error.localizedDescription)
-        }
-        } else {
-            print("xcodeserverclient not found")
         }
     }
     
