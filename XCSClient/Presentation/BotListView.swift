@@ -40,29 +40,6 @@ struct BotListView: View {
                                 Text(item.title)
                                     .padding(.leading, item.isExpandable ? 0: 30)
                             }
-                            .contextMenu {
-                                if item.type == .bot {
-                                    Button(action: { self.integrate(item) }) {
-                                        Text("Integrate")
-                                    }
-                                    Button(action: { self.delete(item) }) {
-                                        Text("Delete Bot")
-                                    }
-                                    Button(action: { self.duplicate(item) }) {
-                                        Text("Duplicate Bot")
-                                    }
-                                    Button(action: { self.export(item) }) {
-                                        Text("Export settings…")
-                                    }
-                                    Button(action: { self.apply(to: item) }) {
-                                        Text("Apply settings…")
-                                    }
-                                } else {
-                                    Button(action: { self.export(item) }) {
-                                        Text("Export results…")
-                                    }
-                                }
-                            }
                         }
                     }
                 }
@@ -92,46 +69,6 @@ struct BotListView: View {
     private var loadingPlaceholder: IntegrationVM {
         let integration = Integration(id: "", rev: nil, assets: nil, bot: nil, buildResultSummary: nil, buildServiceFingerprint: nil, ccPercentage: nil, ccPercentageDelta: nil, currentStep: nil, docType: nil, duration: nil, endedTime: nil, number: nil, queuedDate: nil, result: nil, startedTime: nil, testedDevices: nil, tinyID: "Loading integrations…")
         return IntegrationVM(integration: integration)
-    }
-    
-    private func integrate(_ item: Any) {
-        guard let bot = item as? BotVM else {
-            return
-        }
-        
-    }
-    
-    private func delete(_ item: Any) {
-        guard let bot = item as? BotVM else {
-            return
-        }
-    }
-    
-    private func duplicate(_ item: Any) {
-        guard let bot = item as? BotVM else {
-            return
-        }
-    }
-    
-    private func export(_ item: Any) {
-        switch item {
-        case let bot as BotVM:
-            connector.exportBotSettings(of: bot.botModel) { (result) in
-                
-            }
-        case let integration as IntegrationVM:
-            connector.exportIntegrationAssets(of: integration.integrationModel) { (result) in
-                
-            }
-        default:
-            break
-        }
-    }
-    
-    private func apply(to item: Any) {
-        guard let bot = item as? BotVM else {
-            return
-        }
     }
 }
 

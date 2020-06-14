@@ -33,19 +33,101 @@ class XCSConnector: ObservableObject {
         }
     }
     
-    func delete(_ bot: Bot, completion: @escaping (Result<Bot, Error>) -> Void) {
-        
+    func integrate(_ bot: Bot, completion: @escaping (Result<Integration, Error>) -> Void) {
+        guard let botId = bot.id, !botId.isEmpty else {
+            completion(.failure(NSError(message: "Parameter error")))
+            return
+        }
+        DispatchQueue.global(qos: .background).async {
+            let rslt = self.server.integrate(botId)
+            DispatchQueue.main.async {
+                completion(rslt)
+            }
+        }
     }
     
-    func exportBotSettings(of bot: Bot, completion: @escaping (Result<String, Error>) -> Void) {
-        
+    func duplicate(_ bot: Bot, completion: @escaping (Result<Bot, Error>) -> Void) {
+        guard let botId = bot.id, !botId.isEmpty else {
+            completion(.failure(NSError(message: "Parameter error")))
+            return
+        }
+        DispatchQueue.global(qos: .background).async {
+            let rslt = self.server.duplicateBot(botId)
+            DispatchQueue.main.async {
+                completion(rslt)
+            }
+        }
     }
     
-    func applySettings(to bot: Bot, completion: @escaping (Result<Bot, Error>) -> Void) {
+    func delete(_ bot: Bot, completion: @escaping (Result<Bool, Error>) -> Void) {
+        guard let botId = bot.id, !botId.isEmpty,
+            let revId = bot.rev, !revId.isEmpty else {
+                completion(.failure(NSError(message: "Parameter error")))
+                return
+        }
+        DispatchQueue.global(qos: .background).async {
+            let rslt = self.server.deleteBot(botId: botId, revId: revId)
+            DispatchQueue.main.async {
+                completion(rslt)
+            }
+        }
+    }
+    
+    func exportBotSettings(of bot: Bot, completion: @escaping (Result<Data, Error>) -> Void) {
+        var duplicate = bot
+        duplicate.requiresUpgrade = false
+        duplicate.duplicatedFrom = bot.id ?? ""
         
+        duplicate.id = nil
+        duplicate.rev = nil
+        duplicate.tinyID = nil
+        duplicate.docType = nil
+        duplicate.integrationCounter = nil
+        duplicate.lastRevisionBlueprint = nil
+        duplicate.sourceControlBlueprintIdentifier = nil
+        
+        duplicate.configuration?.sourceControlBlueprint?.identifierKey = UUID().uuidString
+        
+        completion(.success(Data(duplicate.asBodyParamater.utf8)))
+    }
+    
+    func applySettings(at fileUrl: URL, fileName: String, toBot bot: Bot, completion: @escaping (Result<Bot, Error>) -> Void) {
+        guard let botId = bot.id, !botId.isEmpty else {
+            completion(.failure(NSError(message: "Parameter error")))
+            return
+        }
+        DispatchQueue.global(qos: .background).async {
+            let rslt = self.server.applySettings(at: fileUrl, fileName: fileName, toBot: botId)
+            DispatchQueue.main.async {
+                completion(rslt)
+            }
+        }
     }
     
     func exportIntegrationAssets(of integration: Integration, completion: @escaping (Result<Bool, Error>) -> Void) {
-        
+        DispatchQueue.global(qos: .background).async {
+            let rslt = self.server.downloadAssets(for: integration.id)
+            DispatchQueue.main.async {
+                completion(rslt)
+            }
+        }
+    }
+    
+    func downloadAssets(at path: String, filename: String, completion: @escaping (Result<Bool, Error>) -> Void) {
+        DispatchQueue.global(qos: .background).async {
+            let rslt = self.server.downloadAsset(path, filename: filename)
+            DispatchQueue.main.async {
+                completion(rslt)
+            }
+        }
+    }
+    
+    func loadAsset(at path: String, completion: @escaping (Result<Data, Error>) -> Void) {
+        DispatchQueue.global(qos: .background).async {
+            let rslt = self.server.loadAsset(path)
+            DispatchQueue.main.async {
+                completion(rslt)
+            }
+        }
     }
 }

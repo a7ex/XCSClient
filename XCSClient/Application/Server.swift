@@ -82,7 +82,7 @@ struct Server {
         switch rslt {
         case .success(let integrationResult):
             if let first = integrationResult.results.first {
-                return downloadAssets(for: first.tinyID ?? "").map { _ in true }
+                return downloadAssets(for: first.id).map { _ in true }
             } else {
                 return .failure(NSError(message: "Unable to get infoamtion for the last integration of bot \(bot)"))
             }
@@ -105,6 +105,34 @@ struct Server {
             }
         case .failure(let error):
             return .failure(error)
+        }
+    }
+    
+    func downloadAsset(_ path: String, filename: String) -> Result<Bool, Error> {
+        let newArguments = defaultArguments + ["\(apiUrl)/assets/\(path) --output tmpFile"]
+        let rslt = execute(program: sshClient, with: newArguments)
+        switch rslt {
+            case .success:
+                let newRslt = execute(program: secureCopy, with: ["\(sshEndpoint):tmpFile", "tmpFile"])
+                switch newRslt {
+                    case .success:
+                        return .success(true)
+                    case .failure(let error):
+                        return .failure(error)
+            }
+            case .failure(let error):
+                return .failure(error)
+        }
+    }
+    
+    func loadAsset(_ path: String) -> Result<Data, Error> {
+        let newArguments = defaultArguments + ["\(apiUrl)/assets/\(path)"]
+        let rslt = execute(program: sshClient, with: newArguments)
+        switch rslt {
+            case .success(let data):
+                return .success(data)
+            case .failure(let error):
+                return .failure(error)
         }
     }
     
@@ -141,7 +169,23 @@ struct Server {
         return executeJSONTask(with: arguments)
     }
     
-    func modifyBot(_ botId: String, settingsFile: String) -> Result<Bot, Error> {
+    func applySettings(at fileUrl: URL, fileName: String, toBot botId: String) -> Result<Bot, Error> {
+        let rslt = copyBotSettingsToServer(botId, fileUrl: fileUrl, fileName: fileName)
+        switch rslt {
+            case .success(let succes):
+                if succes {
+                    return self.modifyBot(botId, settingsFile: fileName)
+                } else {
+                    return .failure(NSError(message: "Unable to copy settings to server."))
+            }
+            case .failure(let error):
+                return .failure(error)
+        }
+    }
+    
+    /// Modify a bot using settings form a json file
+    /// The file is expected to be at the rootlevel of the ssh user on the jumphost!
+    private func modifyBot(_ botId: String, settingsFile: String) -> Result<Bot, Error> {
         let arguments = defaultArguments + [
             "--request", "PATCH",
             "-H", "\"Content-Type: application/json; charset=utf-8\"",
@@ -151,19 +195,18 @@ struct Server {
         return executeJSONTask(with: arguments)
     }
     
-    func createBot(_ botJSON: String) -> Result<Bot, Error> {
-        let arguments = defaultArguments + [
-            "--request", "POST",
-            "-H", "\"Content-Type: application/json; charset=utf-8\"",
-            "--data", "\"@\(botJSON)\"",
-            "\(apiUrl)/bots"
-        ]
-        return executeJSONTask(with: arguments)
-    }
+//    func createBot(_ botJSON: String) -> Result<Bot, Error> {
+//        let arguments = defaultArguments + [
+//            "--request", "POST",
+//            "-H", "\"Content-Type: application/json; charset=utf-8\"",
+//            "--data", "\"@\(botJSON)\"",
+//            "\(apiUrl)/bots"
+//        ]
+//        return executeJSONTask(with: arguments)
+//    }
     
-    func copyBotSettingsToServer(_ botId: String) -> Result<Bool, Error> {
-        let fileName = "\(botId).json"
-        let rslt = execute(program: secureCopy, with: [fileName, "\(sshEndpoint):\(fileName)"])
+    private func copyBotSettingsToServer(_ botId: String, fileUrl: URL, fileName: String) -> Result<Bool, Error> {
+        let rslt = execute(program: secureCopy, with: ["\"\(fileUrl.path)\"", "\(sshEndpoint):\(fileName)"])
         switch rslt {
         case .success:
             return .success(true)
