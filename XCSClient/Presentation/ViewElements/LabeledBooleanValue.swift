@@ -15,7 +15,10 @@ struct LabeledBooleanValue: View {
     var body: some View {
         HStack(alignment: .top) {
             InfoLabel(content: label)
+            .frame(minWidth: 0, maxWidth: .infinity, alignment: .trailing)
+            .padding([.bottom], 4)
             Text(value ? "✅": "❌")
+            .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
         }
     }
 }

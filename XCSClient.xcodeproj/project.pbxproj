@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FA17F9132496890C000A149D /* ActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA17F9122496890C000A149D /* ActivityIndicator.swift */; };
+		FA17F9152496B29B000A149D /* Tooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA17F9142496B29B000A149D /* Tooltip.swift */; };
+		FA17F9172496B5BE000A149D /* Windows.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA17F9162496B5BE000A149D /* Windows.swift */; };
+		FA17F9192496D1E6000A149D /* ButtonLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA17F9182496D1E6000A149D /* ButtonLabel.swift */; };
 		FA190BF1249545B500B70206 /* IntegrationDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA190BF0249545B500B70206 /* IntegrationDetailView.swift */; };
 		FA2696382495FC8900C7F084 /* BotListVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA2696372495FC8900C7F084 /* BotListVM.swift */; };
 		FA26963A2495FD3100C7F084 /* ExpandableBotListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA2696392495FD3100C7F084 /* ExpandableBotListItem.swift */; };
@@ -52,6 +56,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		FA17F9122496890C000A149D /* ActivityIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicator.swift; sourceTree = "<group>"; };
+		FA17F9142496B29B000A149D /* Tooltip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tooltip.swift; sourceTree = "<group>"; };
+		FA17F9162496B5BE000A149D /* Windows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Windows.swift; sourceTree = "<group>"; };
+		FA17F9182496D1E6000A149D /* ButtonLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonLabel.swift; sourceTree = "<group>"; };
 		FA190BF0249545B500B70206 /* IntegrationDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationDetailView.swift; sourceTree = "<group>"; };
 		FA2696372495FC8900C7F084 /* BotListVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BotListVM.swift; sourceTree = "<group>"; };
 		FA2696392495FD3100C7F084 /* ExpandableBotListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableBotListItem.swift; sourceTree = "<group>"; };
@@ -132,6 +140,9 @@
 				FA26964224960F2600C7F084 /* LabeledStringValue.swift */,
 				FA26964424960F7D00C7F084 /* LabeledBooleanValue.swift */,
 				FA26964C249620A500C7F084 /* LabeledTextInput.swift */,
+				FA17F9122496890C000A149D /* ActivityIndicator.swift */,
+				FA17F9142496B29B000A149D /* Tooltip.swift */,
+				FA17F9182496D1E6000A149D /* ButtonLabel.swift */,
 			);
 			path = ViewElements;
 			sourceTree = "<group>";
@@ -200,6 +211,7 @@
 			children = (
 				FA5636C52493BC55002457DF /* AppDelegate.swift */,
 				FA5637092493BEDC002457DF /* Server.swift */,
+				FA17F9162496B5BE000A149D /* Windows.swift */,
 				FA56370D2493C16E002457DF /* Extensions */,
 			);
 			path = Application;
@@ -361,6 +373,7 @@
 				FA7B8A472493D10900C26B50 /* BotDetailView.swift in Sources */,
 				FA26963E2495FD9800C7F084 /* IntegrationListItemVM.swift in Sources */,
 				FA5636F92493BEC7002457DF /* DeleteResponse.swift in Sources */,
+				FA17F9192496D1E6000A149D /* ButtonLabel.swift in Sources */,
 				FA5636FF2493BEC7002457DF /* Integration.swift in Sources */,
 				FA2696472496124800C7F084 /* BotVM.swift in Sources */,
 				FA2696492496126200C7F084 /* IntegrationVM.swift in Sources */,
@@ -369,6 +382,7 @@
 				FA190BF1249545B500B70206 /* IntegrationDetailView.swift in Sources */,
 				FA26963A2495FD3100C7F084 /* ExpandableBotListItem.swift in Sources */,
 				FA56370C2493BEED002457DF /* NSError+ConvenienceInit.swift in Sources */,
+				FA17F9172496B5BE000A149D /* Windows.swift in Sources */,
 				FA5636D92493BDB0002457DF /* BotListView.swift in Sources */,
 				FA5636F52493BEC7002457DF /* IntegrationAssets.swift in Sources */,
 				FA2696382495FC8900C7F084 /* BotListVM.swift in Sources */,
@@ -392,7 +406,9 @@
 				FA5636C62493BC55002457DF /* AppDelegate.swift in Sources */,
 				FA5637062493BEC7002457DF /* TestDeviceSpecification.swift in Sources */,
 				FA5637042493BEC7002457DF /* TestDevice.swift in Sources */,
+				FA17F9132496890C000A149D /* ActivityIndicator.swift in Sources */,
 				FA26964524960F7D00C7F084 /* LabeledBooleanValue.swift in Sources */,
+				FA17F9152496B29B000A149D /* Tooltip.swift in Sources */,
 				FA56370A2493BEDC002457DF /* Server.swift in Sources */,
 				FA5637012493BEC7002457DF /* BotsQueryResponse.swift in Sources */,
 			);

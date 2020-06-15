@@ -104,18 +104,18 @@ class XCSConnector: ObservableObject {
         }
     }
     
-    func exportIntegrationAssets(of integration: Integration, completion: @escaping (Result<Bool, Error>) -> Void) {
+    func exportIntegrationAssets(of integration: Integration, to targetUrl: URL, completion: @escaping (Result<Bool, Error>) -> Void) {
         DispatchQueue.global(qos: .background).async {
-            let rslt = self.server.downloadAssets(for: integration.id)
+            let rslt = self.server.downloadAssets(for: integration.id, to: targetUrl)
             DispatchQueue.main.async {
                 completion(rslt)
             }
         }
     }
     
-    func downloadAssets(at path: String, filename: String, completion: @escaping (Result<Bool, Error>) -> Void) {
+    func downloadAssets(at path: String, to targetUrl: URL, completion: @escaping (Result<Bool, Error>) -> Void) {
         DispatchQueue.global(qos: .background).async {
-            let rslt = self.server.downloadAsset(path, filename: filename)
+            let rslt = self.server.downloadAsset(path, to: targetUrl)
             DispatchQueue.main.async {
                 completion(rslt)
             }
@@ -130,4 +130,5 @@ class XCSConnector: ObservableObject {
             }
         }
     }
+    
 }

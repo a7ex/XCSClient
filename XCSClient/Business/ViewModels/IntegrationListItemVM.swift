@@ -19,7 +19,7 @@ struct IntegrationListItemVM: ExpandableBotListItem {
     }
     
     var title: String {
-        return integration.tinyID
+        return integration.listTitle
     }
     
     var destination: AnyView {

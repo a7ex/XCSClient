@@ -14,30 +14,25 @@ struct IntegrationDetailView: View {
     
     @State private var hasError = false
     @State private var errorMessage = ""
+    @State private var activityShowing = false
     
     var body: some View {
-        HStack {
-            VStack(alignment: .leading) {
-                HStack {
-                    Text("Integration \(integration.tinyID) (\(integration.number)) - \(integration.currentStep)")
+        ZStack {
+            VStack() {
+                Text("Integration \(integration.tinyID) (\(integration.number)) - \(integration.currentStep)")
                         .font(.headline)
-                    Spacer()
-                    MenuButton(label: Text("⚙️")) {
-                        Button(action: { self.export(self.integration) }) {
-                            Text("Download all assets…")
-                        }
-                    }
-                    .menuButtonStyle(BorderlessPullDownMenuButtonStyle())
-                    .frame(width: 30)
-                }
                 Divider()
                 Group {
                     LabeledStringValue(label: "Result", value: integration.result)
                     LabeledStringValue(label: "Bot", value: integration.botName)
                     LabeledStringValue(label: "Duration", value: integration.duration)
-                    LabeledStringValue(label: "Queued at", value: integration.queuedDate)
-                    LabeledStringValue(label: "Started at", value: integration.startedTime)
-                    LabeledStringValue(label: "Ended at", value: integration.endedTime)
+                    LabeledStringValue(label: "Date", value: integration.startDate)
+                    if !integration.startEndTimes.isEmpty {
+                        LabeledStringValue(label: "Time", value: integration.startEndTimes)
+                    }
+                    if !integration.sourceControlCommitId.isEmpty {
+                    LabeledStringValue(label: "Commit ID", value: integration.sourceControlCommitId)
+                    }
                 }
                 Group {
                     LabeledStringValue(label: "Number of errors", value: integration.errorCount)
@@ -48,42 +43,40 @@ struct IntegrationDetailView: View {
                     LabeledStringValue(label: "Code Coverage percentage", value: integration.codeCoverage)
                     LabeledStringValue(label: "Performance Test changes", value: integration.performanceTests)
                 }
+                Divider()
                 Group {
                     if integration.archive.size > 0 {
                         Button(action: { self.downloadAsset(self.integration.archive) }) {
-                            Text(integration.archive.title)
-                                .frame(width: 240)
+                            ButtonLabel(text: integration.archive.title)
                         }
                     }
                     if integration.buildServiceLog.size > 0 {
                         Button(action: { self.downloadAsset(self.integration.buildServiceLog) }) {
-                            Text(integration.buildServiceLog.title)
-                                .frame(width: 240)
+                            ButtonLabel(text: integration.buildServiceLog.title)
                         }
                     }
                     if integration.sourceControlLog.size > 0 {
                         Button(action: { self.downloadAsset(self.integration.sourceControlLog) }) {
-                            Text(integration.sourceControlLog.title)
-                                .frame(width: 240)
+                            ButtonLabel(text: integration.sourceControlLog.title)
                         }
                     }
                     if integration.xcodebuildLog.size > 0 {
                         Button(action: { self.downloadAsset(self.integration.xcodebuildLog) }) {
-                            Text(integration.xcodebuildLog.title)
-                                .frame(width: 240)
+                            ButtonLabel(text: integration.xcodebuildLog.title)
                         }
                     }
                     if integration.xcodebuildOutput.size > 0 {
                         Button(action: { self.downloadAsset(self.integration.xcodebuildOutput) }) {
-                            Text(integration.xcodebuildOutput.title)
-                                .frame(width: 240)
+                            ButtonLabel(text: integration.xcodebuildOutput.title)
                         }
                     }
                     ForEach(integration.triggerAssets, id: \.path) { asset in
                         Button(action: { self.downloadAsset(asset) }) {
-                            Text(asset.title)
-                                .frame(width: 240)
+                            ButtonLabel(text: asset.title)
                         }
+                    }
+                    Button(action: { self.export(self.integration) }) {
+                        ButtonLabel(text: "Download all assets as archive…")
                     }
                 }
                 .alert(isPresented: $hasError) {
@@ -92,12 +85,32 @@ struct IntegrationDetailView: View {
                 Spacer()
             }
             .padding()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            if activityShowing {
+                Color.black
+                    .opacity(0.5)
+                VStack {
+                    ActivityIndicator()
+                        .frame(width: 40, height: 40)
+                        .foregroundColor(.white)
+                    Text("Loading…")
+                        .foregroundColor(.white)
+                }
+            }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
     private func export(_ integration: IntegrationVM) {
-        connector.exportIntegrationAssets(of: integration.integrationModel) { (result) in
+        guard let url = getSaveURLFromUser(for: "Results-\(integration.tinyID).tgz") else {
+            return
+        }
+        withAnimation {
+            self.activityShowing = true
+        }
+        connector.exportIntegrationAssets(of: integration.integrationModel, to: url) { (result) in
+            withAnimation {
+                self.activityShowing = false
+            }
             switch result {
                 case .success(let success):
                     print("Download success = \(success)")
@@ -110,28 +123,39 @@ struct IntegrationDetailView: View {
     
     private func downloadAsset(_ asset: FileDescriptor) {
         if asset.size < 500000 { // 500 KB
+            withAnimation {
+                self.activityShowing = true
+            }
             connector.loadAsset(at: asset.path) { (result) in
+                withAnimation {
+                    self.activityShowing = false
+                }
                 switch result {
                     case .success(let logData):
-                        let panel = NSSavePanel()
-                        panel.nameFieldStringValue = asset.name
-                        let result = panel.runModal()
-                        if result == .OK,
-                            let url = panel.url {
+                        if let url = self.getSaveURLFromUser(for: asset.name) {
                             do {
                                 try logData.write(to: url)
                             } catch {
                                 self.errorMessage = error.localizedDescription
                                 self.hasError = true
                             }
-                        }
+                    }
                     case .failure(let error):
                         self.errorMessage = error.localizedDescription
                         self.hasError = true
                 }
             }
         } else {
-            connector.downloadAssets(at: asset.path, filename: asset.name) { (result) in
+            guard let url = getSaveURLFromUser(for: asset.name) else {
+                return
+            }
+            withAnimation {
+                self.activityShowing = true
+            }
+            connector.downloadAssets(at: asset.path, to: url) { (result) in
+                withAnimation {
+                    self.activityShowing = false
+                }
                 switch result {
                     case .success(let success):
                         print("Download success = \(success)")
@@ -142,11 +166,31 @@ struct IntegrationDetailView: View {
             }
         }
     }
+    
+    // MARK: - Helper
+    
+    func getSaveURLFromUser(for fileName: String) -> URL? {
+        let panel = NSSavePanel()
+        panel.nameFieldStringValue = fileName
+        let result = panel.runModal()
+        guard result == .OK else {
+            return nil
+        }
+        return panel.url
+    }
 }
 
 struct IntegrationDetailView_Previews: PreviewProvider {
     static var previews: some View {
-        let integration = Integration(id: UUID().uuidString, rev: "", assets: nil, bot: nil, buildResultSummary: BuildResultSummary(analyzerWarningChange: 0, analyzerWarningCount: 0, codeCoveragePercentage: 0, codeCoveragePercentageDelta: 0, errorChange: 0, errorCount: 0, improvedPerfTestCount: 0, regressedPerfTestCount: 0, testFailureChange: 0, testFailureCount: 0, testsChange: 0, testsCount: 0, warningChange: 0, warningCount: 0), buildServiceFingerprint: "", ccPercentage: 0, ccPercentageDelta: 0, currentStep: "completed", docType: "", duration: 230, endedTime: Date(), number: 1, queuedDate: nil, result: IntegrationResult.buildErrors, startedTime: Date().advanced(by: 120), testedDevices: nil, tinyID: "1817142698624")
+        
+        let logfile = LogFile(allowAnonymousAccess: true, fileName: "Source Control Logs", isDirectory: false, relativePath: "NotEmpty", size: 3474)
+        let logfile2 = LogFile(allowAnonymousAccess: true, fileName: "Archive", isDirectory: false, relativePath: "NotEmpty", size: 143456474)
+        let logfile3 = LogFile(allowAnonymousAccess: true, fileName: "Ein ganz langer Name", isDirectory: false, relativePath: "NotEmpty", size: 34536474)
+        
+        let assets = IntegrationAssets(archive: logfile, buildServiceLog: logfile2, sourceControlLog: logfile3, xcodebuildLog: logfile2, xcodebuildOutput: logfile, triggerAssets: [logfile3])
+        
+        let integration = Integration(id: UUID().uuidString, rev: "", assets: assets, bot: nil, buildResultSummary: BuildResultSummary(analyzerWarningChange: 0, analyzerWarningCount: 0, codeCoveragePercentage: 0, codeCoveragePercentageDelta: 0, errorChange: 0, errorCount: 0, improvedPerfTestCount: 0, regressedPerfTestCount: 0, testFailureChange: 0, testFailureCount: 0, testsChange: 0, testsCount: 0, warningChange: 0, warningCount: 0), buildServiceFingerprint: "", ccPercentage: 0, ccPercentageDelta: 0, currentStep: "completed", docType: "", duration: 230, endedTime: Date(), number: 1, queuedDate: nil, result: IntegrationResult.buildErrors, startedTime: Date().advanced(by: 120), testedDevices: nil, tinyID: "1817142698624")
+        
         return IntegrationDetailView(integration: IntegrationVM(integration: integration))
     }
 }

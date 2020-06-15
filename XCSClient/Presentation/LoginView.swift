@@ -17,22 +17,36 @@ struct LoginView: View {
     
     @State private var hasError = false
     @State private var errorMessage = ""
+    @State private var activityShowing = false
     
     var body: some View {
-        VStack {
-            LabeledTextInput(label: "Xcode Server Address", content: $xcsServerAddress)
-            LabeledTextInput(label: "SSH Jumphost Address", content: $sshAddress)
-            LabeledTextInput(label: "SSH Username", content: $sshUser)
-            
-            Button(action: { self.loadBots() }) {
-                Text("Login and load bots")
+        ZStack {
+            VStack {
+                LabeledTextInput(label: "Xcode Server Address", content: $xcsServerAddress)
+                LabeledTextInput(label: "SSH Jumphost Address", content: $sshAddress)
+                LabeledTextInput(label: "SSH Username", content: $sshUser)
+                
+                Button(action: { self.loadBots() }) {
+                    Text("Login and load bots")
+                }
+                .alert(isPresented: $hasError) {
+                    Alert(title: Text(errorMessage))
+                }
             }
-            .alert(isPresented: $hasError) {
-                Alert(title: Text(errorMessage))
+            .frame(minWidth: 400)
+            .padding()
+            if activityShowing {
+                Color.black
+                    .opacity(0.5)
+                VStack {
+                    ActivityIndicator()
+                        .frame(width: 40, height: 40)
+                        .foregroundColor(.white)
+                    Text("Logging in…")
+                        .foregroundColor(.white)
+                }
             }
         }
-        .frame(minWidth: 400)
-        .padding()
     }
     
     private func loadBots() {
@@ -42,7 +56,13 @@ struct LoginView: View {
                 sshEndpoint: "\(sshUser)@\(sshAddress)"
             )
         )
+        withAnimation {
+            self.activityShowing = true
+        }
         connector.getBotList() { result in
+            withAnimation {
+                self.activityShowing = false
+            }
             switch result {
             case .success(let bots):
                 self.openWindow(with: bots.sorted(by: { $0.name < $1.name }), connector: connector)
@@ -54,14 +74,12 @@ struct LoginView: View {
     }
     
     private func openWindow(with bots: [Bot], connector: XCSConnector) {
-        var windowRef:NSWindow
-        windowRef = NSWindow(
-        contentRect: NSRect(x: 0, y: 0, width: 480, height: 300),
-        styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
-        backing: .buffered, defer: false)
-        let botlist = BotListView(window: windowRef, bots: bots.map { BotVM(bot: $0) }).environmentObject(connector)
+        let windowRef = NSWindow.botList
+        let botlist = BotListView(
+            window: windowRef,
+            bots: bots.map { BotVM(bot: $0) }
+        ).environmentObject(connector)
         windowRef.contentView = NSHostingView(rootView: botlist)
-        windowRef.setFrame(NSRect(x: 0, y: 0, width: 640, height: 480), display: true)
         windowRef.makeKeyAndOrderFront(nil)
         myWindow?.close()
     }

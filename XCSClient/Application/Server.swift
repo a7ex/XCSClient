@@ -76,13 +76,13 @@ struct Server {
         return rslt.map { $0.results }
     }
     
-    func getLatestResult(for bot: String) -> Result<Bool, Error> {
+    func getLatestResult(for bot: String, to targetUrl: URL) -> Result<Bool, Error> {
         let arguments = defaultArguments + ["--request", "GET", "\(apiUrl)/bots/\(bot)/integrations?last=1&summary_only=true"]
         let rslt: Result<IntegrationsQueryResponse, Error> = executeJSONTask(with: arguments)
         switch rslt {
         case .success(let integrationResult):
             if let first = integrationResult.results.first {
-                return downloadAssets(for: first.id).map { _ in true }
+                return downloadAssets(for: first.id, to: targetUrl).map { _ in true }
             } else {
                 return .failure(NSError(message: "Unable to get infoamtion for the last integration of bot \(bot)"))
             }
@@ -91,12 +91,12 @@ struct Server {
         }
     }
     
-    func downloadAssets(for integrationId: String) -> Result<Bool, Error> {
+    func downloadAssets(for integrationId: String, to targetUrl: URL) -> Result<Bool, Error> {
         let newArguments = defaultArguments + ["\(apiUrl)/integrations/\(integrationId)/assets --output logResults.tgz"]
         let rslt = execute(program: sshClient, with: newArguments)
         switch rslt {
         case .success:
-            let newRslt = execute(program: secureCopy, with: ["\(sshEndpoint):logResults.tgz", "logResults.tgz"])
+            let newRslt = execute(program: secureCopy, with: ["\(sshEndpoint):logResults.tgz", "\(targetUrl.path)"])
             switch newRslt {
             case .success:
                 return .success(true)
@@ -108,12 +108,12 @@ struct Server {
         }
     }
     
-    func downloadAsset(_ path: String, filename: String) -> Result<Bool, Error> {
-        let newArguments = defaultArguments + ["\(apiUrl)/assets/\(path) --output tmpFile"]
+    func downloadAsset(_ path: String, to targetUrl: URL) -> Result<Bool, Error> {
+        let newArguments = defaultArguments + ["\(apiUrl)/assets/\(path.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? path) --output tmpFile"]
         let rslt = execute(program: sshClient, with: newArguments)
         switch rslt {
             case .success:
-                let newRslt = execute(program: secureCopy, with: ["\(sshEndpoint):tmpFile", "tmpFile"])
+                let newRslt = execute(program: secureCopy, with: ["\(sshEndpoint):tmpFile", "\(targetUrl.path)"])
                 switch newRslt {
                     case .success:
                         return .success(true)
@@ -126,7 +126,7 @@ struct Server {
     }
     
     func loadAsset(_ path: String) -> Result<Data, Error> {
-        let newArguments = defaultArguments + ["\(apiUrl)/assets/\(path)"]
+        let newArguments = defaultArguments + ["\(apiUrl)/assets/\(path.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? path)"]
         let rslt = execute(program: sshClient, with: newArguments)
         switch rslt {
             case .success(let data):
@@ -206,7 +206,7 @@ struct Server {
 //    }
     
     private func copyBotSettingsToServer(_ botId: String, fileUrl: URL, fileName: String) -> Result<Bool, Error> {
-        let rslt = execute(program: secureCopy, with: ["\"\(fileUrl.path)\"", "\(sshEndpoint):\(fileName)"])
+        let rslt = execute(program: secureCopy, with: ["\(fileUrl.path)", "\(sshEndpoint):\(fileName)"])
         switch rslt {
         case .success:
             return .success(true)
@@ -239,7 +239,6 @@ struct Server {
     private func executeJSONTask<T: Codable>(with arguments: [String]) -> Result<T, Error> {
         let rslt = execute(program: sshClient, with: arguments)
         return rslt.flatMap { data in
-            try? data.write(to: URL(fileURLWithPath: "/Users/alex/Desktop/intgerations.json"))
             let rslt = Result { try decoder.decode(T.self, from: data) }
             return rslt
         }
@@ -264,7 +263,7 @@ struct Server {
         task.waitUntilExit()
         let status = task.terminationStatus
         if status != 0 {
-            return .failure(NSError(message: String(data: errorData, encoding: .utf8) ?? "Unknown", status: Int(status)))
+            return .failure(NSError(jumpHostError: errorData, status: Int(status)))
         } else {
             if let error = try? decoder.decode(ErrorResponse.self, from: data) {
                 return .failure(NSError(message: error.message, status: error.status))

@@ -24,14 +24,21 @@ struct IntegrationVM {
     
     private static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateStyle = .short
-        formatter.timeStyle = .short
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .none
         return formatter
     }()
     
     private static let onlyTimeDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .none
+        formatter.timeStyle = .short
+        return formatter
+    }()
+    
+    private static let fullDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
         formatter.timeStyle = .short
         return formatter
     }()
@@ -53,15 +60,34 @@ struct IntegrationVM {
     var duration: String {
         return Self.timeFormatter.string(from: integrationModel.duration ?? 0) ?? ""
     }
-    var queuedDate: String {
-        return Self.dateFormatter.string(from: integrationModel.queuedDate ?? Date.distantPast)
+    var listTitle: String {
+        var title = "(\(number)) "
+        if let date = integrationModel.queuedDate {
+            title += "\(Self.fullDateFormatter.string(from: date))\t"
+        }
+        title += result
+        return title
     }
-    var startedTime: String {
-        return Self.onlyTimeDateFormatter.string(from: integrationModel.startedTime ?? Date.distantPast)
+    var startDate: String {
+        guard let date = integrationModel.queuedDate else {
+            return ""
+        }
+        return Self.dateFormatter.string(from: date)
     }
-    var endedTime: String {
-        return Self.onlyTimeDateFormatter.string(from: integrationModel.endedTime ?? Date.distantFuture)
+    var startEndTimes: String {
+        var times = ""
+        if let date = integrationModel.queuedDate {
+            times += "Queued: \(Self.onlyTimeDateFormatter.string(from: date)) / "
+        }
+        if let date = integrationModel.startedTime {
+            times += "Started: \(Self.onlyTimeDateFormatter.string(from: date)) / "
+        }
+        if let date = integrationModel.endedTime {
+            times += "Ended: \(Self.onlyTimeDateFormatter.string(from: date))"
+        }
+        return times
     }
+    
     var result: String {
         return (integrationModel.result ?? IntegrationResult.unknown).rawValue
     }
@@ -109,6 +135,14 @@ struct IntegrationVM {
     }
     var triggerAssets: [FileDescriptor] {
         return integrationModel.assets?.triggerAssets?.map { FileDescriptor(logFile: $0) }.filter { $0.size > 0 } ?? [FileDescriptor]()
+    }
+    var sourceControlCommitId: String {
+        guard let primaryRemoteKey = integrationModel.bot?.lastRevisionBlueprint?.primaryRemoteRepositoryKey,
+            !primaryRemoteKey.isEmpty,
+       let srcLocation = integrationModel.bot?.lastRevisionBlueprint?.locationsKey?[primaryRemoteKey] else {
+                return ""
+        }
+        return srcLocation.locationRevisionKey ?? ""
     }
     
     init(integration: Integration) {

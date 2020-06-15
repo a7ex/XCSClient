@@ -14,52 +14,81 @@ struct BotDetailView: View {
     
     @State private var hasError = false
     @State private var errorMessage = ""
+    @State private var deleteConfirm = false
     
     var body: some View {
-        HStack {
-            VStack(alignment: .leading) {
-                HStack {
-                    Text(bot.name)
-                        .font(.headline)
-                    Spacer()
-                    MenuButton(label: Text("⚙️")) {
-                        Button(action: { self.integrate(self.bot) }) {
-                            Text("Integrate")
-                        }
-                        Button(action: { self.delete(self.bot) }) {
-                            Text("Delete Bot")
-                        }
-                        Button(action: { self.duplicate(self.bot) }) {
-                            Text("Duplicate Bot")
-                        }
-                        Button(action: { self.export(self.bot) }) {
-                            Text("Export settings…")
-                        }
-                        Button(action: { self.apply(to: self.bot) }) {
-                            Text("Apply settings…")
-                        }
-                    }
-                    .menuButtonStyle(BorderlessPullDownMenuButtonStyle())
-                    .frame(width: 30)
-                    .alert(isPresented: $hasError) {
-                        Alert(title: Text(errorMessage))
-                    }
-                }
-                Divider()
-                VStack(alignment: .leading, spacing: 8) {
+        VStack {
+            Text(bot.name)
+                .font(.headline)
+            Divider()
+            VStack(alignment: .leading, spacing: 8) {
+                Group {
                     LabeledStringValue(label: "ID", value: bot.id)
                     LabeledStringValue(label: "TinyId", value: bot.tinyID)
                     LabeledStringValue(label: "Integration Counter", value: String(bot.integrationCounter))
+                    if !bot.additionalBuildArguments.isEmpty {
+                    LabeledStringValue(label: "Additional Build Arguments", value: bot.additionalBuildArguments)
+                    }
+                    if !bot.schemeName.isEmpty {
+                    LabeledStringValue(label: "schemeName", value: bot.schemeName)
+                    }
+                    if !bot.buildConfiguration.isEmpty {
+                    LabeledStringValue(label: "buildConfiguration", value: bot.buildConfiguration)
+                    }
+                    LabeledStringValue(label: "sourceControlBranch", value: bot.sourceControlBranch)
+                }
+                Group {
                     LabeledBooleanValue(label: "Performs Analyze Action", value: bot.performsAnalyzeAction)
                     LabeledBooleanValue(label: "Performs Test Action", value: bot.performsTestAction)
                     LabeledBooleanValue(label: "Performs Archive Action", value: bot.performsArchiveAction)
                     LabeledBooleanValue(label: "Performs Upgrade Integration", value: bot.performsUpgradeIntegration)
                 }
-                Spacer()
+                Group {
+                    LabeledBooleanValue(label: "Disable App Thinning", value: bot.disableAppThinning)
+                    LabeledBooleanValue(label: "Exports Product Rrom Archive", value: bot.exportsProductFromArchive)
+                    LabeledStringValue(label: "ScheduleType", value: bot.scheduleType)
+                    if bot.botModel.configuration?.scheduleType == ScheduleType.periodically {
+                        LabeledStringValue(label: "Periodic Schedule Interval", value: bot.periodicScheduleInterval)
+                        if bot.botModel.configuration?.periodicScheduleInterval == .weekly {
+                            LabeledStringValue(label: "Weekly Schedule Day", value: bot.weeklyScheduleDay)
+                            LabeledStringValue(label: "Hour", value: bot.integrationTimeSchedule)
+                        } else if bot.botModel.configuration?.periodicScheduleInterval == .daily {
+                            LabeledStringValue(label: "Hour", value: bot.integrationTimeSchedule)
+                        } else if bot.botModel.configuration?.periodicScheduleInterval == .hourly {
+                            LabeledStringValue(label: "Minute", value: bot.integrationMinuteSchedule)
+                        }
+                    }
+                }
             }
-            .padding()
-            
+            Divider()
+            Group {
+                Button(action: { self.integrate(self.bot) }) {
+                    ButtonLabel(text: "Start Integration")
+                }
+                Button(action: { self.duplicate(self.bot) }) {
+                    ButtonLabel(text: "Duplicate Bot")
+                }
+                Button(action: { self.export(self.bot) }) {
+                    ButtonLabel(text: "Export settings…")
+                }
+                Button(action: { self.apply(to: self.bot) }) {
+                    ButtonLabel(text: "Apply settings…")
+                }
+                Button(action: { self.deleteConfirm = true }) {
+                    ButtonLabel(text: "Delete Bot")
+                }
+                .foregroundColor(.red)
+                .alert(isPresented: $deleteConfirm) {
+                    Alert(title: Text("Deleting a bot can not be undone! All archived data for the bot will be erased."), primaryButton: .default(Text("Delete")) {
+                        self.delete(self.bot)
+                        }, secondaryButton: .cancel())
+                }
+            }
             Spacer()
+        }
+        .padding()
+        .alert(isPresented: $hasError) {
+            Alert(title: Text(errorMessage))
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -68,11 +97,11 @@ struct BotDetailView: View {
         connector.integrate(bot.botModel) { (result) in
             switch result {
                 case .success(let integration):
-                    print("Successfully startet integration with ID: \(integration.tinyID ?? integration.id)")
+                    self.errorMessage = "Successfully startet integration with ID: \(integration.tinyID ?? integration.id)"
                 case .failure(let error):
                     self.errorMessage = error.localizedDescription
-                    self.hasError = true
             }
+            self.hasError = true
         }
     }
     
@@ -80,11 +109,12 @@ struct BotDetailView: View {
         connector.delete(bot.botModel) { (result) in
             switch result {
                 case .success(let success):
-                    print("Bot eletion with success: \"\(success)\"")
+                    NotificationCenter.default.post(name: NSNotification.Name("RefreshBotList"), object: nil)
+                    self.errorMessage = success ? "Bot successfully deleted": "Failed to delete Bot"
                 case .failure(let error):
                     self.errorMessage = error.localizedDescription
-                    self.hasError = true
             }
+            self.hasError = true
         }
     }
     
@@ -92,11 +122,12 @@ struct BotDetailView: View {
         connector.duplicate(bot.botModel) { (result) in
             switch result {
                 case .success(let bot):
-                    print("Successfully duplicated bot: \"\(bot.name)\"")
+                    NotificationCenter.default.post(name: NSNotification.Name("RefreshBotList"), object: nil)
+                    self.errorMessage = "Successfully duplicated bot: \"\(bot.name)\""
                 case .failure(let error):
                     self.errorMessage = error.localizedDescription
-                    self.hasError = true
             }
+            self.hasError = true
         }
     }
     
@@ -104,7 +135,19 @@ struct BotDetailView: View {
         connector.exportBotSettings(of: bot.botModel) { (result) in
             switch result {
                 case .success(let json):
-                print(json)
+                    let panel = NSSavePanel()
+                    panel.nameFieldStringValue = "\(bot.tinyID).json"
+                    let result = panel.runModal()
+                    guard result == .OK,
+                        let url = panel.url else {
+                            return
+                    }
+                    do {
+                        try json.write(to: url)
+                    } catch {
+                        self.errorMessage = error.localizedDescription
+                        self.hasError = true
+                }
                 case .failure(let error):
                     self.errorMessage = error.localizedDescription
                     self.hasError = true
@@ -113,11 +156,41 @@ struct BotDetailView: View {
     }
     
     private func apply(to bot: BotVM) {
-        
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = true
+        panel.allowedFileTypes = ["json"]
+        let result = panel.runModal()
+        guard result == .OK,
+            let url = panel.url else {
+                return
+        }
+        connector.applySettings(at: url, fileName: "\(bot.tinyID).json", toBot: bot.botModel) { (result) in
+            switch result {
+                case .success(let bot):
+                    NotificationCenter.default.post(name: NSNotification.Name("RefreshBotList"), object: nil)
+                    self.errorMessage = "Successfully modified bot: \"\(bot.name)\""
+                case .failure(let error):
+                    self.errorMessage = error.localizedDescription
+            }
+            self.hasError = true
+        }
+    }
+    
+    // MARK: - Helper
+    
+    func getSaveURLFromUser(for fileName: String) -> URL? {
+        let panel = NSSavePanel()
+        panel.nameFieldStringValue = fileName
+        let result = panel.runModal()
+        guard result == .OK else {
+            return nil
+        }
+        return panel.url
     }
 }
 
 struct BotDetailView_Previews: PreviewProvider {
+    
     static var previews: some View {
         var bot = Bot(id: UUID().uuidString, name: "DHLPaket_GIT_Fabric_DeviceCloud", tinyID: "3")
         var configuration = BotConfiguration()

@@ -35,6 +35,79 @@ struct BotVM {
     var performsUpgradeIntegration: Bool {
         return botModel.configuration?.performsUpgradeIntegration ?? false
     }
+    var additionalBuildArguments: String {
+        return botModel.configuration?.additionalBuildArguments?.joined(separator: ", ") ?? ""
+    }
+    var disableAppThinning: Bool {
+        return botModel.configuration?.disableAppThinning ?? false
+    }
+    var exportsProductFromArchive: Bool {
+        return botModel.configuration?.exportsProductFromArchive ?? false
+    }
+    var integrationTimeSchedule: String {
+        return "\(botModel.configuration?.hourOfIntegration ?? 0)"
+    }
+    var integrationMinuteSchedule: String {
+        return "\(botModel.configuration?.minutesAfterHourToIntegrate ?? 0)"
+    }
+    var weeklyScheduleDay: String {
+        switch botModel.configuration?.weeklyScheduleDay {
+            case .monday:
+                return "Monday"
+            case .tuesday:
+                return "Tuesday"
+            case .wednesday:
+                return "Wednesday"
+            case .thursday:
+                return "Thursday"
+            case .friday:
+                return "Friday"
+            case .saturday:
+                return "Saturday"
+            case .sunday:
+                return "Sunday"
+            default:
+                return ""
+        }
+    }
+    var periodicScheduleInterval: String {
+        switch botModel.configuration?.periodicScheduleInterval {
+            case .daily:
+                return "Daily"
+            case .hourly:
+                return "Hourly"
+            case .weekly:
+                return "Weekly"
+            default:
+                return ""
+        }
+    }
+    var scheduleType: String {
+        switch botModel.configuration?.scheduleType {
+            case .periodically:
+                return "Periodically"
+            case .onCommit:
+                return "On Commit"
+            case .manually:
+                return "Manually"
+            default:
+                return ""
+        }
+    }
+    var schemeName: String {
+        return botModel.configuration?.schemeName ?? ""
+    }
+    var buildConfiguration: String {
+        return botModel.configuration?.buildConfiguration ?? ""
+    }
+    var sourceControlBranch: String {
+        guard let locations = botModel.configuration?.sourceControlBlueprint?.locationsKey,
+            let pimaryRepo = botModel.configuration?.sourceControlBlueprint?.primaryRemoteRepositoryKey,
+            let location = locations[pimaryRepo] else {
+                return ""
+        }
+        return location.branchIdentifierKey ?? ""
+    }
     
     init(bot: Bot) {
         botModel = bot

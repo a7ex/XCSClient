@@ -12,18 +12,32 @@ struct BotListView: View {
     let myWindow: NSWindow?
     @EnvironmentObject var connector: XCSConnector
     @ObservedObject var viewModel = BotListVM()
+    @State private var botlistWindowDelegate = BotlistWindowDelegate()
+    
+    let refreshPublisher = NotificationCenter.default
+        .publisher(for: NSNotification.Name("RefreshBotList"))
     
     init(window: NSWindow?, bots: [BotVM]) {
         myWindow = window
+        myWindow?.delegate = botlistWindowDelegate
         viewModel.items = bots.map { BotListItemVM(bot: $0, isExpanded: false) }
     }
     
     var body: some View {
         NavigationView {
             VStack(alignment: .leading) {
-                Text("Bots")
-                    .font(.headline)
-                    .padding([.leading, .top])
+                HStack {
+                    Text("Bots")
+                        .font(.headline)
+                        .padding([.leading, .top])
+                    Spacer()
+                    Button(action: { self.reLoadBots() }) {
+                        Text("↺")
+                    }
+                    .padding([.top, .trailing])
+                    .toolTip("Reload list from server")
+                }
+                Divider()
                 List(viewModel.items, id: \.id) { item in
                     VStack(alignment: .leading) {
                         HStack {
@@ -45,9 +59,25 @@ struct BotListView: View {
                 }
                 .listStyle(SidebarListStyle())
             }
-            .frame(minWidth: 100, maxWidth: .infinity, maxHeight: .infinity)
+            .frame(minWidth: 200, maxWidth: .infinity, maxHeight: .infinity)
         }
         .navigationViewStyle(DoubleColumnNavigationViewStyle())
+        .onReceive(refreshPublisher) { (output) in
+            self.reLoadBots()
+        }
+    }
+    
+    private func reLoadBots() {
+        connector.getBotList() { result in
+            switch result {
+                case .success(let bots):
+                    self.viewModel.items = bots
+                        .sorted(by: { $0.name < $1.name })
+                        .map { BotListItemVM(bot: BotVM(bot: $0), isExpanded: false) }
+                case .failure(let error):
+                    print("Error occurred: \(error.localizedDescription)")
+            }
+        }
     }
     
     private func toggleExpandedState(of botId: String) {
@@ -58,7 +88,7 @@ struct BotListView: View {
             viewModel.removeIntegrations(of: botId)
         } else {
             viewModel.addIntegrations(for: botId, integrations: [loadingPlaceholder])
-            connector.getIntegrationsList(for: botId, last: 3) { (result) in
+            connector.getIntegrationsList(for: botId, last: 10) { (result) in
                 if case let .success(integrations) = result {
                     self.viewModel.addIntegrations(for: botId, integrations: integrations.map { IntegrationVM(integration: $0) })
                 }
@@ -69,6 +99,12 @@ struct BotListView: View {
     private var loadingPlaceholder: IntegrationVM {
         let integration = Integration(id: "", rev: nil, assets: nil, bot: nil, buildResultSummary: nil, buildServiceFingerprint: nil, ccPercentage: nil, ccPercentageDelta: nil, currentStep: nil, docType: nil, duration: nil, endedTime: nil, number: nil, queuedDate: nil, result: nil, startedTime: nil, testedDevices: nil, tinyID: "Loading integrations…")
         return IntegrationVM(integration: integration)
+    }
+    
+    class BotlistWindowDelegate: NSObject, NSWindowDelegate {
+        func windowWillClose(_ notification: Notification) {
+            NSWindow.login.makeKeyAndOrderFront(nil)
+        }
     }
 }
 
