@@ -62,10 +62,11 @@ struct BotListView: View {
                 }
                 .listStyle(SidebarListStyle())
             }
-            .frame(minWidth: 200, maxWidth: .infinity, maxHeight: .infinity)
             .onReceive(timer) { (timer) in
                 self.refreshLastIntegration(of: self.inProgressBot)
             }
+            Text("Select bot in the list of bots to see details.")
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .navigationViewStyle(DoubleColumnNavigationViewStyle())
         .onReceive(refreshPublisher) { (output) in

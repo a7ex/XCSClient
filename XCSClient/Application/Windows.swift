@@ -24,14 +24,14 @@ extension NSWindow {
     
     static var botList: NSWindow {
         let windowRef = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 640, height: 480),
+            contentRect: NSRect(x: 0, y: 0, width: 740, height: 480),
             styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
             backing: .buffered,
             defer: false
         )
         let screenHeight = NSScreen.main?.frame.size.height ?? 0
         windowRef.setFrame(
-            NSRect(x: 50, y: screenHeight - 530, width: 640, height: 480),
+            NSRect(x: 50, y: screenHeight - 530, width: 740, height: 480),
             display: true
         )
         return windowRef
