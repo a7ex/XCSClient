@@ -13,6 +13,9 @@ struct BotListView: View {
     @EnvironmentObject var connector: XCSConnector
     @ObservedObject var viewModel = BotListVM()
     @State private var botlistWindowDelegate = BotlistWindowDelegate()
+    @State private var inProgressBot = ""
+    
+    let timer = Timer.publish(every: 10, tolerance: 0.5, on: .main, in: .common).autoconnect()
     
     let refreshPublisher = NotificationCenter.default
         .publisher(for: NSNotification.Name("RefreshBotList"))
@@ -60,6 +63,9 @@ struct BotListView: View {
                 .listStyle(SidebarListStyle())
             }
             .frame(minWidth: 200, maxWidth: .infinity, maxHeight: .infinity)
+            .onReceive(timer) { (timer) in
+                self.refreshLastIntegration(of: self.inProgressBot)
+            }
         }
         .navigationViewStyle(DoubleColumnNavigationViewStyle())
         .onReceive(refreshPublisher) { (output) in
@@ -85,13 +91,40 @@ struct BotListView: View {
             return
         }
         if bot.isExpanded {
-            viewModel.removeIntegrations(of: botId)
+            viewModel.collapseIntegrations(of: botId)
         } else {
-            viewModel.addIntegrations(for: botId, integrations: [loadingPlaceholder])
+            viewModel.expandIntegrations(for: botId, integrations: [loadingPlaceholder])
             connector.getIntegrationsList(for: botId, last: 10) { (result) in
                 if case let .success(integrations) = result {
-                    self.viewModel.addIntegrations(for: botId, integrations: integrations.map { IntegrationVM(integration: $0) })
+                    self.inProgressBot = ""
+                    self.viewModel.expandIntegrations(for: botId, integrations: integrations.map { integration in
+                        if integration.result == .unknown,
+                            integration.currentStep?.contains("pending") != true {
+                            self.inProgressBot = botId
+                        }
+                        return IntegrationVM(integration: integration)
+                    })
                 }
+            }
+        }
+    }
+    
+    private func refreshLastIntegration(of botId: String) {
+        guard !botId.isEmpty,
+            let bot = viewModel.items.first(where: { $0.id == botId }),
+            bot.isExpanded else {
+            return
+        }
+        connector.getIntegrationsList(for: botId, last: 1) { (result) in
+            if case let .success(integrations) = result {
+                self.inProgressBot = ""
+                self.viewModel.refresh(integrations.map { integration in
+                    if integration.result == .unknown,
+                        integration.currentStep?.contains("pending") != true {
+                        self.inProgressBot = botId
+                    }
+                    return IntegrationVM(integration: integration)
+                })
             }
         }
     }

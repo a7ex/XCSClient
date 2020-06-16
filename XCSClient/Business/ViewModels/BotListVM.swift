@@ -11,7 +11,7 @@ import Foundation
 class BotListVM: ObservableObject {
     @Published var items = [ExpandableBotListItem]()
     
-    func removeIntegrations(of id: String) {
+    func collapseIntegrations(of id: String) {
         guard var bot = items.first(where: { $0.id == id }) else {
             return
         }
@@ -21,7 +21,7 @@ class BotListVM: ObservableObject {
             .removingIntegrations(of: id)
     }
     
-    func addIntegrations(for id: String, integrations: [IntegrationVM]) {
+    func expandIntegrations(for id: String, integrations: [IntegrationVM]) {
         guard var bot = items.first(where: { $0.id == id }) else {
             return
         }
@@ -29,6 +29,14 @@ class BotListVM: ObservableObject {
         items = items
             .replacingItem(with: id, newItem: bot)
             .addingIntegrations(for: id, integrations: integrations)
+    }
+    
+    func refresh(_ integrations: [IntegrationVM]) {
+        var tItems = items
+        for integration in integrations {
+            tItems = tItems.replacingItem(with: integration.id, newItem: IntegrationListItemVM(integration: integration))
+        }
+        items = tItems
     }
 }
 

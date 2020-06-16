@@ -19,6 +19,15 @@ struct LabeledStringValue: View {
                 .padding([.bottom], 4)
             Text(value)
                 .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                .contextMenu {
+                    Button(action: {
+                        let pb = NSPasteboard.general
+                        pb.declareTypes([.string], owner: nil)
+                        pb.setString(self.value, forType: .string)
+                    }) {
+                        Text("Copy")
+                    }
+            }
         }
     }
 }

@@ -65,7 +65,11 @@ struct IntegrationVM {
         if let date = integrationModel.queuedDate {
             title += "\(Self.fullDateFormatter.string(from: date))\t"
         }
-        title += result
+        if result == "unknown" {
+            title += currentStep
+        } else {
+            title += result
+        }
         return title
     }
     var startDate: String {

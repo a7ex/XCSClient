@@ -27,13 +27,13 @@ struct BotDetailView: View {
                     LabeledStringValue(label: "TinyId", value: bot.tinyID)
                     LabeledStringValue(label: "Integration Counter", value: String(bot.integrationCounter))
                     if !bot.additionalBuildArguments.isEmpty {
-                    LabeledStringValue(label: "Additional Build Arguments", value: bot.additionalBuildArguments)
+                        LabeledStringValue(label: "Additional Build Arguments", value: bot.additionalBuildArguments)
                     }
                     if !bot.schemeName.isEmpty {
-                    LabeledStringValue(label: "schemeName", value: bot.schemeName)
+                        LabeledStringValue(label: "schemeName", value: bot.schemeName)
                     }
                     if !bot.buildConfiguration.isEmpty {
-                    LabeledStringValue(label: "buildConfiguration", value: bot.buildConfiguration)
+                        LabeledStringValue(label: "buildConfiguration", value: bot.buildConfiguration)
                     }
                     LabeledStringValue(label: "sourceControlBranch", value: bot.sourceControlBranch)
                 }
@@ -45,7 +45,7 @@ struct BotDetailView: View {
                 }
                 Group {
                     LabeledBooleanValue(label: "Disable App Thinning", value: bot.disableAppThinning)
-                    LabeledBooleanValue(label: "Exports Product Rrom Archive", value: bot.exportsProductFromArchive)
+                    LabeledBooleanValue(label: "Exports Product From Archive", value: bot.exportsProductFromArchive)
                     LabeledStringValue(label: "ScheduleType", value: bot.scheduleType)
                     if bot.botModel.configuration?.scheduleType == ScheduleType.periodically {
                         LabeledStringValue(label: "Periodic Schedule Interval", value: bot.periodicScheduleInterval)
