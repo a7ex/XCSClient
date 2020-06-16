@@ -62,6 +62,7 @@ struct BotListView: View {
                 }
                 .listStyle(SidebarListStyle())
             }
+            .frame(minWidth: 280, maxWidth: .infinity)
             .onReceive(timer) { (timer) in
                 self.refreshLastIntegration(of: self.inProgressBot)
             }
