@@ -10,9 +10,11 @@ import Foundation
 
 class XCSConnector: ObservableObject {
     let server: Server
+    let name: String
     
-    init(server: Server) {
+    init(server: Server, name: String) {
         self.server = server
+        self.name = name
     }
     
     func getBotList(completion: @escaping (Result<[Bot], Error>) -> Void) {
@@ -40,6 +42,19 @@ class XCSConnector: ObservableObject {
         }
         DispatchQueue.global(qos: .background).async {
             let rslt = self.server.integrate(botId)
+            DispatchQueue.main.async {
+                completion(rslt)
+            }
+        }
+    }
+    
+    func cancelIntegration(_ integrationId: String, completion: @escaping (Result<Bool, Error>) -> Void) {
+        guard !integrationId.isEmpty else {
+            completion(.failure(NSError(message: "Parameter error")))
+            return
+        }
+        DispatchQueue.global(qos: .background).async {
+            let rslt = self.server.cancelIntegration(integrationId)
             DispatchQueue.main.async {
                 completion(rslt)
             }

@@ -35,7 +35,10 @@ struct Server {
     
     // MARK: - Initialization
     
-    init(xcodeServerAddress: String, sshEndpoint: String) {
+    init(
+        xcodeServerAddress: String,
+        sshEndpoint: String
+    ) {
         self.xcodeServerAddress = xcodeServerAddress
         self.sshEndpoint = sshEndpoint
         decoder.dateDecodingStrategy = .formatted(DateFormatter.backendDate)

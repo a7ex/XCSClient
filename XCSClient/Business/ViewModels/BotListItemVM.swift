@@ -26,4 +26,8 @@ struct BotListItemVM: ExpandableBotListItem {
     var destination: AnyView {
         AnyView(BotDetailView(bot: bot))
     }
+    
+    var statusColor: Color {
+        return Color.primary
+    }
 }

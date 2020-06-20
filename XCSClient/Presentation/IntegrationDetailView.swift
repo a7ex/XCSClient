@@ -10,28 +10,79 @@ import SwiftUI
 
 struct IntegrationDetailView: View {
     let integration: IntegrationVM
+    
     @EnvironmentObject var connector: XCSConnector
     
     @State private var hasError = false
     @State private var errorMessage = ""
     @State private var activityShowing = false
     
+    @State private var durationInSeconds = "0"
+    private let timer = Timer.publish(every: 1, tolerance: 0.5, on: .main, in: .common).autoconnect()
+    
+    private func timeSpanFromNow(to startDate: Date?) -> String {
+        guard let startDate = startDate else {
+            return ""
+        }
+        
+        if !integration.endedTime.isEmpty {
+            timer.upstream.connect().cancel()
+            return integration.duration
+        }
+        
+        let interval = startDate.timeIntervalSinceNow * -1
+        if (Int(interval) % 10) == 0 {
+            refreshLastIntegration(of: integration.botId)
+        }
+        let fmt = DateComponentsFormatter()
+        return fmt.string(from: interval) ?? ""
+    }
+    
+    private func refreshLastIntegration(of botId: String) {
+        connector.getIntegrationsList(for: botId, last: 1) { (result) in
+            if case let .success(integrations) = result {
+                if let integration = integrations.first,
+                    let result = integration.result,
+                    result == .unknown {
+//                    self.integration.integrationModel = integration
+                }
+            }
+        }
+    }
+    
+    
     var body: some View {
         ZStack {
             VStack() {
-                Text("Integration \(integration.tinyID) (\(integration.number)) - \(integration.currentStep)")
+                HStack {
+                    Text("●")
+                        .foregroundColor(integration.statusColor)
+                    Text("Integration \(integration.tinyID) (\(integration.number)) - \(integration.result)")
                         .font(.headline)
+                }
                 Divider()
                 Group {
+                    UpdatingStatusText(currentStatus: integration.currentStep, botId: integration.botId)
+                        .font(.subheadline)
+                        .padding(.bottom, 8)
                     LabeledStringValue(label: "Result", value: integration.result)
+                    LabeledStringValue(label: "ID", value: integration.id)
                     LabeledStringValue(label: "Bot", value: integration.botName)
-                    LabeledStringValue(label: "Duration", value: integration.duration)
                     LabeledStringValue(label: "Date", value: integration.startDate)
-                    if !integration.startEndTimes.isEmpty {
-                        LabeledStringValue(label: "Time", value: integration.startEndTimes)
+                    if !integration.startTimes.isEmpty {
+                        LabeledStringValue(label: "Start time", value: integration.startTimes)
+                    }
+                    if !integration.endedTime.isEmpty {
+                        LabeledStringValue(label: "End time", value: integration.endedTime)
+                    }
+                    if integration.integrationModel.startedTime != nil {
+                        LabeledStringValue(label: "Duration", value: durationInSeconds)
+                            .onReceive(timer) { (timer) in
+                                self.durationInSeconds = self.timeSpanFromNow(to: self.integration.integrationModel.startedTime)
+                        }
                     }
                     if !integration.sourceControlCommitId.isEmpty {
-                    LabeledStringValue(label: "Commit ID", value: integration.sourceControlCommitId)
+                        LabeledStringValue(label: "Commit ID", value: integration.sourceControlCommitId)
                     }
                 }
                 Group {
@@ -45,6 +96,11 @@ struct IntegrationDetailView: View {
                 }
                 Divider()
                 Group {
+                    if integration.result == IntegrationResult.unknown.rawValue {
+                        Button(action: { self.cancelIntegration(self.integration.id) }) {
+                            ButtonLabel(text: "Cancel integration")
+                        }
+                    }
                     if integration.archive.size > 0 {
                         Button(action: { self.downloadAsset(self.integration.archive) }) {
                             ButtonLabel(text: integration.archive.title)
@@ -98,6 +154,9 @@ struct IntegrationDetailView: View {
                 }
             }
         }
+        .onAppear {
+            
+        }
     }
     
     private func export(_ integration: IntegrationVM) {
@@ -112,11 +171,11 @@ struct IntegrationDetailView: View {
                 self.activityShowing = false
             }
             switch result {
-                case .success(let success):
-                    print("Download success = \(success)")
-                case .failure(let error):
-                    self.errorMessage = error.localizedDescription
-                    self.hasError = true
+            case .success(let success):
+                print("Download success = \(success)")
+            case .failure(let error):
+                self.errorMessage = error.localizedDescription
+                self.hasError = true
             }
         }
     }
@@ -131,18 +190,20 @@ struct IntegrationDetailView: View {
                     self.activityShowing = false
                 }
                 switch result {
-                    case .success(let logData):
-                        if let url = self.getSaveURLFromUser(for: asset.name) {
-                            do {
-                                try logData.write(to: url)
-                            } catch {
-                                self.errorMessage = error.localizedDescription
-                                self.hasError = true
-                            }
+                case .success(let logData):
+                    if let str = String(data: logData, encoding: .utf8) {
+                        self.openTextWindow(with: str, windowTitle: asset.name)
+                    } else if let url = self.getSaveURLFromUser(for: asset.name) {
+                        do {
+                            try logData.write(to: url)
+                        } catch {
+                            self.errorMessage = error.localizedDescription
+                            self.hasError = true
+                        }
                     }
-                    case .failure(let error):
-                        self.errorMessage = error.localizedDescription
-                        self.hasError = true
+                case .failure(let error):
+                    self.errorMessage = error.localizedDescription
+                    self.hasError = true
                 }
             }
         } else {
@@ -157,13 +218,39 @@ struct IntegrationDetailView: View {
                     self.activityShowing = false
                 }
                 switch result {
-                    case .success(let success):
-                        print("Download success = \(success)")
-                    case .failure(let error):
-                        self.errorMessage = error.localizedDescription
-                        self.hasError = true
+                case .success(let success):
+                    print("Download success = \(success)")
+                case .failure(let error):
+                    self.errorMessage = error.localizedDescription
+                    self.hasError = true
                 }
             }
+        }
+    }
+    
+    private func cancelIntegration(_ integrationId: String) {
+        guard !integrationId.isEmpty else {
+            return
+        }
+        connector.cancelIntegration(integrationId) { (result) in
+            switch result {
+            case .success(let success):
+                self.errorMessage = success ? "Integration successfully cancelled": "Failed to cancel integration"
+                self.hasError = true
+            case .failure(let error):
+                self.errorMessage = error.localizedDescription
+                self.hasError = true
+            }
+        }
+    }
+    
+    private func openTextWindow(with textContent: String, windowTitle: String = "Unnamed") {
+        let sb = NSStoryboard(name: "Main", bundle: nil)
+        if let windowController = sb.instantiateController(withIdentifier: "TextEditorWindow") as? NSWindowController,
+            let controller = windowController.contentViewController as? SimpleTextViewController {
+            controller.stringContent = textContent
+            windowController.window?.title = windowTitle
+            windowController.showWindow(nil)
         }
     }
     
@@ -191,6 +278,9 @@ struct IntegrationDetailView_Previews: PreviewProvider {
         
         let integration = Integration(id: UUID().uuidString, rev: "", assets: assets, bot: nil, buildResultSummary: BuildResultSummary(analyzerWarningChange: 0, analyzerWarningCount: 0, codeCoveragePercentage: 0, codeCoveragePercentageDelta: 0, errorChange: 0, errorCount: 0, improvedPerfTestCount: 0, regressedPerfTestCount: 0, testFailureChange: 0, testFailureCount: 0, testsChange: 0, testsCount: 0, warningChange: 0, warningCount: 0), buildServiceFingerprint: "", ccPercentage: 0, ccPercentageDelta: 0, currentStep: "completed", docType: "", duration: 230, endedTime: Date(), number: 1, queuedDate: nil, result: IntegrationResult.buildErrors, startedTime: Date().advanced(by: 120), testedDevices: nil, tinyID: "1817142698624")
         
+        let connector = XCSConnector(server: Server(xcodeServerAddress: XcodeServer.miniAgent03.ipAddress, sshEndpoint: "adafranca@10.175.31.236"), name: "Mac Mini 01")
+        
         return IntegrationDetailView(integration: IntegrationVM(integration: integration))
+            .environmentObject(connector)
     }
 }

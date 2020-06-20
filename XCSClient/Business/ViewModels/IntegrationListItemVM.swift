@@ -25,4 +25,8 @@ struct IntegrationListItemVM: ExpandableBotListItem {
     var destination: AnyView {
         AnyView(IntegrationDetailView(integration: integration))
     }
+    
+    var statusColor: Color {
+        return integration.statusColor
+    }
 }

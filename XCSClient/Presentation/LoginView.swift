@@ -11,7 +11,7 @@ import SwiftUI
 struct LoginView: View {
     let myWindow: NSWindow?
     
-    @State private var xcsServerAddress = "10.172.200.20"
+    @State private var xcodeServerData = XcodeServer.none
     @State private var sshAddress = "10.175.31.236"
     @State private var sshUser = "adafranca"
     
@@ -22,7 +22,21 @@ struct LoginView: View {
     var body: some View {
         ZStack {
             VStack {
-                LabeledTextInput(label: "Xcode Server Address", content: $xcsServerAddress)
+                HStack {
+                    Text("Xcode server")
+                        .frame(minWidth: 200, alignment: .trailing)
+                    MenuButton(label: Text(xcodeServerData.name)) {
+                        Button(action: { self.xcodeServerData = .miniAgent01 }) {
+                            Text(XcodeServer.miniAgent01.name)
+                        }
+                        Button(action: { self.xcodeServerData = .miniAgent02 }) {
+                            Text(XcodeServer.miniAgent02.name)
+                        }
+                        Button(action: { self.xcodeServerData = .miniAgent03 }) {
+                            Text(XcodeServer.miniAgent03.name)
+                        }
+                    }
+                }
                 LabeledTextInput(label: "SSH Jumphost Address", content: $sshAddress)
                 LabeledTextInput(label: "SSH Username", content: $sshUser)
                 
@@ -52,9 +66,10 @@ struct LoginView: View {
     private func loadBots() {
         let connector = XCSConnector(
             server: Server(
-                xcodeServerAddress: xcsServerAddress,
+                xcodeServerAddress: xcodeServerData.ipAddress,
                 sshEndpoint: "\(sshUser)@\(sshAddress)"
-            )
+            ),
+            name: xcodeServerData.name
         )
         withAnimation {
             self.activityShowing = true
@@ -87,7 +102,7 @@ struct LoginView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-         let connector = XCSConnector(server: Server(xcodeServerAddress: "10.172.200.20", sshEndpoint: "adafranca@10.175.31.236"))
+        let connector = XCSConnector(server: Server(xcodeServerAddress: XcodeServer.miniAgent03.ipAddress, sshEndpoint: "adafranca@10.175.31.236"), name: "Mac Mini 01")
         return LoginView(myWindow: nil).environmentObject(connector)
     }
 }

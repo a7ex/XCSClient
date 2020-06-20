@@ -6,7 +6,7 @@
 //  Copyright © 2020 Farbflash. All rights reserved.
 //
 
-import Foundation
+import SwiftUI
 
 struct IntegrationVM {
     private static let timeFormatter: DateComponentsFormatter = {
@@ -54,6 +54,15 @@ struct IntegrationVM {
     var botName: String {
         return integrationModel.bot?.name ?? "- missing -"
     }
+    var botId: String {
+        return integrationModel.bot?.id ?? ""
+    }
+    var bot: BotVM? {
+        guard let bot = integrationModel.bot else {
+            return nil
+        }
+        return BotVM(bot: bot)
+    }
     var currentStep: String {
         return integrationModel.currentStep ?? ""
     }
@@ -78,18 +87,22 @@ struct IntegrationVM {
         }
         return Self.dateFormatter.string(from: date)
     }
-    var startEndTimes: String {
+    var startTimes: String {
         var times = ""
         if let date = integrationModel.queuedDate {
-            times += "Queued: \(Self.onlyTimeDateFormatter.string(from: date)) / "
+            times += "Queued: \(Self.onlyTimeDateFormatter.string(from: date))"
         }
         if let date = integrationModel.startedTime {
-            times += "Started: \(Self.onlyTimeDateFormatter.string(from: date)) / "
-        }
-        if let date = integrationModel.endedTime {
-            times += "Ended: \(Self.onlyTimeDateFormatter.string(from: date))"
+            times += " (Started: \(Self.onlyTimeDateFormatter.string(from: date)))"
         }
         return times
+    }
+    
+    var endedTime: String {
+        if let date = integrationModel.endedTime {
+            return "Ended: \(Self.onlyTimeDateFormatter.string(from: date))"
+        }
+        return ""
     }
     
     var result: String {

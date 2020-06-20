@@ -8,6 +8,22 @@
 
 import SwiftUI
 
+class FormData: ObservableObject {
+    @Published var branch = ""
+    @Published var scheme = ""
+    @Published var buildConfig = ""
+    @Published var additionalBuildArguments = ""
+    @Published var name = ""
+    
+    func setup(with bot: BotVM) {
+        branch = bot.sourceControlBranch
+        scheme = bot.schemeName
+        buildConfig = bot.buildConfiguration
+        additionalBuildArguments = bot.additionalBuildArguments
+        name = bot.name
+    }
+}
+
 struct BotDetailView: View {
     let bot: BotVM
     @EnvironmentObject var connector: XCSConnector
@@ -15,6 +31,8 @@ struct BotDetailView: View {
     @State private var hasError = false
     @State private var errorMessage = ""
     @State private var deleteConfirm = false
+    
+    @ObservedObject private var formData = FormData()
     
     var body: some View {
         VStack {
@@ -26,16 +44,17 @@ struct BotDetailView: View {
                     LabeledStringValue(label: "ID", value: bot.id)
                     LabeledStringValue(label: "TinyId", value: bot.tinyID)
                     LabeledStringValue(label: "Integration Counter", value: String(bot.integrationCounter))
+                    LabeledTextInputValue(label: "Name", value: $formData.name)
                     if !bot.additionalBuildArguments.isEmpty {
-                        LabeledStringValue(label: "Additional Build Arguments", value: bot.additionalBuildArguments)
+                        LabeledTextInputValue(label: "Additional Build Arguments", value: $formData.additionalBuildArguments)
                     }
                     if !bot.schemeName.isEmpty {
-                        LabeledStringValue(label: "schemeName", value: bot.schemeName)
+                        LabeledTextInputValue(label: "Scheme", value: $formData.scheme)
                     }
                     if !bot.buildConfiguration.isEmpty {
-                        LabeledStringValue(label: "buildConfiguration", value: bot.buildConfiguration)
+                        LabeledTextInputValue(label: "Build Configuration", value: $formData.buildConfig)
                     }
-                    LabeledStringValue(label: "sourceControlBranch", value: bot.sourceControlBranch)
+                    LabeledTextInputValue(label: "Branch", value: $formData.branch)
                 }
                 Group {
                     LabeledBooleanValue(label: "Performs Analyze Action", value: bot.performsAnalyzeAction)
@@ -79,9 +98,10 @@ struct BotDetailView: View {
                 }
                 .foregroundColor(.red)
                 .alert(isPresented: $deleteConfirm) {
-                    Alert(title: Text("Deleting a bot can not be undone! All archived data for the bot will be erased."), primaryButton: .default(Text("Delete")) {
-                        self.delete(self.bot)
-                        }, secondaryButton: .cancel())
+                    Alert(title: Text("Deleting a bot can not be undone! All archived data for the bot will be erased."),
+                          primaryButton: .default(Text("Delete")) { self.delete(self.bot) },
+                          secondaryButton: .cancel()
+                    )
                 }
             }
             Spacer()
@@ -91,6 +111,9 @@ struct BotDetailView: View {
             Alert(title: Text(errorMessage))
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .onAppear {
+            self.formData.setup(with: self.bot)
+        }
     }
     
     private func integrate(_ bot: BotVM) {
@@ -192,11 +215,12 @@ struct BotDetailView: View {
 struct BotDetailView_Previews: PreviewProvider {
     
     static var previews: some View {
+        let connector = XCSConnector(server: Server(xcodeServerAddress: XcodeServer.miniAgent03.ipAddress, sshEndpoint: "adafranca@10.175.31.236"), name: "Mac Mini 01")
         var bot = Bot(id: UUID().uuidString, name: "DHLPaket_GIT_Fabric_DeviceCloud", tinyID: "3")
         var configuration = BotConfiguration()
         configuration.performsArchiveAction = true
         bot.configuration = configuration
         bot.integrationCounter = 12
-        return BotDetailView(bot: BotVM(bot: bot))
+        return BotDetailView(bot: BotVM(bot: bot)).environmentObject(connector)
     }
 }

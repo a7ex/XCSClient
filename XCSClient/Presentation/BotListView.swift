@@ -13,9 +13,6 @@ struct BotListView: View {
     @EnvironmentObject var connector: XCSConnector
     @ObservedObject var viewModel = BotListVM()
     @State private var botlistWindowDelegate = BotlistWindowDelegate()
-    @State private var inProgressBot = ""
-    
-    let timer = Timer.publish(every: 10, tolerance: 0.5, on: .main, in: .common).autoconnect()
     
     let refreshPublisher = NotificationCenter.default
         .publisher(for: NSNotification.Name("RefreshBotList"))
@@ -30,7 +27,7 @@ struct BotListView: View {
         NavigationView {
             VStack(alignment: .leading) {
                 HStack {
-                    Text("Bots")
+                    Text("Bots @ \(connector.name)")
                         .font(.headline)
                         .padding([.leading, .top])
                     Spacer()
@@ -44,15 +41,15 @@ struct BotListView: View {
                 List(viewModel.items, id: \.id) { item in
                     VStack(alignment: .leading) {
                         HStack {
-                            if item.isExpandable {
                                 Button(action: {
                                     self.toggleExpandedState(of: item.id)
                                 }) {
-                                    Text("▼")
+                                    Text(item.isExpandable ? "▼": "●")
                                 }
                                 .buttonStyle(BorderlessButtonStyle())
                                 .rotationEffect(Angle(degrees: item.isExpanded ? 0: -90))
-                            }
+                                .foregroundColor(item.statusColor)
+                                .offset(CGSize(width: item.isExpandable ? 0: 24, height: 0))
                             NavigationLink(destination: item.destination) {
                                 Text(item.title)
                                     .padding(.leading, item.isExpandable ? 0: 30)
@@ -63,9 +60,6 @@ struct BotListView: View {
                 .listStyle(SidebarListStyle())
             }
             .frame(minWidth: 280, maxWidth: .infinity)
-            .onReceive(timer) { (timer) in
-                self.refreshLastIntegration(of: self.inProgressBot)
-            }
             Text("Select bot in the list of bots to see details.")
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
@@ -98,35 +92,8 @@ struct BotListView: View {
             viewModel.expandIntegrations(for: botId, integrations: [loadingPlaceholder])
             connector.getIntegrationsList(for: botId, last: 10) { (result) in
                 if case let .success(integrations) = result {
-                    self.inProgressBot = ""
-                    self.viewModel.expandIntegrations(for: botId, integrations: integrations.map { integration in
-                        if integration.result == .unknown,
-                            integration.currentStep?.contains("pending") != true {
-                            self.inProgressBot = botId
-                        }
-                        return IntegrationVM(integration: integration)
-                    })
+                    self.viewModel.expandIntegrations(for: botId, integrations: integrations.map { IntegrationVM(integration: $0) })
                 }
-            }
-        }
-    }
-    
-    private func refreshLastIntegration(of botId: String) {
-        guard !botId.isEmpty,
-            let bot = viewModel.items.first(where: { $0.id == botId }),
-            bot.isExpanded else {
-            return
-        }
-        connector.getIntegrationsList(for: botId, last: 1) { (result) in
-            if case let .success(integrations) = result {
-                self.inProgressBot = ""
-                self.viewModel.refresh(integrations.map { integration in
-                    if integration.result == .unknown,
-                        integration.currentStep?.contains("pending") != true {
-                        self.inProgressBot = botId
-                    }
-                    return IntegrationVM(integration: integration)
-                })
             }
         }
     }
@@ -145,12 +112,13 @@ struct BotListView: View {
 
 struct BotList_Previews: PreviewProvider {
     static var previews: some View {
-        BotListView(window: nil, bots: [
+        let connector = XCSConnector(server: Server(xcodeServerAddress: XcodeServer.miniAgent03.ipAddress, sshEndpoint: "adafranca@10.175.31.236"), name: "Mac Mini 01")
+        return BotListView(window: nil, bots: [
             Bot(id: UUID().uuidString, name: "DHLPaket_GIT_Testflight", tinyID: "1"),
             Bot(id: UUID().uuidString, name: "DHLPaket_GIT_Testflight_Beta", tinyID: "2"),
             Bot(id: UUID().uuidString, name: "DHLPaket_GIT_Fabric_DeviceCloud", tinyID: "3"),
             Bot(id: UUID().uuidString, name: "LPS (Mock) Bot", tinyID: "4"),
             Bot(id: UUID().uuidString, name: "XCS DHL Paket Dev Unit-Tests", tinyID: "5")
-            ].map { BotVM(bot: $0) })
+            ].map { BotVM(bot: $0) }).environmentObject(connector)
     }
 }

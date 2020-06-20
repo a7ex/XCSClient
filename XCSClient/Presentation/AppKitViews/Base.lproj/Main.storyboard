@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14814" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="16097" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14814"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="16097"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
         <!--Application-->
@@ -673,11 +674,92 @@
                         <outlet property="delegate" destination="Voe-Tx-rLC" id="PrD-fu-P6m"/>
                     </connections>
                 </application>
-                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModuleProvider="target"/>
+                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="XCSClient" customModuleProvider="target"/>
                 <customObject id="YLy-65-1bz" customClass="NSFontManager"/>
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="75" y="0.0"/>
+            <point key="canvasLocation" x="-332" y="-243"/>
+        </scene>
+        <!--Window Controller-->
+        <scene sceneID="D9V-bH-exl">
+            <objects>
+                <windowController storyboardIdentifier="TextEditorWindow" id="AGh-QK-yQL" sceneMemberID="viewController">
+                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="sK4-xm-oFC">
+                        <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+                        <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+                        <rect key="contentRect" x="300" y="750" width="640" height="480"/>
+                        <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+                        <connections>
+                            <outlet property="delegate" destination="AGh-QK-yQL" id="Az2-uO-yAb"/>
+                        </connections>
+                    </window>
+                    <connections>
+                        <segue destination="vaO-sk-hs2" kind="relationship" relationship="window.shadowedContentViewController" id="Hlu-dx-ofc"/>
+                    </connections>
+                </windowController>
+                <customObject id="ceC-i7-eCk" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-367" y="166"/>
+        </scene>
+        <!--Simple Text View Controller-->
+        <scene sceneID="ESq-4m-gGV">
+            <objects>
+                <viewController id="vaO-sk-hs2" customClass="SimpleTextViewController" customModule="XCSClient" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="55t-Bp-BG3">
+                        <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <scrollView appearanceType="aqua" borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" translatesAutoresizingMaskIntoConstraints="NO" id="e4R-Ga-TIL">
+                                <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
+                                <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="ISd-wF-ZrN">
+                                    <rect key="frame" x="0.0" y="0.0" width="465" height="270"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <textView verticallyResizable="YES" usesFontPanel="YES" usesInspectorBar="YES" findStyle="bar" allowsDocumentBackgroundColorChange="YES" usesRuler="YES" spellingCorrection="YES" smartInsertDelete="YES" id="F3w-0v-uBT">
+                                            <rect key="frame" x="0.0" y="0.0" width="465" height="270"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <size key="minSize" width="465" height="270"/>
+                                            <size key="maxSize" width="465" height="10000000"/>
+                                            <attributedString key="textStorage">
+                                                <fragment content="Content">
+                                                    <attributes>
+                                                        <color key="NSColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                                        <font key="NSFont" metaFont="user"/>
+                                                        <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                                    </attributes>
+                                                </fragment>
+                                            </attributedString>
+                                            <color key="insertionPointColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                        </textView>
+                                    </subviews>
+                                </clipView>
+                                <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="zo4-L9-gY6">
+                                    <rect key="frame" x="-100" y="-100" width="225" height="15"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                                <scroller key="verticalScroller" verticalHuggingPriority="750" horizontal="NO" id="hdQ-WK-wab">
+                                    <rect key="frame" x="465" y="0.0" width="15" height="270"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                            </scrollView>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="e4R-Ga-TIL" firstAttribute="top" secondItem="55t-Bp-BG3" secondAttribute="top" id="4V5-kC-Hxt"/>
+                            <constraint firstItem="e4R-Ga-TIL" firstAttribute="leading" secondItem="55t-Bp-BG3" secondAttribute="leading" id="iaD-rn-kzc"/>
+                            <constraint firstAttribute="trailing" secondItem="e4R-Ga-TIL" secondAttribute="trailing" id="iwb-5L-lDm"/>
+                            <constraint firstAttribute="bottom" secondItem="e4R-Ga-TIL" secondAttribute="bottom" id="qBu-fP-0i8"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="textView" destination="F3w-0v-uBT" id="dbZ-MJ-hrx"/>
+                    </connections>
+                </viewController>
+                <customObject id="tHl-B8-0Bn" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+                <userDefaultsController representsSharedInstance="YES" id="fwg-m8-Dgp"/>
+            </objects>
+            <point key="canvasLocation" x="320" y="61"/>
         </scene>
     </scenes>
 </document>
