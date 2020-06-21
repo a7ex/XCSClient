@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Combine
 
 struct UpdatingStatusText: View {
     @EnvironmentObject var connector: XCSConnector
@@ -15,7 +16,9 @@ struct UpdatingStatusText: View {
     
     @State private var inProgressBot = ""
     @State private var currentStatus = ""
-    private let timer = Timer.publish(every: 10, tolerance: 0.5, on: .main, in: .common).autoconnect()
+    
+    @State private var cancellable: AnyCancellable?
+    private let timerPublisher = Timer.publish(every: 10, tolerance: 0.5, on: .main, in: .common)
     
     init(currentStatus: String, botId: String) {
         self.botId = botId
@@ -24,10 +27,13 @@ struct UpdatingStatusText: View {
     
     var body: some View {
         Text(currentStatus)
-            .onReceive(timer) { (timer) in
-                self.refreshLastIntegration(of: self.inProgressBot)
-        }
         .onAppear {
+            self.cancellable = self.timerPublisher
+                .autoconnect()
+                .sink { timer in
+                    self.refreshLastIntegration(of: self.inProgressBot)
+            }
+            
             self.currentStatus = self.initialStatus
             self.inProgressBot = self.botId
         }
@@ -45,6 +51,7 @@ struct UpdatingStatusText: View {
                     self.currentStatus = integration.currentStep ?? ""
                 } else {
                     self.inProgressBot = ""
+                    self.cancellable?.cancel()
                 }
             }
         }

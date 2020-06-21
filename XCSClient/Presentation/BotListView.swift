@@ -119,13 +119,12 @@ struct BotListView: View {
 
 struct BotList_Previews: PreviewProvider {
     static var previews: some View {
-        let connector = XCSConnector(server: Server(xcodeServerAddress: XcodeServer.miniAgent03.ipAddress, sshEndpoint: "adafranca@10.175.31.236"), name: "Mac Mini 01")
         return BotListView(window: nil, bots: [
             Bot(id: UUID().uuidString, name: "DHLPaket_GIT_Testflight", tinyID: "1"),
             Bot(id: UUID().uuidString, name: "DHLPaket_GIT_Testflight_Beta", tinyID: "2"),
             Bot(id: UUID().uuidString, name: "DHLPaket_GIT_Fabric_DeviceCloud", tinyID: "3"),
             Bot(id: UUID().uuidString, name: "LPS (Mock) Bot", tinyID: "4"),
             Bot(id: UUID().uuidString, name: "XCS DHL Paket Dev Unit-Tests", tinyID: "5")
-            ].map { BotVM(bot: $0) }).environmentObject(connector)
+            ].map { BotVM(bot: $0) }).environmentObject(XCSConnector.previewServerConnector)
     }
 }

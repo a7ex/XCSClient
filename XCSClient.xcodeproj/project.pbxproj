@@ -70,6 +70,7 @@
 		FAE5B875249FC4AE00E06155 /* BranchOptionsKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAE5B874249FC4AE00E06155 /* BranchOptionsKey.swift */; };
 		FAE5B877249FC4BA00E06155 /* WorkspaceBlueprintLocationType.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAE5B876249FC4BA00E06155 /* WorkspaceBlueprintLocationType.swift */; };
 		FAE5B87A249FC4FD00E06155 /* TriggerPhase.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAE5B879249FC4FD00E06155 /* TriggerPhase.swift */; };
+		FAE5B87C249FE6CD00E06155 /* UserDefault.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAE5B87B249FE6CD00E06155 /* UserDefault.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -141,6 +142,7 @@
 		FAE5B874249FC4AE00E06155 /* BranchOptionsKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BranchOptionsKey.swift; sourceTree = "<group>"; };
 		FAE5B876249FC4BA00E06155 /* WorkspaceBlueprintLocationType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceBlueprintLocationType.swift; sourceTree = "<group>"; };
 		FAE5B879249FC4FD00E06155 /* TriggerPhase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TriggerPhase.swift; sourceTree = "<group>"; };
+		FAE5B87B249FE6CD00E06155 /* UserDefault.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefault.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -252,6 +254,7 @@
 				FA17F9162496B5BE000A149D /* Windows.swift */,
 				FA56370D2493C16E002457DF /* Extensions */,
 				FAC759C6249E6AEF0028BBFA /* FileHelper.swift */,
+				FAE5B87B249FE6CD00E06155 /* UserDefault.swift */,
 			);
 			path = Application;
 			sourceTree = "<group>";
@@ -450,6 +453,7 @@
 				FABF8766249D211A005A9D48 /* SimpleTextViewController.swift in Sources */,
 				FA5636F92493BEC7002457DF /* DeleteResponse.swift in Sources */,
 				FAE5B870249FC42700E06155 /* BuiltFromClean.swift in Sources */,
+				FAE5B87C249FE6CD00E06155 /* UserDefault.swift in Sources */,
 				FA17F9192496D1E6000A149D /* ButtonLabel.swift in Sources */,
 				FA5636FF2493BEC7002457DF /* Integration.swift in Sources */,
 				FA2696472496124800C7F084 /* BotVM.swift in Sources */,

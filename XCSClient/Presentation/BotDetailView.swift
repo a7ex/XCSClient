@@ -214,12 +214,11 @@ struct BotDetailView: View {
 struct BotDetailView_Previews: PreviewProvider {
     
     static var previews: some View {
-        let connector = XCSConnector(server: Server(xcodeServerAddress: XcodeServer.miniAgent03.ipAddress, sshEndpoint: "adafranca@10.175.31.236"), name: "Mac Mini 01")
         var bot = Bot(id: UUID().uuidString, name: "DHLPaket_GIT_Fabric_DeviceCloud", tinyID: "3")
         var configuration = BotConfiguration()
         configuration.performsArchiveAction = true
         bot.configuration = configuration
         bot.integrationCounter = 12
-        return BotDetailView(bot: BotVM(bot: bot)).environmentObject(connector)
+        return BotDetailView(bot: BotVM(bot: bot)).environmentObject(XCSConnector.previewServerConnector)
     }
 }

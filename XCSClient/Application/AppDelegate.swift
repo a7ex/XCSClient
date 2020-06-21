@@ -8,6 +8,7 @@
 
 import Cocoa
 import SwiftUI
+import Combine
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
@@ -24,7 +25,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         window.center()
         window.setFrameAutosaveName("Main Window")
         
-        let contentView = LoginView(myWindow: window)
+        let contentView = LoginView(window: window)
         
         window.contentView = NSHostingView(rootView: contentView)
         window.makeKeyAndOrderFront(nil)
@@ -33,6 +34,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationWillTerminate(_ aNotification: Notification) {
         // Insert code here to tear down your application
+    }
+    
+    private var saveAction: ((Any) -> Void)?
+    
+    func onSave(_ listener: @escaping (Any) -> Void) {
+        saveAction = listener
+    }
+    
+    @IBAction func saveMenuAction(_ sender: Any) {
+        print("Save menu called in app delegate")
     }
 
 

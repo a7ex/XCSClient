@@ -22,6 +22,7 @@ struct Server {
     
     private let sshEndpoint: String
     private let xcodeServerAddress: String
+    private let netrcFilename: String
     
     private let sshClient = "/usr/bin/ssh"
     private let secureCopy = "/usr/bin/scp"
@@ -29,7 +30,7 @@ struct Server {
         return "https://\(xcodeServerAddress):20343/api"
     }
     private var defaultArguments: [String] {
-        [sshEndpoint, "curl", "-k", "--netrc-file", ".xcbot"]
+        [sshEndpoint, "curl", "-k", "--netrc-file", netrcFilename]
     }
     private let decoder = JSONDecoder()
     
@@ -37,10 +38,12 @@ struct Server {
     
     init(
         xcodeServerAddress: String,
-        sshEndpoint: String
+        sshEndpoint: String,
+        netrcFilename: String
     ) {
         self.xcodeServerAddress = xcodeServerAddress
         self.sshEndpoint = sshEndpoint
+        self.netrcFilename = netrcFilename
         decoder.dateDecodingStrategy = .formatted(DateFormatter.backendDate)
     }
     

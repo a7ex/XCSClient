@@ -16,7 +16,7 @@ extension NSWindow {
             backing: .buffered,
             defer: false
         )
-        let loginView = LoginView(myWindow: windowRef)
+        let loginView = LoginView(window: windowRef)
         windowRef.contentView = NSHostingView(rootView: loginView)
         windowRef.center()
         return windowRef

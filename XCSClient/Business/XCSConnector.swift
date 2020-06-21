@@ -17,6 +17,16 @@ class XCSConnector: ObservableObject {
         self.name = name
     }
     
+    static var previewServerConnector: XCSConnector {
+        return XCSConnector(
+            server: Server(
+                xcodeServerAddress: "",
+                sshEndpoint: "",
+                netrcFilename: ""),
+            name: "Untitled Xcode Server"
+        )
+    }
+    
     func getBotList(completion: @escaping (Result<[Bot], Error>) -> Void) {
         DispatchQueue.global(qos: .background).async {
             let rslt = self.server.getBotList()

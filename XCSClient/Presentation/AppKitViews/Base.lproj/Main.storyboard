@@ -90,7 +90,7 @@
                                         </menuItem>
                                         <menuItem title="Save…" keyEquivalent="s" id="pxx-59-PXV">
                                             <connections>
-                                                <action selector="saveCurrentLog:" target="Ady-hI-5gd" id="YHv-Cp-J3e"/>
+                                                <action selector="saveMenuAction:" target="Ady-hI-5gd" id="slh-YI-5aG"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Save As…" keyEquivalent="S" id="Bw7-FT-i3A">

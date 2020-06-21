@@ -8,12 +8,36 @@
 
 import SwiftUI
 
+extension Array where Element == XcodeServer {
+    var lastUsed: XcodeServer? {
+        guard let name = UserDefaults.standard.object(forKey: "lastUsedXcodeServerName") as? String,
+            !name.isEmpty else {
+                return nil
+        }
+        return first { $0.name == name}
+    }
+}
+
 struct LoginView: View {
     let myWindow: NSWindow?
     
-    @State private var xcodeServerData = XcodeServer.none
-    @State private var sshAddress = "10.175.31.236"
-    @State private var sshUser = "adafranca"
+    init(window: NSWindow?) {
+        self.myWindow = window
+        xcodeServers = UserDefaults.standard.object(forKey: "xcodeServers") as? [XcodeServer] ?? [XcodeServer]()
+        if let lastUsedServer = xcodeServers.lastUsed {
+            populateFields(for: lastUsedServer)
+        } else if let first = xcodeServers.first {
+            populateFields(for: first)
+        }
+    }
+    
+    private let xcodeServers: [XcodeServer]
+    
+    @State private var xcodeServerName = "Recents"
+    @State private var xcodeServerAddress = ""
+    @State private var sshAddress = ""
+    @State private var sshUser = ""
+    @State private var netRCFilename = ""
     
     @State private var hasError = false
     @State private var errorMessage = ""
@@ -25,20 +49,18 @@ struct LoginView: View {
                 HStack {
                     Text("Xcode server")
                         .frame(minWidth: 200, alignment: .trailing)
-                    MenuButton(label: Text(xcodeServerData.name)) {
-                        Button(action: { self.xcodeServerData = .miniAgent01 }) {
-                            Text(XcodeServer.miniAgent01.name)
-                        }
-                        Button(action: { self.xcodeServerData = .miniAgent02 }) {
-                            Text(XcodeServer.miniAgent02.name)
-                        }
-                        Button(action: { self.xcodeServerData = .miniAgent03 }) {
-                            Text(XcodeServer.miniAgent03.name)
+                    MenuButton(label: Text(xcodeServerName)) {
+                        ForEach(xcodeServers, id: \.self) { server in
+                            Button(action: { self.populateFields(for: server) }) {
+                                Text(server.name)
+                            }
                         }
                     }
                 }
-                LabeledTextInput(label: "SSH Jumphost Address", content: $sshAddress)
-                LabeledTextInput(label: "SSH Username", content: $sshUser)
+                LabeledTextInput(label: "Xcode Server Address", content: $xcodeServerAddress)
+                LabeledTextInput(label: "SSH Jumphost Address (optional)", content: $sshAddress)
+                LabeledTextInput(label: "SSH Username (optional)", content: $sshUser)
+                LabeledTextInput(label: ".netrc file (optional)", content: $netRCFilename)
                 
                 Button(action: { self.loadBots() }) {
                     Text("Login and load bots")
@@ -63,13 +85,45 @@ struct LoginView: View {
         }
     }
     
+    private func populateFields(for server: XcodeServer) {
+        xcodeServerName = server.name
+        xcodeServerAddress = server.ipAddress
+        sshAddress = server.sshAddress
+        sshUser = server.sshUser
+        netRCFilename = server.netRCFilename
+    }
+    
+    private func updateRecentXcodeServer() {
+        let currentXcodeServer = XcodeServer(
+            ipAddress: xcodeServerAddress,
+            name: xcodeServerName,
+            sshAddress: sshAddress,
+            sshUser: sshUser,
+            netRCFilename: netRCFilename
+        )
+        var newName = xcodeServerName
+        if newName.isEmpty {
+            newName = "Untitled Xcode Server"
+        }
+        while xcodeServers.first(where: { $0.name == newName }) != nil {
+            newName += "-1"
+        }
+        UserDefaults.standard.set(xcodeServerName, forKey: newName)
+        guard !xcodeServers.contains(currentXcodeServer) else {
+            return
+        }
+        let newServers = [currentXcodeServer] + xcodeServers
+        UserDefaults.standard.set(newServers, forKey: "xcodeServers")
+    }
+    
     private func loadBots() {
         let connector = XCSConnector(
             server: Server(
-                xcodeServerAddress: xcodeServerData.ipAddress,
-                sshEndpoint: "\(sshUser)@\(sshAddress)"
+                xcodeServerAddress: xcodeServerAddress,
+                sshEndpoint: "\(sshUser)@\(sshAddress)",
+                netrcFilename: netRCFilename
             ),
-            name: xcodeServerData.name
+            name: xcodeServerName
         )
         withAnimation {
             self.activityShowing = true
@@ -80,6 +134,7 @@ struct LoginView: View {
             }
             switch result {
             case .success(let bots):
+                self.updateRecentXcodeServer()
                 self.openWindow(with: bots.sorted(by: { $0.name < $1.name }), connector: connector)
             case .failure(let error):
                 self.errorMessage = "Error occurred: \(error.localizedDescription)"
@@ -102,7 +157,6 @@ struct LoginView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        let connector = XCSConnector(server: Server(xcodeServerAddress: XcodeServer.miniAgent03.ipAddress, sshEndpoint: "adafranca@10.175.31.236"), name: "Mac Mini 01")
-        return LoginView(myWindow: nil).environmentObject(connector)
+        return LoginView(window: nil).environmentObject(XCSConnector.previewServerConnector)
     }
 }

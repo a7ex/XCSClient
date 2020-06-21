@@ -12,7 +12,7 @@ class SimpleTextViewController: NSViewController {
     
     private let fileHelper = FileHelper()
     
-    @IBAction func saveCurrentLog(_ sender: Any) {
+    @IBAction func saveMenuAction(_ sender: Any) {
         guard let url = fileHelper.getSaveURLFromUser(for: view.window?.title ?? "Untitled.log") else {
             return
         }
