@@ -239,7 +239,7 @@ struct Server {
     
     // MARK: - Private interface
     
-    private func executeJSONTask<T: Codable>(with arguments: [String]) -> Result<T, Error> {
+    private func executeJSONTask<T: Decodable>(with arguments: [String]) -> Result<T, Error> {
         let rslt = execute(program: sshClient, with: arguments)
         return rslt.flatMap { data in
             let rslt = Result { try decoder.decode(T.self, from: data) }

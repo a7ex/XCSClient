@@ -20,6 +20,8 @@ struct IntegrationDetailView: View {
     @State private var durationInSeconds = "0"
     private let timer = Timer.publish(every: 1, tolerance: 0.5, on: .main, in: .common).autoconnect()
     
+    private let fileHelper = FileHelper()
+    
     private func timeSpanFromNow(to startDate: Date?) -> String {
         guard let startDate = startDate else {
             return ""
@@ -131,8 +133,10 @@ struct IntegrationDetailView: View {
                             ButtonLabel(text: asset.title)
                         }
                     }
-                    Button(action: { self.export(self.integration) }) {
-                        ButtonLabel(text: "Download all assets as archive…")
+                    if integration.hasAssets {
+                        Button(action: { self.export(self.integration) }) {
+                            ButtonLabel(text: "Download all assets as archive…")
+                        }
                     }
                 }
                 .alert(isPresented: $hasError) {
@@ -155,12 +159,12 @@ struct IntegrationDetailView: View {
             }
         }
         .onAppear {
-            
+            self.timer.upstream.autoconnect()
         }
     }
     
     private func export(_ integration: IntegrationVM) {
-        guard let url = getSaveURLFromUser(for: "Results-\(integration.tinyID).tgz") else {
+        guard let url = fileHelper.getSaveURLFromUser(for: "Results-\(integration.tinyID).tgz") else {
             return
         }
         withAnimation {
@@ -193,7 +197,7 @@ struct IntegrationDetailView: View {
                 case .success(let logData):
                     if let str = String(data: logData, encoding: .utf8) {
                         self.openTextWindow(with: str, windowTitle: asset.name)
-                    } else if let url = self.getSaveURLFromUser(for: asset.name) {
+                    } else if let url = self.fileHelper.getSaveURLFromUser(for: asset.name) {
                         do {
                             try logData.write(to: url)
                         } catch {
@@ -207,7 +211,7 @@ struct IntegrationDetailView: View {
                 }
             }
         } else {
-            guard let url = getSaveURLFromUser(for: asset.name) else {
+            guard let url = fileHelper.getSaveURLFromUser(for: asset.name) else {
                 return
             }
             withAnimation {
@@ -253,18 +257,6 @@ struct IntegrationDetailView: View {
             windowController.showWindow(nil)
         }
     }
-    
-    // MARK: - Helper
-    
-    func getSaveURLFromUser(for fileName: String) -> URL? {
-        let panel = NSSavePanel()
-        panel.nameFieldStringValue = fileName
-        let result = panel.runModal()
-        guard result == .OK else {
-            return nil
-        }
-        return panel.url
-    }
 }
 
 struct IntegrationDetailView_Previews: PreviewProvider {
@@ -276,7 +268,7 @@ struct IntegrationDetailView_Previews: PreviewProvider {
         
         let assets = IntegrationAssets(archive: logfile, buildServiceLog: logfile2, sourceControlLog: logfile3, xcodebuildLog: logfile2, xcodebuildOutput: logfile, triggerAssets: [logfile3])
         
-        let integration = Integration(id: UUID().uuidString, rev: "", assets: assets, bot: nil, buildResultSummary: BuildResultSummary(analyzerWarningChange: 0, analyzerWarningCount: 0, codeCoveragePercentage: 0, codeCoveragePercentageDelta: 0, errorChange: 0, errorCount: 0, improvedPerfTestCount: 0, regressedPerfTestCount: 0, testFailureChange: 0, testFailureCount: 0, testsChange: 0, testsCount: 0, warningChange: 0, warningCount: 0), buildServiceFingerprint: "", ccPercentage: 0, ccPercentageDelta: 0, currentStep: "completed", docType: "", duration: 230, endedTime: Date(), number: 1, queuedDate: nil, result: IntegrationResult.buildErrors, startedTime: Date().advanced(by: 120), testedDevices: nil, tinyID: "1817142698624")
+        let integration = Integration(id: UUID().uuidString, rev: "", assets: assets, bot: nil, buildResultSummary: BuildResultSummary(analyzerWarningChange: 0, analyzerWarningCount: 0, codeCoveragePercentage: 0, codeCoveragePercentageDelta: 0, errorChange: 0, errorCount: 0, improvedPerfTestCount: 0, regressedPerfTestCount: 0, testFailureChange: 0, testFailureCount: 0, testsChange: 0, testsCount: 0, warningChange: 0, warningCount: 0), buildServiceFingerprint: "", ccPercentage: 0, ccPercentageDelta: 0, currentStep: "completed", docType: "", duration: 230, endedTime: Date(), number: 1, queuedDate: nil, result: IntegrationResult.buildErrors, revisionBlueprint: nil, startedTime: Date().advanced(by: 120), testHierarchy: nil, testedDevices: nil, tinyID: "1817142698624")
         
         let connector = XCSConnector(server: Server(xcodeServerAddress: XcodeServer.miniAgent03.ipAddress, sshEndpoint: "adafranca@10.175.31.236"), name: "Mac Mini 01")
         

@@ -16,6 +16,7 @@ protocol ExpandableBotListItem {
     var isExpanded: Bool { get set }
     var destination: AnyView { get }
     var statusColor: Color { get }
+    var searchableContent: String { get }
 }
 
 enum ListviewModelType {

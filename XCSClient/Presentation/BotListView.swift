@@ -20,7 +20,7 @@ struct BotListView: View {
     init(window: NSWindow?, bots: [BotVM]) {
         myWindow = window
         myWindow?.delegate = botlistWindowDelegate
-        viewModel.items = bots.map { BotListItemVM(bot: $0, isExpanded: false) }
+        viewModel.allItems = bots.map { BotListItemVM(bot: $0, isExpanded: false) }
     }
     
     var body: some View {
@@ -38,6 +38,7 @@ struct BotListView: View {
                     .toolTip("Reload list from server")
                 }
                 Divider()
+                SearchBar(query: $viewModel.searchQuery)
                 List(viewModel.items, id: \.id) { item in
                     VStack(alignment: .leading) {
                         HStack {
@@ -73,7 +74,7 @@ struct BotListView: View {
         connector.getBotList() { result in
             switch result {
                 case .success(let bots):
-                    self.viewModel.items = bots
+                    self.viewModel.allItems = bots
                         .sorted(by: { $0.name < $1.name })
                         .map { BotListItemVM(bot: BotVM(bot: $0), isExpanded: false) }
                 case .failure(let error):
@@ -89,18 +90,24 @@ struct BotListView: View {
         if bot.isExpanded {
             viewModel.collapseIntegrations(of: botId)
         } else {
-            viewModel.expandIntegrations(for: botId, integrations: [loadingPlaceholder])
+            viewModel.expandIntegrations(for: botId, integrations: [loadingPlaceholder(for: bot.title)])
             connector.getIntegrationsList(for: botId, last: 10) { (result) in
-                if case let .success(integrations) = result {
+                switch result {
+                case .success(let integrations):
                     self.viewModel.expandIntegrations(for: botId, integrations: integrations.map { IntegrationVM(integration: $0) })
+                case .failure(let error):
+                    print("\(error)")
                 }
             }
         }
     }
     
-    private var loadingPlaceholder: IntegrationVM {
-        let integration = Integration(id: "", rev: nil, assets: nil, bot: nil, buildResultSummary: nil, buildServiceFingerprint: nil, ccPercentage: nil, ccPercentageDelta: nil, currentStep: nil, docType: nil, duration: nil, endedTime: nil, number: nil, queuedDate: nil, result: nil, startedTime: nil, testedDevices: nil, tinyID: "Loading integrations…")
-        return IntegrationVM(integration: integration)
+    private func loadingPlaceholder(for botName: String) -> IntegrationVM {
+        return IntegrationVM(integration: Integration(
+            id: UUID().uuidString,
+            tinyId: "Loading integrations…",
+            bot: Bot(name: botName))
+        )
     }
     
     class BotlistWindowDelegate: NSObject, NSWindowDelegate {

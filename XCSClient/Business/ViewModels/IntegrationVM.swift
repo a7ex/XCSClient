@@ -70,6 +70,9 @@ struct IntegrationVM {
         return Self.timeFormatter.string(from: integrationModel.duration ?? 0) ?? ""
     }
     var listTitle: String {
+        if tinyID == "Loading integrations…" {
+            return "Loading integrations…"
+        }
         var title = "(\(number)) "
         if let date = integrationModel.queuedDate {
             title += "\(Self.fullDateFormatter.string(from: date))\t"
@@ -89,11 +92,11 @@ struct IntegrationVM {
     }
     var startTimes: String {
         var times = ""
-        if let date = integrationModel.queuedDate {
-            times += "Queued: \(Self.onlyTimeDateFormatter.string(from: date))"
-        }
         if let date = integrationModel.startedTime {
-            times += " (Started: \(Self.onlyTimeDateFormatter.string(from: date)))"
+            times += Self.onlyTimeDateFormatter.string(from: date)
+        }
+        if let date = integrationModel.queuedDate {
+            times += " (Queued: \(Self.onlyTimeDateFormatter.string(from: date)))"
         }
         return times
     }
@@ -104,9 +107,27 @@ struct IntegrationVM {
         }
         return ""
     }
-    
     var result: String {
         return (integrationModel.result ?? IntegrationResult.unknown).rawValue
+    }
+    var statusColor: Color {
+        guard let result = integrationModel.result else {
+            return .clear
+        }
+        switch result {
+        case .analyzerWarnings, .warnings:
+            return .orange
+        case .buildErrors, .buildFailed, .checkoutError, .internalBuildError, .internalCheckoutError, .internalError, .internalProcessingError, .triggerError:
+            return .red
+        case .canceled:
+            return .gray
+        case .succeeded:
+            return .green
+        case .testFailures:
+            return .purple
+        case .unknown:
+            return .clear
+        }
     }
     var testedDevices: String {
         return Self.dateFormatter.string(from: integrationModel.startedTime ?? Date.distantPast)
@@ -153,10 +174,18 @@ struct IntegrationVM {
     var triggerAssets: [FileDescriptor] {
         return integrationModel.assets?.triggerAssets?.map { FileDescriptor(logFile: $0) }.filter { $0.size > 0 } ?? [FileDescriptor]()
     }
+    var hasAssets: Bool {
+        return archive.size +
+            buildServiceLog.size +
+            sourceControlLog.size +
+            xcodebuildLog.size +
+            xcodebuildOutput.size +
+            triggerAssets.count > 0
+    }
     var sourceControlCommitId: String {
-        guard let primaryRemoteKey = integrationModel.bot?.lastRevisionBlueprint?.primaryRemoteRepositoryKey,
+        guard let primaryRemoteKey = integrationModel.revisionBlueprint?.primaryRemoteRepositoryKey,
             !primaryRemoteKey.isEmpty,
-       let srcLocation = integrationModel.bot?.lastRevisionBlueprint?.locationsKey?[primaryRemoteKey] else {
+       let srcLocation = integrationModel.revisionBlueprint?.locationsKey?[primaryRemoteKey] else {
                 return ""
         }
         return srcLocation.locationRevisionKey ?? ""

@@ -11,22 +11,44 @@ import Foundation
 class BotListVM: ObservableObject {
     @Published var items = [ExpandableBotListItem]()
     
+    var allItems = [ExpandableBotListItem]() {
+        didSet {
+            items = filteredItems
+        }
+    }
+    
+    var searchQuery = "" {
+        didSet {
+            searchQuery = searchQuery.lowercased()
+            items = filteredItems
+        }
+    }
+    
+    var filteredItems: [ExpandableBotListItem] {
+        return allItems.filter { item in
+            guard searchQuery.count > 2 else {
+                return true
+            }
+            return  item.searchableContent.contains(searchQuery)
+        }
+    }
+    
     func collapseIntegrations(of id: String) {
-        guard var bot = items.first(where: { $0.id == id }) else {
+        guard var bot = allItems.first(where: { $0.id == id }) else {
             return
         }
         bot.isExpanded = false
-        items = items
+        allItems = allItems
             .replacingItem(with: id, newItem: bot)
             .removingIntegrations(of: id)
     }
     
     func expandIntegrations(for id: String, integrations: [IntegrationVM]) {
-        guard var bot = items.first(where: { $0.id == id }) else {
+        guard var bot = allItems.first(where: { $0.id == id }) else {
             return
         }
         bot.isExpanded = true
-        items = items
+        allItems = allItems
             .replacingItem(with: id, newItem: bot)
             .addingIntegrations(for: id, integrations: integrations)
     }

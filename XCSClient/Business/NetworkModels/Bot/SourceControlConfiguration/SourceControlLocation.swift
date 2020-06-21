@@ -23,14 +23,3 @@ struct SourceControlLocation: Codable {
         case locationRevisionKey = "DVTSourceControlLocationRevisionKey"
     }
 }
-
-enum BranchOptionsKey: Int, Codable {
-    case normalRemoteBranch = 4
-    case primaryRemoteBranch = 5 // necessary for trunk-like branch in Subversion
-}
-
-enum WorkspaceBlueprintLocationType: String, Codable {
-    case branch = "DVTSourceControlBranch"
-    case pathLocation = "DVTSourceControlPathLocation" // svn only
-    case lockedRevisionLocation = "DVTSourceControlLockedRevisionLocation" // git only
-}

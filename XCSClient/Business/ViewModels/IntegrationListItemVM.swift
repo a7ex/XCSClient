@@ -29,4 +29,8 @@ struct IntegrationListItemVM: ExpandableBotListItem {
     var statusColor: Color {
         return integration.statusColor
     }
+    
+    var searchableContent: String {
+        return integration.bot?.name.lowercased() ?? ""
+    }
 }

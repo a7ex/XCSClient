@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct IntegrationsQueryResponse: Codable {
+struct IntegrationsQueryResponse: Decodable {
     let count: Int?
     let results: [Integration]
 }

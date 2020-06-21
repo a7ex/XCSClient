@@ -16,8 +16,3 @@ struct Trigger: Codable {
     var type: Int?
     var emailConfiguration: EmailConfiguration?
 }
-
-enum TriggerPhase: Int, Codable {
-    case none = 0
-    case before, after
-}

@@ -158,19 +158,7 @@ struct BotDetailView: View {
         connector.exportBotSettings(of: bot.botModel) { (result) in
             switch result {
                 case .success(let json):
-                    let panel = NSSavePanel()
-                    panel.nameFieldStringValue = "\(bot.tinyID).json"
-                    let result = panel.runModal()
-                    guard result == .OK,
-                        let url = panel.url else {
-                            return
-                    }
-                    do {
-                        try json.write(to: url)
-                    } catch {
-                        self.errorMessage = error.localizedDescription
-                        self.hasError = true
-                }
+                    self.openTextEditorWindow(with: String(decoding: json, as: UTF8.self), windowTitle: "\(bot.tinyID).json")
                 case .failure(let error):
                     self.errorMessage = error.localizedDescription
                     self.hasError = true
@@ -196,6 +184,17 @@ struct BotDetailView: View {
                     self.errorMessage = error.localizedDescription
             }
             self.hasError = true
+        }
+    }
+    
+    private func openTextEditorWindow(with textContent: String, windowTitle: String = "Unnamed") {
+        let sb = NSStoryboard(name: "Main", bundle: nil)
+        if let windowController = sb.instantiateController(withIdentifier: "TextEditorWindow") as? NSWindowController,
+            let controller = windowController.contentViewController as? SimpleTextViewController {
+            controller.stringContent = textContent
+            controller.editableText = true
+            windowController.window?.title = windowTitle
+            windowController.showWindow(nil)
         }
     }
     

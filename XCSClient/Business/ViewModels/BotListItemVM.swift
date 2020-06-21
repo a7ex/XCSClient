@@ -30,4 +30,8 @@ struct BotListItemVM: ExpandableBotListItem {
     var statusColor: Color {
         return Color.primary
     }
+    
+    var searchableContent: String {
+        return title.lowercased()
+    }
 }

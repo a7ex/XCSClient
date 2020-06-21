@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Integration: Codable {
+struct Integration: Decodable {
     let id: String // "824d4cdc2b61984cfc4e6556656d36c0",
     let rev: String? // "23-1505c13a74bcf06a4afb4b8c303f3c98",
     let assets: IntegrationAssets?
@@ -20,22 +20,18 @@ struct Integration: Codable {
     let currentStep: String? // "completed",
     let docType: String? // "integration",
     let duration: Double? // 491.034,
-    
     let endedTime: Date? // "2020-05-28T07:59:23.098Z",
-    
 //    let endedTimeDate: String // [],
     let number: Int? // 94,
 //    let perfMetricKeyPaths: String // [],
 //    let perfMetricNames: String // [],
     let queuedDate: Date? // "2020-05-28T07:42:04.909Z",
     let result: IntegrationResult? // "warnings",
-//    let revisionBlueprint: SourceControlBlueprint
-    
+    let revisionBlueprint: SourceControlBlueprint?
     let startedTime: Date? // "2020-05-28T07:51:12.064Z",
-    
 //    let success_streak: String // 0,
 //    let tags: String // [],
-//    let testHierarchy: String // {},
+    let testHierarchy: [String: JSONValue]?
     let testedDevices: [TestDevice]?
     let tinyID: String? // "3B5C700"
     
@@ -58,27 +54,37 @@ struct Integration: Codable {
 //        case perfMetricNames
         case queuedDate
         case result
-//        case revisionBlueprint
+        case revisionBlueprint
         case startedTime
-//        case success_streak, tags, testHierarchy
+//        case success_streak
+//        case tags
+        case testHierarchy
         case testedDevices
         case tinyID
     }
 }
 
-enum IntegrationResult: String, Codable {
-    case succeeded
-    case warnings
-    case canceled
-    case unknown
-    case testFailures = "test-failures"
-    case buildErrors = "build-errors"
-    case analyzerWarnings = "analyzer-warnings"
-    case buildFailed = "build-failed"
-    case checkoutError = "checkout-error"
-    case internalError = "internal-error"
-    case triggerError = "trigger-error"
-    case internalCheckoutError = "internal-checkout-error"
-    case internalBuildError = "internal-build-error"
-    case internalProcessingError = "internal-processing-error"
+extension Integration {
+    init(id: String, tinyId: String, bot: Bot) {
+        self.id = id
+        self.tinyID = tinyId
+        self.bot = bot
+        rev = nil
+        docType = nil
+        assets = nil
+        buildResultSummary = nil
+        buildServiceFingerprint = nil
+        ccPercentage = nil
+        ccPercentageDelta = nil
+        currentStep = nil
+        duration = nil
+        endedTime = nil
+        number = nil
+        queuedDate = nil
+        result = nil
+        revisionBlueprint = nil
+        startedTime = nil
+        testHierarchy = nil
+        testedDevices = nil
+    }
 }

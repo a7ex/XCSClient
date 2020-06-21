@@ -35,24 +35,3 @@ struct BotConfiguration: Codable {
     var weeklyScheduleDay: WeeklyScheduleDay? // only if 'periodicScheduleInterval' set to 3 (Weekly)
     var buildConfiguration: String?
 }
-
-enum ScheduleType: Int, Codable {
-    case none = 0
-    case periodically, onCommit, manually
-}
-enum PeriodicScheduleInterval: Int, Codable {
-    case none = 0
-    case hourly, daily, weekly
-}
-enum WeeklyScheduleDay: Int, Codable {
-    case none = 0
-    case monday, tuesday, wednesday, thursday, friday, saturday, sunday
-}
-enum BuiltFromClean: Int, Codable {
-    case never = 0
-    case always, onceADay, onceAWeek
-}
-enum CodeCoveragePreference: Int, Codable {
-    case none = 0
-    case useSchemeSetting, enabled, disabled
-}
