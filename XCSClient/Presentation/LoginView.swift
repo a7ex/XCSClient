@@ -8,32 +8,27 @@
 
 import SwiftUI
 
-extension Array where Element == XcodeServer {
-    var lastUsed: XcodeServer? {
-        guard let name = UserDefaults.standard.object(forKey: "lastUsedXcodeServerName") as? String,
-            !name.isEmpty else {
-                return nil
-        }
-        return first { $0.name == name}
-    }
-}
-
 struct LoginView: View {
+    private struct UserDefaultsKeys {
+        static let xcodeServers = "xcodeServers"
+        static let lastUsedXcodeServerName = "lastUsedXcodeServerName"
+    }
     let myWindow: NSWindow?
     
     init(window: NSWindow?) {
         self.myWindow = window
-        xcodeServers = UserDefaults.standard.object(forKey: "xcodeServers") as? [XcodeServer] ?? [XcodeServer]()
-        if let lastUsedServer = xcodeServers.lastUsed {
-            populateFields(for: lastUsedServer)
-        } else if let first = xcodeServers.first {
-            populateFields(for: first)
+        if let dictionary = UserDefaults.standard.object(forKey: UserDefaultsKeys.xcodeServers) as? [[String: String]] ,
+            let data = try? PropertyListSerialization.data(fromPropertyList: dictionary, format: .xml, options: 0),
+            let servers = try? PropertyListDecoder().decode([XcodeServer].self, from: data) {
+            xcodeServers = servers
+        } else {
+            xcodeServers = [XcodeServer]()
         }
     }
     
     private let xcodeServers: [XcodeServer]
     
-    @State private var xcodeServerName = "Recents"
+    @State private var xcodeServerName = ""
     @State private var xcodeServerAddress = ""
     @State private var sshAddress = ""
     @State private var sshUser = ""
@@ -46,20 +41,25 @@ struct LoginView: View {
     var body: some View {
         ZStack {
             VStack {
-                HStack {
-                    Text("Xcode server")
-                        .frame(minWidth: 200, alignment: .trailing)
-                    MenuButton(label: Text(xcodeServerName)) {
-                        ForEach(xcodeServers, id: \.self) { server in
-                            Button(action: { self.populateFields(for: server) }) {
-                                Text(server.name)
+                if xcodeServers.isEmpty {
+                    LabeledTextInput(label: "Xcode server name", content: $xcodeServerName)
+                } else {
+                    HStack {
+                        LabeledTextInput(label: "Xcode server name", content: $xcodeServerName)
+                        MenuButton(label: Text("▼")) {
+                            ForEach(xcodeServers, id: \.self) { server in
+                                Button(action: { self.populateFields(for: server) }) {
+                                    Text(server.name)
+                                }
                             }
                         }
+                        .menuButtonStyle(BorderlessButtonMenuButtonStyle())
+                        .frame(width: 20)
                     }
                 }
-                LabeledTextInput(label: "Xcode Server Address", content: $xcodeServerAddress)
-                LabeledTextInput(label: "SSH Jumphost Address (optional)", content: $sshAddress)
-                LabeledTextInput(label: "SSH Username (optional)", content: $sshUser)
+                LabeledTextInput(label: "Xcode server address", content: $xcodeServerAddress)
+                LabeledTextInput(label: "SSH jumphost address (optional)", content: $sshAddress)
+                LabeledTextInput(label: "SSH username (optional)", content: $sshUser)
                 LabeledTextInput(label: ".netrc file (optional)", content: $netRCFilename)
                 
                 Button(action: { self.loadBots() }) {
@@ -71,6 +71,13 @@ struct LoginView: View {
             }
             .frame(minWidth: 400)
             .padding()
+            .onAppear {
+                if let lastUsedServer = self.xcodeServers.lastUsed {
+                    self.populateFields(for: lastUsedServer)
+                } else if let first = self.xcodeServers.first {
+                    self.populateFields(for: first)
+                }
+            }
             if activityShowing {
                 Color.black
                     .opacity(0.5)
@@ -101,19 +108,20 @@ struct LoginView: View {
             sshUser: sshUser,
             netRCFilename: netRCFilename
         )
+        var newServerList = xcodeServers
         var newName = xcodeServerName
         if newName.isEmpty {
             newName = "Untitled Xcode Server"
         }
-        while xcodeServers.first(where: { $0.name == newName }) != nil {
-            newName += "-1"
+        UserDefaults.standard.set(newName, forKey: UserDefaultsKeys.lastUsedXcodeServerName)
+        
+        newServerList.removeAll(where: { $0.name == newName })
+        let newServers = [currentXcodeServer] + newServerList
+        guard let data = try? PropertyListEncoder().encode(newServers),
+            let dictionary = try? PropertyListSerialization.propertyList(from: data, format: nil) as? [[String: String]] else {
+                return
         }
-        UserDefaults.standard.set(xcodeServerName, forKey: newName)
-        guard !xcodeServers.contains(currentXcodeServer) else {
-            return
-        }
-        let newServers = [currentXcodeServer] + xcodeServers
-        UserDefaults.standard.set(newServers, forKey: "xcodeServers")
+        UserDefaults.standard.set(dictionary, forKey: UserDefaultsKeys.xcodeServers)
     }
     
     private func loadBots() {
@@ -158,5 +166,15 @@ struct LoginView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         return LoginView(window: nil).environmentObject(XCSConnector.previewServerConnector)
+    }
+}
+
+extension Array where Element == XcodeServer {
+    var lastUsed: XcodeServer? {
+        guard let name = UserDefaults.standard.object(forKey: "lastUsedXcodeServerName") as? String,
+            !name.isEmpty else {
+                return nil
+        }
+        return first { $0.name == name}
     }
 }

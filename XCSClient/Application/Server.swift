@@ -20,18 +20,17 @@ struct Server {
     
     // MARK: - Private instance variables
     
+    private let cliProgram: String
+    
     private let sshEndpoint: String
     private let xcodeServerAddress: String
-    private let netrcFilename: String
-    
-    private let sshClient = "/usr/bin/ssh"
+
     private let secureCopy = "/usr/bin/scp"
+    
     private var apiUrl: String {
         return "https://\(xcodeServerAddress):20343/api"
     }
-    private var defaultArguments: [String] {
-        [sshEndpoint, "curl", "-k", "--netrc-file", netrcFilename]
-    }
+    private let defaultArguments: [String]
     private let decoder = JSONDecoder()
     
     // MARK: - Initialization
@@ -43,8 +42,21 @@ struct Server {
     ) {
         self.xcodeServerAddress = xcodeServerAddress
         self.sshEndpoint = sshEndpoint
-        self.netrcFilename = netrcFilename
         decoder.dateDecodingStrategy = .formatted(DateFormatter.backendDate)
+        
+        let defaultArgs: [String]
+        if !sshEndpoint.isEmpty {
+            cliProgram = "/usr/bin/ssh"
+            defaultArgs = [sshEndpoint] + ["curl", "-k"]
+        } else {
+            cliProgram = "/usr/bin/curl"
+            defaultArgs = ["-k"]
+        }
+        if !netrcFilename.isEmpty {
+            defaultArguments = defaultArgs + ["--netrc-file", netrcFilename]
+        } else {
+            defaultArguments = defaultArgs
+        }
     }
     
     // MARK: - Public interface
@@ -98,16 +110,20 @@ struct Server {
     }
     
     func downloadAssets(for integrationId: String, to targetUrl: URL) -> Result<Bool, Error> {
-        let newArguments = defaultArguments + ["\(apiUrl)/integrations/\(integrationId)/assets --output logResults.tgz"]
-        let rslt = execute(program: sshClient, with: newArguments)
+        let newArguments = defaultArguments + ["\(apiUrl)/integrations/\(integrationId)/assets --output \(sshEndpoint.isEmpty ? targetUrl.path: "logResults.tgz")"]
+        let rslt = execute(program: cliProgram, with: newArguments)
         switch rslt {
         case .success:
-            let newRslt = execute(program: secureCopy, with: ["\(sshEndpoint):logResults.tgz", "\(targetUrl.path)"])
-            switch newRslt {
-            case .success:
+            if !sshEndpoint.isEmpty {
+                let newRslt = execute(program: secureCopy, with: ["\(sshEndpoint):logResults.tgz", "\(targetUrl.path)"])
+                switch newRslt {
+                case .success:
+                    return .success(true)
+                case .failure(let error):
+                    return .failure(error)
+                }
+            } else {
                 return .success(true)
-            case .failure(let error):
-                return .failure(error)
             }
         case .failure(let error):
             return .failure(error)
@@ -115,25 +131,29 @@ struct Server {
     }
     
     func downloadAsset(_ path: String, to targetUrl: URL) -> Result<Bool, Error> {
-        let newArguments = defaultArguments + ["\(apiUrl)/assets/\(path.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? path) --output tmpFile"]
-        let rslt = execute(program: sshClient, with: newArguments)
+        let newArguments = defaultArguments + ["\(apiUrl)/assets/\(path.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? path) --output \(sshEndpoint.isEmpty ? targetUrl.path: "tmpFile")"]
+        let rslt = execute(program: cliProgram, with: newArguments)
         switch rslt {
-            case .success:
+        case .success:
+            if !sshEndpoint.isEmpty {
                 let newRslt = execute(program: secureCopy, with: ["\(sshEndpoint):tmpFile", "\(targetUrl.path)"])
                 switch newRslt {
-                    case .success:
-                        return .success(true)
-                    case .failure(let error):
-                        return .failure(error)
+                case .success:
+                    return .success(true)
+                case .failure(let error):
+                    return .failure(error)
+                }
+            } else {
+                return .success(true)
             }
-            case .failure(let error):
-                return .failure(error)
+        case .failure(let error):
+            return .failure(error)
         }
     }
     
     func loadAsset(_ path: String) -> Result<Data, Error> {
         let newArguments = defaultArguments + ["\(apiUrl)/assets/\(path.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? path)"]
-        let rslt = execute(program: sshClient, with: newArguments)
+        let rslt = execute(program: cliProgram, with: newArguments)
         switch rslt {
             case .success(let data):
                 return .success(data)
@@ -148,7 +168,7 @@ struct Server {
             //            "-H", "\"X-XCSClientVersion: 7\"",
             "\(apiUrl)/bots/\(botId)/\(revId)"
         ]
-        let rslt = execute(program: sshClient, with: arguments)
+        let rslt = execute(program: cliProgram, with: arguments)
         switch rslt {
         case .success(let data):
             if let errorResponse = try? JSONDecoder().decode(ErrorResponse.self, from: data) {
@@ -178,12 +198,8 @@ struct Server {
     func applySettings(at fileUrl: URL, fileName: String, toBot botId: String) -> Result<Bot, Error> {
         let rslt = copyBotSettingsToServer(botId, fileUrl: fileUrl, fileName: fileName)
         switch rslt {
-            case .success(let succes):
-                if succes {
-                    return self.modifyBot(botId, settingsFile: fileName)
-                } else {
-                    return .failure(NSError(message: "Unable to copy settings to server."))
-            }
+            case .success(let path):
+                return self.modifyBot(botId, settingsFile: path)
             case .failure(let error):
                 return .failure(error)
         }
@@ -211,11 +227,14 @@ struct Server {
 //        return executeJSONTask(with: arguments)
 //    }
     
-    private func copyBotSettingsToServer(_ botId: String, fileUrl: URL, fileName: String) -> Result<Bool, Error> {
+    private func copyBotSettingsToServer(_ botId: String, fileUrl: URL, fileName: String) -> Result<String, Error> {
+        guard !sshEndpoint.isEmpty else {
+            return .success(fileUrl.path)
+        }
         let rslt = execute(program: secureCopy, with: ["\(fileUrl.path)", "\(sshEndpoint):\(fileName)"])
         switch rslt {
         case .success:
-            return .success(true)
+            return .success(fileName)
         case .failure(let error):
             return .failure(error)
         }
@@ -236,14 +255,14 @@ struct Server {
             "-H", "\"Content-Type: application/json; charset=utf-8\"",
             "\(apiUrl)/integrations/\(integrationId)/cancel"
         ]
-        return execute(program: sshClient, with: arguments)
+        return execute(program: cliProgram, with: arguments)
             .map { _ in true }
     }
     
     // MARK: - Private interface
     
     private func executeJSONTask<T: Decodable>(with arguments: [String]) -> Result<T, Error> {
-        let rslt = execute(program: sshClient, with: arguments)
+        let rslt = execute(program: cliProgram, with: arguments)
         return rslt.flatMap { data in
             let rslt = Result { try decoder.decode(T.self, from: data) }
             return rslt
