@@ -35,17 +35,5 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationWillTerminate(_ aNotification: Notification) {
         // Insert code here to tear down your application
     }
-    
-    private var saveAction: ((Any) -> Void)?
-    
-    func onSave(_ listener: @escaping (Any) -> Void) {
-        saveAction = listener
-    }
-    
-    @IBAction func saveMenuAction(_ sender: Any) {
-        print("Save menu called in app delegate")
-    }
-
-
 }
 

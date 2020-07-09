@@ -17,6 +17,7 @@ class XCSConnector: ObservableObject {
         self.name = name
     }
     
+    // Mock for use in previews
     static var previewServerConnector: XCSConnector {
         return XCSConnector(
             server: Server(
@@ -28,7 +29,7 @@ class XCSConnector: ObservableObject {
     }
     
     func getBotList(completion: @escaping (Result<[Bot], Error>) -> Void) {
-        DispatchQueue.global(qos: .background).async {
+        DispatchQueue.global(qos: .userInitiated).async {
             let rslt = self.server.getBotList()
             DispatchQueue.main.async {
                 completion(rslt)
@@ -37,7 +38,7 @@ class XCSConnector: ObservableObject {
     }
     
     func getIntegrationsList(for botId: String, last: Int = 3, completion: @escaping (Result<[Integration], Error>) -> Void) {
-        DispatchQueue.global(qos: .background).async {
+        DispatchQueue.global(qos: .userInitiated).async {
             let rslt = self.server.getIntegrations(for: botId, last: last)
             DispatchQueue.main.async {
                 completion(rslt)
@@ -50,7 +51,7 @@ class XCSConnector: ObservableObject {
             completion(.failure(NSError(message: "Parameter error")))
             return
         }
-        DispatchQueue.global(qos: .background).async {
+        DispatchQueue.global(qos: .userInitiated).async {
             let rslt = self.server.integrate(botId)
             DispatchQueue.main.async {
                 completion(rslt)
@@ -63,7 +64,7 @@ class XCSConnector: ObservableObject {
             completion(.failure(NSError(message: "Parameter error")))
             return
         }
-        DispatchQueue.global(qos: .background).async {
+        DispatchQueue.global(qos: .userInitiated).async {
             let rslt = self.server.cancelIntegration(integrationId)
             DispatchQueue.main.async {
                 completion(rslt)
@@ -76,7 +77,7 @@ class XCSConnector: ObservableObject {
             completion(.failure(NSError(message: "Parameter error")))
             return
         }
-        DispatchQueue.global(qos: .background).async {
+        DispatchQueue.global(qos: .userInitiated).async {
             let rslt = self.server.duplicateBot(botId)
             DispatchQueue.main.async {
                 completion(rslt)
@@ -90,7 +91,7 @@ class XCSConnector: ObservableObject {
                 completion(.failure(NSError(message: "Parameter error")))
                 return
         }
-        DispatchQueue.global(qos: .background).async {
+        DispatchQueue.global(qos: .userInitiated).async {
             let rslt = self.server.deleteBot(botId: botId, revId: revId)
             DispatchQueue.main.async {
                 completion(rslt)
@@ -121,7 +122,7 @@ class XCSConnector: ObservableObject {
             completion(.failure(NSError(message: "Parameter error")))
             return
         }
-        DispatchQueue.global(qos: .background).async {
+        DispatchQueue.global(qos: .userInitiated).async {
             let rslt = self.server.applySettings(at: fileUrl, fileName: fileName, toBot: botId)
             DispatchQueue.main.async {
                 completion(rslt)
@@ -130,7 +131,7 @@ class XCSConnector: ObservableObject {
     }
     
     func exportIntegrationAssets(of integration: Integration, to targetUrl: URL, completion: @escaping (Result<Bool, Error>) -> Void) {
-        DispatchQueue.global(qos: .background).async {
+        DispatchQueue.global(qos: .userInitiated).async {
             let rslt = self.server.downloadAssets(for: integration.id, to: targetUrl)
             DispatchQueue.main.async {
                 completion(rslt)
@@ -139,7 +140,7 @@ class XCSConnector: ObservableObject {
     }
     
     func downloadAssets(at path: String, to targetUrl: URL, completion: @escaping (Result<Bool, Error>) -> Void) {
-        DispatchQueue.global(qos: .background).async {
+        DispatchQueue.global(qos: .userInitiated).async {
             let rslt = self.server.downloadAsset(path, to: targetUrl)
             DispatchQueue.main.async {
                 completion(rslt)
@@ -148,7 +149,7 @@ class XCSConnector: ObservableObject {
     }
     
     func loadAsset(at path: String, completion: @escaping (Result<Data, Error>) -> Void) {
-        DispatchQueue.global(qos: .background).async {
+        DispatchQueue.global(qos: .userInitiated).async {
             let rslt = self.server.loadAsset(path)
             DispatchQueue.main.async {
                 completion(rslt)

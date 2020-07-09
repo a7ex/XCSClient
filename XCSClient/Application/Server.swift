@@ -205,12 +205,13 @@ struct Server {
         }
     }
     
-    /// Modify a bot using settings form a json file
+    /// Modify a bot using settings from a json file
     /// The file is expected to be at the rootlevel of the ssh user on the jumphost!
     private func modifyBot(_ botId: String, settingsFile: String) -> Result<Bot, Error> {
         let arguments = defaultArguments + [
             "--request", "PATCH",
             "-H", "\"Content-Type: application/json; charset=utf-8\"",
+            "-H", "\"X-XCSClientVersion: 7\"",
             "--data", "\"@\(settingsFile)\"",
             "\(apiUrl)/bots/\(botId)?overwriteBlueprint=true"
         ]

@@ -8,6 +8,14 @@
 
 import SwiftUI
 
+class ConnectionDetails: ObservableObject {
+    @Published var xcodeServerName = ""
+    @Published var xcodeServerAddress = ""
+    @Published var sshAddress = ""
+    @Published var sshUser = ""
+    @Published var netRCFilename = ""
+}
+
 struct LoginView: View {
     private struct UserDefaultsKeys {
         static let xcodeServers = "xcodeServers"
@@ -28,11 +36,8 @@ struct LoginView: View {
     
     private let xcodeServers: [XcodeServer]
     
-    @State private var xcodeServerName = ""
-    @State private var xcodeServerAddress = ""
-    @State private var sshAddress = ""
-    @State private var sshUser = ""
-    @State private var netRCFilename = ""
+    // My model
+    @ObservedObject private var connectionDetails = ConnectionDetails()
     
     @State private var hasError = false
     @State private var errorMessage = ""
@@ -42,10 +47,10 @@ struct LoginView: View {
         ZStack {
             VStack {
                 if xcodeServers.isEmpty {
-                    LabeledTextInput(label: "Xcode server name", content: $xcodeServerName)
+                    LabeledTextInput(label: "Xcode server name", content: $connectionDetails.xcodeServerName)
                 } else {
                     HStack {
-                        LabeledTextInput(label: "Xcode server name", content: $xcodeServerName)
+                        LabeledTextInput(label: "Xcode server name", content: $connectionDetails.xcodeServerName)
                         MenuButton(label: Text("▼")) {
                             ForEach(xcodeServers, id: \.self) { server in
                                 Button(action: { self.populateFields(for: server) }) {
@@ -57,10 +62,10 @@ struct LoginView: View {
                         .frame(width: 20)
                     }
                 }
-                LabeledTextInput(label: "Xcode server address", content: $xcodeServerAddress)
-                LabeledTextInput(label: "SSH jumphost address (optional)", content: $sshAddress)
-                LabeledTextInput(label: "SSH username (optional)", content: $sshUser)
-                LabeledTextInput(label: ".netrc file (optional)", content: $netRCFilename)
+                LabeledTextInput(label: "Xcode server address", content: $connectionDetails.xcodeServerAddress)
+                LabeledTextInput(label: "SSH jumphost address (optional)", content: $connectionDetails.sshAddress)
+                LabeledTextInput(label: "SSH username (optional)", content: $connectionDetails.sshUser)
+                LabeledTextInput(label: ".netrc file (optional)", content: $connectionDetails.netRCFilename)
                 
                 Button(action: { self.loadBots() }) {
                     Text("Login and load bots")
@@ -92,24 +97,27 @@ struct LoginView: View {
         }
     }
     
+    // menu action
     private func populateFields(for server: XcodeServer) {
-        xcodeServerName = server.name
-        xcodeServerAddress = server.ipAddress
-        sshAddress = server.sshAddress
-        sshUser = server.sshUser
-        netRCFilename = server.netRCFilename
+        connectionDetails.xcodeServerName = server.name
+        connectionDetails.xcodeServerAddress = server.ipAddress
+        connectionDetails.sshAddress = server.sshAddress
+        connectionDetails.sshUser = server.sshUser
+        connectionDetails.netRCFilename = server.netRCFilename
     }
     
+    // persist selection in userDefaults for convenience
+    // It's just IP adresses, user- and filename. No passwords.
     private func updateRecentXcodeServer() {
         let currentXcodeServer = XcodeServer(
-            ipAddress: xcodeServerAddress,
-            name: xcodeServerName,
-            sshAddress: sshAddress,
-            sshUser: sshUser,
-            netRCFilename: netRCFilename
+            ipAddress: connectionDetails.xcodeServerAddress,
+            name: connectionDetails.xcodeServerName,
+            sshAddress: connectionDetails.sshAddress,
+            sshUser: connectionDetails.sshUser,
+            netRCFilename: connectionDetails.netRCFilename
         )
         var newServerList = xcodeServers
-        var newName = xcodeServerName
+        var newName = connectionDetails.xcodeServerName
         if newName.isEmpty {
             newName = "Untitled Xcode Server"
         }
@@ -127,11 +135,11 @@ struct LoginView: View {
     private func loadBots() {
         let connector = XCSConnector(
             server: Server(
-                xcodeServerAddress: xcodeServerAddress,
-                sshEndpoint: "\(sshUser)@\(sshAddress)",
-                netrcFilename: netRCFilename
+                xcodeServerAddress: connectionDetails.xcodeServerAddress,
+                sshEndpoint: "\(connectionDetails.sshUser)@\(connectionDetails.sshAddress)",
+                netrcFilename: connectionDetails.netRCFilename
             ),
-            name: xcodeServerName
+            name: connectionDetails.xcodeServerName
         )
         withAnimation {
             self.activityShowing = true

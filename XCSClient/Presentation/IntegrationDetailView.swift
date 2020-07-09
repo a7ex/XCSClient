@@ -270,7 +270,12 @@ struct IntegrationDetailView_Previews: PreviewProvider {
         
         let integration = Integration(id: UUID().uuidString, rev: "", assets: assets, bot: nil, buildResultSummary: BuildResultSummary(analyzerWarningChange: 0, analyzerWarningCount: 0, codeCoveragePercentage: 0, codeCoveragePercentageDelta: 0, errorChange: 0, errorCount: 0, improvedPerfTestCount: 0, regressedPerfTestCount: 0, testFailureChange: 0, testFailureCount: 0, testsChange: 0, testsCount: 0, warningChange: 0, warningCount: 0), buildServiceFingerprint: "", ccPercentage: 0, ccPercentageDelta: 0, currentStep: "completed", docType: "", duration: 230, endedTime: Date(), number: 1, queuedDate: nil, result: IntegrationResult.buildErrors, revisionBlueprint: nil, startedTime: Date().advanced(by: 120), testHierarchy: nil, testedDevices: nil, tinyID: "1817142698624")
         
-        return IntegrationDetailView(integration: IntegrationVM(integration: integration))
-            .environmentObject(XCSConnector.previewServerConnector)
+        return Group {
+            IntegrationDetailView(integration: IntegrationVM(integration: integration))
+                .environmentObject(XCSConnector.previewServerConnector)
+            IntegrationDetailView(integration: IntegrationVM(integration: integration))
+                .environment(\.sizeCategory, .extraLarge)
+                .environmentObject(XCSConnector.previewServerConnector)
+        }
     }
 }

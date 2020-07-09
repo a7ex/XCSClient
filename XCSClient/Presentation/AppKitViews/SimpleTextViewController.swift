@@ -8,7 +8,19 @@
 
 import Cocoa
 
-class SimpleTextViewController: NSViewController {
+class SimpleTextViewController: NSViewController, NSWindowDelegate {
+    // ... rest of the code goes here
+    override func viewDidAppear() {
+        self.view.window?.delegate = self
+    }
+//    func windowShouldClose(_ sender: Any) {
+//        NSApplication.shared().terminate(self)
+//    }
+    func windowShouldClose(_ sender: NSWindow) -> Bool {
+        print("windowShouldClose")
+        return true
+    }
+
     
     private let fileHelper = FileHelper()
     
@@ -22,6 +34,19 @@ class SimpleTextViewController: NSViewController {
         } catch {
                _ = NSAlert(error: error).runModal()
         }
+    }
+    
+    @IBAction func closeMenuAction(_ sender: Any) {
+        print("Close received")
+//        guard let url = fileHelper.getSaveURLFromUser(for: view.window?.title ?? "Untitled.log") else {
+//            return
+//        }
+//        let log = Data(textView.string.utf8)
+//        do {
+//            try log.write(to: url)
+//        } catch {
+//            _ = NSAlert(error: error).runModal()
+//        }
     }
     
     var stringContent: String? {
@@ -51,5 +76,7 @@ class SimpleTextViewController: NSViewController {
         }
         textView.isEditable = editableText
     }
+    
+    
     
 }
