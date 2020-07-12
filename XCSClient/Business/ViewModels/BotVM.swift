@@ -83,16 +83,7 @@ struct BotVM {
         }
     }
     var scheduleType: String {
-        switch botModel.configuration?.scheduleType {
-            case .periodically:
-                return "Periodically"
-            case .onCommit:
-                return "On Commit"
-            case .manually:
-                return "Manually"
-            default:
-                return ""
-        }
+        return botModel.configuration?.scheduleType?.string ?? ""
     }
     var schemeName: String {
         return botModel.configuration?.schemeName ?? ""
@@ -108,8 +99,35 @@ struct BotVM {
         }
         return location.branchIdentifierKey ?? ""
     }
+    var triggerScripts: [TriggerScript] {
+        guard let triggers = botModel.configuration?.triggers else {
+            return [TriggerScript]()
+        }
+        return triggers.compactMap { TriggerScript(name: $0.name, script: $0.scriptBody) }
+    }
     
     init(bot: Bot) {
         botModel = bot
+    }
+}
+
+extension ScheduleType {
+    var string: String {
+        switch self {
+        case .periodically:
+            return "Periodically"
+        case .onCommit:
+            return "On Commit"
+        case .manually:
+            return "Manually"
+        case .none:
+            return ""
+        }
+    }
+    
+    static var allStringValues: [String] {
+        return ScheduleType.allCases
+            .map { $0.string }
+            .filter { !$0.isEmpty }
     }
 }

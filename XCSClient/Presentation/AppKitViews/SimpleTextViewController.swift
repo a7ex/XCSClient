@@ -9,45 +9,8 @@
 import Cocoa
 
 class SimpleTextViewController: NSViewController, NSWindowDelegate {
-    // ... rest of the code goes here
-    override func viewDidAppear() {
-        self.view.window?.delegate = self
-    }
-//    func windowShouldClose(_ sender: Any) {
-//        NSApplication.shared().terminate(self)
-//    }
-    func windowShouldClose(_ sender: NSWindow) -> Bool {
-        print("windowShouldClose")
-        return true
-    }
-
     
-    private let fileHelper = FileHelper()
-    
-    @IBAction func saveMenuAction(_ sender: Any) {
-        guard let url = fileHelper.getSaveURLFromUser(for: view.window?.title ?? "Untitled.log") else {
-            return
-        }
-        let log = Data(textView.string.utf8)
-        do {
-            try log.write(to: url)
-        } catch {
-               _ = NSAlert(error: error).runModal()
-        }
-    }
-    
-    @IBAction func closeMenuAction(_ sender: Any) {
-        print("Close received")
-//        guard let url = fileHelper.getSaveURLFromUser(for: view.window?.title ?? "Untitled.log") else {
-//            return
-//        }
-//        let log = Data(textView.string.utf8)
-//        do {
-//            try log.write(to: url)
-//        } catch {
-//            _ = NSAlert(error: error).runModal()
-//        }
-    }
+    @IBOutlet private var textView: NSTextView!
     
     var stringContent: String? {
         didSet {
@@ -65,7 +28,8 @@ class SimpleTextViewController: NSViewController, NSWindowDelegate {
             textView.isEditable = editableText
         }
     }
-    @IBOutlet private var textView: NSTextView!
+    private var uploadClosure: ((String) -> Void)?
+    private let fileHelper = FileHelper()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -77,6 +41,50 @@ class SimpleTextViewController: NSViewController, NSWindowDelegate {
         textView.isEditable = editableText
     }
     
+    override func viewDidAppear() {
+        super.viewDidAppear()
+        
+        self.view.window?.delegate = self
+    }
     
+    private var alert: NSAlert?
+
+    func windowShouldClose(_ sender: NSWindow) -> Bool {
+        let newText = textView.string
+        if newText == stringContent {
+            return true
+        } else {
+            let alrt = NSAlert()
+            alrt.addButton(withTitle: "Upload settings")
+            alrt.addButton(withTitle: "Cancel")
+            alrt.messageText = "Do you want to upload changes to the server?"
+            alrt.beginSheetModal(for: view.window!) { [weak self] (result) in
+                switch result {
+                case .alertFirstButtonReturn:
+                    self?.uploadClosure?(newText)
+                    self?.view.window?.close()
+                default:
+                    self?.view.window?.close()
+                }
+            }
+            alert = alrt
+            return false
+        }
+    }
     
+    @IBAction func saveMenuAction(_ sender: Any) {
+        guard let url = fileHelper.getSaveURLFromUser(for: view.window?.title ?? "Untitled.log") else {
+            return
+        }
+        let log = Data(textView.string.utf8)
+        do {
+            try log.write(to: url)
+        } catch {
+               _ = NSAlert(error: error).runModal()
+        }
+    }
+    
+    func onUploadChanges(completion: @escaping (String) -> Void) {
+        uploadClosure = completion
+    }
 }

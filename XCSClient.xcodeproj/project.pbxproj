@@ -12,13 +12,14 @@
 		FA17F9172496B5BE000A149D /* Windows.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA17F9162496B5BE000A149D /* Windows.swift */; };
 		FA17F9192496D1E6000A149D /* ButtonLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA17F9182496D1E6000A149D /* ButtonLabel.swift */; };
 		FA190BF1249545B500B70206 /* IntegrationDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA190BF0249545B500B70206 /* IntegrationDetailView.swift */; };
+		FA20876624BBACD60013CC21 /* BotEditorData.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA20876524BBACD60013CC21 /* BotEditorData.swift */; };
+		FA20876824BBAD5B0013CC21 /* TriggerScript.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA20876724BBAD5B0013CC21 /* TriggerScript.swift */; };
 		FA2696382495FC8900C7F084 /* BotListVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA2696372495FC8900C7F084 /* BotListVM.swift */; };
 		FA26963A2495FD3100C7F084 /* ExpandableBotListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA2696392495FD3100C7F084 /* ExpandableBotListItem.swift */; };
 		FA26963C2495FD7900C7F084 /* BotListItemVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA26963B2495FD7900C7F084 /* BotListItemVM.swift */; };
 		FA26963E2495FD9800C7F084 /* IntegrationListItemVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA26963D2495FD9800C7F084 /* IntegrationListItemVM.swift */; };
 		FA26964124960E9900C7F084 /* InfoLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA26964024960E9900C7F084 /* InfoLabel.swift */; };
 		FA26964324960F2600C7F084 /* LabeledStringValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA26964224960F2600C7F084 /* LabeledStringValue.swift */; };
-		FA26964524960F7D00C7F084 /* LabeledBooleanValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA26964424960F7D00C7F084 /* LabeledBooleanValue.swift */; };
 		FA2696472496124800C7F084 /* BotVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA2696462496124800C7F084 /* BotVM.swift */; };
 		FA2696492496126200C7F084 /* IntegrationVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA2696482496126200C7F084 /* IntegrationVM.swift */; };
 		FA26964B24961F6200C7F084 /* Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA26964A24961F6200C7F084 /* Platform.swift */; };
@@ -55,7 +56,6 @@
 		FA7B8A472493D10900C26B50 /* BotDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7B8A462493D10900C26B50 /* BotDetailView.swift */; };
 		FA7B8A4A2493E12900C26B50 /* XCSConnector.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7B8A492493E12900C26B50 /* XCSConnector.swift */; };
 		FA92653E249A01F5001B4949 /* XcodeServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA92653D249A01F5001B4949 /* XcodeServer.swift */; };
-		FA9372C4249AD1A700B24A42 /* LabeledTextInputValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9372C3249AD1A700B24A42 /* LabeledTextInputValue.swift */; };
 		FABF8766249D211A005A9D48 /* SimpleTextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FABF8765249D211A005A9D48 /* SimpleTextViewController.swift */; };
 		FAC759C7249E6AEF0028BBFA /* FileHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC759C6249E6AEF0028BBFA /* FileHelper.swift */; };
 		FAC759C9249F89DA0028BBFA /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC759C8249F89DA0028BBFA /* SearchBar.swift */; };
@@ -79,13 +79,14 @@
 		FA17F9162496B5BE000A149D /* Windows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Windows.swift; sourceTree = "<group>"; };
 		FA17F9182496D1E6000A149D /* ButtonLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonLabel.swift; sourceTree = "<group>"; };
 		FA190BF0249545B500B70206 /* IntegrationDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationDetailView.swift; sourceTree = "<group>"; };
+		FA20876524BBACD60013CC21 /* BotEditorData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BotEditorData.swift; sourceTree = "<group>"; };
+		FA20876724BBAD5B0013CC21 /* TriggerScript.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TriggerScript.swift; sourceTree = "<group>"; };
 		FA2696372495FC8900C7F084 /* BotListVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BotListVM.swift; sourceTree = "<group>"; };
 		FA2696392495FD3100C7F084 /* ExpandableBotListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableBotListItem.swift; sourceTree = "<group>"; };
 		FA26963B2495FD7900C7F084 /* BotListItemVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BotListItemVM.swift; sourceTree = "<group>"; };
 		FA26963D2495FD9800C7F084 /* IntegrationListItemVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationListItemVM.swift; sourceTree = "<group>"; };
 		FA26964024960E9900C7F084 /* InfoLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoLabel.swift; sourceTree = "<group>"; };
 		FA26964224960F2600C7F084 /* LabeledStringValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledStringValue.swift; sourceTree = "<group>"; };
-		FA26964424960F7D00C7F084 /* LabeledBooleanValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledBooleanValue.swift; sourceTree = "<group>"; };
 		FA2696462496124800C7F084 /* BotVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BotVM.swift; sourceTree = "<group>"; };
 		FA2696482496126200C7F084 /* IntegrationVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationVM.swift; sourceTree = "<group>"; };
 		FA26964A24961F6200C7F084 /* Platform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Platform.swift; sourceTree = "<group>"; };
@@ -127,7 +128,6 @@
 		FA7B8A482493D57600C26B50 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = SOURCE_ROOT; };
 		FA7B8A492493E12900C26B50 /* XCSConnector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCSConnector.swift; sourceTree = "<group>"; };
 		FA92653D249A01F5001B4949 /* XcodeServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcodeServer.swift; sourceTree = "<group>"; };
-		FA9372C3249AD1A700B24A42 /* LabeledTextInputValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledTextInputValue.swift; sourceTree = "<group>"; };
 		FABF8765249D211A005A9D48 /* SimpleTextViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleTextViewController.swift; sourceTree = "<group>"; };
 		FAC759C6249E6AEF0028BBFA /* FileHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileHelper.swift; sourceTree = "<group>"; };
 		FAC759C8249F89DA0028BBFA /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
@@ -165,6 +165,8 @@
 				FA2696392495FD3100C7F084 /* ExpandableBotListItem.swift */,
 				FA26963B2495FD7900C7F084 /* BotListItemVM.swift */,
 				FA26963D2495FD9800C7F084 /* IntegrationListItemVM.swift */,
+				FA20876524BBACD60013CC21 /* BotEditorData.swift */,
+				FA20876724BBAD5B0013CC21 /* TriggerScript.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -174,13 +176,11 @@
 			children = (
 				FA26964024960E9900C7F084 /* InfoLabel.swift */,
 				FA26964224960F2600C7F084 /* LabeledStringValue.swift */,
-				FA26964424960F7D00C7F084 /* LabeledBooleanValue.swift */,
 				FA26964C249620A500C7F084 /* LabeledTextInput.swift */,
 				FA17F9122496890C000A149D /* ActivityIndicator.swift */,
 				FA17F9142496B29B000A149D /* Tooltip.swift */,
 				FA17F9182496D1E6000A149D /* ButtonLabel.swift */,
 				FA5EBA7824994A660032834B /* UpdatingStatusText.swift */,
-				FA9372C3249AD1A700B24A42 /* LabeledTextInputValue.swift */,
 				FAC759C8249F89DA0028BBFA /* SearchBar.swift */,
 			);
 			path = ViewElements;
@@ -469,9 +469,11 @@
 				FA26963A2495FD3100C7F084 /* ExpandableBotListItem.swift in Sources */,
 				FA56370C2493BEED002457DF /* NSError+ConvenienceInit.swift in Sources */,
 				FA17F9172496B5BE000A149D /* Windows.swift in Sources */,
+				FA20876824BBAD5B0013CC21 /* TriggerScript.swift in Sources */,
 				FAE5B87A249FC4FD00E06155 /* TriggerPhase.swift in Sources */,
 				FA5636D92493BDB0002457DF /* BotListView.swift in Sources */,
 				FA5636F52493BEC7002457DF /* IntegrationAssets.swift in Sources */,
+				FA20876624BBACD60013CC21 /* BotEditorData.swift in Sources */,
 				FA2696382495FC8900C7F084 /* BotListVM.swift in Sources */,
 				FA5636C82493BC55002457DF /* LoginView.swift in Sources */,
 				FAE5B875249FC4AE00E06155 /* BranchOptionsKey.swift in Sources */,
@@ -502,8 +504,6 @@
 				FA5637042493BEC7002457DF /* TestDevice.swift in Sources */,
 				FAC759C9249F89DA0028BBFA /* SearchBar.swift in Sources */,
 				FA17F9132496890C000A149D /* ActivityIndicator.swift in Sources */,
-				FA9372C4249AD1A700B24A42 /* LabeledTextInputValue.swift in Sources */,
-				FA26964524960F7D00C7F084 /* LabeledBooleanValue.swift in Sources */,
 				FA17F9152496B29B000A149D /* Tooltip.swift in Sources */,
 				FA56370A2493BEDC002457DF /* Server.swift in Sources */,
 				FA5637012493BEC7002457DF /* BotsQueryResponse.swift in Sources */,

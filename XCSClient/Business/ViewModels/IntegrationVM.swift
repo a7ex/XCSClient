@@ -132,29 +132,66 @@ struct IntegrationVM {
     var testedDevices: String {
         return Self.dateFormatter.string(from: integrationModel.startedTime ?? Date.distantPast)
     }
-    var number: String {
-        return "\(integrationModel.number ?? 0)"
+    var number: Int {
+        return integrationModel.number ?? 0
     }
-    var analyzerWarnings: String {
-        return "\(integrationModel.buildResultSummary?.analyzerWarningCount ?? 0) (\(integrationModel.buildResultSummary?.analyzerWarningChange ?? 0))"
+    var errorCount: Int {
+        return integrationModel.buildResultSummary?.errorCount ?? 0
+    }
+    var errorChange: String {
+        let change = integrationModel.buildResultSummary?.errorChange ?? 0
+        return "\(change < 0 ? "": "+")\(change)"
+    }
+    
+    var performsAnalyzeAction: Bool {
+        return integrationModel.bot?.configuration?.performsAnalyzeAction ?? false
+    }
+    var analyzerWarnings: Int {
+        return integrationModel.buildResultSummary?.analyzerWarningCount ?? 0
+    }
+    var analyzerWarningChange: String {
+        let change = integrationModel.buildResultSummary?.analyzerWarningChange ?? 0
+        return "\(change < 0 ? "": "+")\(change)"
+    }
+    
+    var performsTestAction: Bool {
+        return integrationModel.bot?.configuration?.performsTestAction ?? false
     }
     var codeCoverage: String {
         return "\(integrationModel.ccPercentage ?? 0)% (delta: \(integrationModel.ccPercentageDelta ?? 0))"
     }
-    var errorCount: String {
-        return "\(integrationModel.buildResultSummary?.errorCount ?? 0) (\(integrationModel.buildResultSummary?.errorChange ?? 0))"
-    }
     var performanceTests: String {
         return "Improved: \(integrationModel.buildResultSummary?.improvedPerfTestCount ?? 0); Regressed: \(integrationModel.buildResultSummary?.regressedPerfTestCount ?? 0)"
     }
-    var testFailureCount: String {
-        return "\(integrationModel.buildResultSummary?.testFailureCount ?? 0) (\(integrationModel.buildResultSummary?.testFailureChange ?? 0))"
+    var testFailureCount: Int {
+        return integrationModel.buildResultSummary?.testFailureCount ?? 0
     }
-    var testsCount: String {
-        return "\(integrationModel.buildResultSummary?.testsCount ?? 0) (\(integrationModel.buildResultSummary?.testsChange ?? 0))"
+    var testFailureChange: String {
+        let change = integrationModel.buildResultSummary?.testFailureChange ?? 0
+        return "\(change < 0 ? "": "+")\(change)"
     }
-    var warningCount: String {
-        return "\(integrationModel.buildResultSummary?.warningCount ?? 0) (\(integrationModel.buildResultSummary?.warningChange ?? 0))"
+    var testsCount: Int {
+        return integrationModel.buildResultSummary?.testsCount ?? 0
+    }
+    var testsCountChange: String {
+        let change = integrationModel.buildResultSummary?.testsChange ?? 0
+        return "\(change < 0 ? "+": "-")\(change)"
+    }
+    var passedTestsCount: Int {
+        let all = integrationModel.buildResultSummary?.testsCount ?? 0
+        let failed = integrationModel.buildResultSummary?.testFailureCount ?? 0
+        return all - failed
+    }
+    var passedTestsChange: String {
+        let change = integrationModel.buildResultSummary?.testFailureChange ?? 0
+        return "\(change < 0 ? "+": "-")\(change)"
+    }
+    var warningCount: Int {
+        return integrationModel.buildResultSummary?.warningCount ?? 0
+    }
+    var warningChange: String {
+        let change = integrationModel.buildResultSummary?.warningChange ?? 0
+        return "\(change < 0 ? "": "+")\(change)"
     }
     var archive: FileDescriptor {
         return FileDescriptor(logFile: integrationModel.assets?.archive)

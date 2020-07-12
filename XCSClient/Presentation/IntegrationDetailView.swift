@@ -46,7 +46,7 @@ struct IntegrationDetailView: View {
                 if let integration = integrations.first,
                     let result = integration.result,
                     result == .unknown {
-//                    self.integration.integrationModel = integration
+                    //                    self.integration.integrationModel = integration
                 }
             }
         }
@@ -74,6 +74,8 @@ struct IntegrationDetailView: View {
                     if !integration.startTimes.isEmpty {
                         LabeledStringValue(label: "Start time", value: integration.startTimes)
                     }
+                }
+                Group {
                     if !integration.endedTime.isEmpty {
                         LabeledStringValue(label: "End time", value: integration.endedTime)
                     }
@@ -86,26 +88,53 @@ struct IntegrationDetailView: View {
                     if !integration.sourceControlCommitId.isEmpty {
                         LabeledStringValue(label: "Commit ID", value: integration.sourceControlCommitId)
                     }
-                }
-                Group {
-                    LabeledStringValue(label: "Number of errors", value: integration.errorCount)
-                    LabeledStringValue(label: "Number of warnings", value: integration.warningCount)
-                    LabeledStringValue(label: "Number of analyzer warnings", value: integration.analyzerWarnings)
-                    LabeledStringValue(label: "Number of tests", value: integration.testsCount)
-                    LabeledStringValue(label: "Number of failed tests", value: integration.testFailureCount)
                     LabeledStringValue(label: "Code Coverage percentage", value: integration.codeCoverage)
                     LabeledStringValue(label: "Performance Test changes", value: integration.performanceTests)
+                }
+                Divider()
+                HStack(alignment: .top) {
+                    Spacer()
+                    VStack {
+                        Text("🐞")
+                            .font(.largeTitle)
+                        Text("\(integration.errorCount) Errors")
+                            .font(.headline)
+                        Text("(\(integration.errorChange))")
+                    }
+                    Spacer()
+                    VStack {
+                        Text("⚠️")
+                            .font(.largeTitle)
+                        Text("\(integration.warningCount) Warnings")
+                            .font(.headline)
+                        Text("(\(integration.warningChange))")
+                    }
+                    Spacer()
+                    VStack {
+                        Text("🛠")
+                            .font(.largeTitle)
+                        Text("\(integration.analyzerWarnings) Issues")
+                            .font(.headline)
+                        Text("(\(integration.analyzerWarningChange))")
+                    }
+                    Spacer()
+                    VStack {
+                        Text(integration.testFailureCount > 0 ? "❌": "✅")
+                            .font(.largeTitle)
+                        Text("\(integration.passedTestsCount) Passed tests")
+                            .font(.headline)
+                        Text("(\(integration.passedTestsChange))")
+                        Text("\(integration.testFailureCount) Failed tests")
+                            .font(.headline)
+                        Text("(\(integration.testFailureChange))")
+                    }
+                    Spacer()
                 }
                 Divider()
                 Group {
                     if integration.result == IntegrationResult.unknown.rawValue {
                         Button(action: { self.cancelIntegration(self.integration.id) }) {
                             ButtonLabel(text: "Cancel integration")
-                        }
-                    }
-                    if integration.archive.size > 0 {
-                        Button(action: { self.downloadAsset(self.integration.archive) }) {
-                            ButtonLabel(text: integration.archive.title)
                         }
                     }
                     if integration.buildServiceLog.size > 0 {
@@ -123,11 +152,6 @@ struct IntegrationDetailView: View {
                             ButtonLabel(text: integration.xcodebuildLog.title)
                         }
                     }
-                    if integration.xcodebuildOutput.size > 0 {
-                        Button(action: { self.downloadAsset(self.integration.xcodebuildOutput) }) {
-                            ButtonLabel(text: integration.xcodebuildOutput.title)
-                        }
-                    }
                     ForEach(integration.triggerAssets, id: \.path) { asset in
                         Button(action: { self.downloadAsset(asset) }) {
                             ButtonLabel(text: asset.title)
@@ -135,7 +159,11 @@ struct IntegrationDetailView: View {
                     }
                     if integration.hasAssets {
                         Button(action: { self.export(self.integration) }) {
-                            ButtonLabel(text: "Download all assets as archive…")
+                            if integration.archive.size > 0 {
+                                ButtonLabel(text: integration.archive.title)
+                            } else {
+                                ButtonLabel(text: "Logs and Test Results")
+                            }
                         }
                     }
                 }
@@ -268,14 +296,14 @@ struct IntegrationDetailView_Previews: PreviewProvider {
         
         let assets = IntegrationAssets(archive: logfile, buildServiceLog: logfile2, sourceControlLog: logfile3, xcodebuildLog: logfile2, xcodebuildOutput: logfile, triggerAssets: [logfile3])
         
-        let integration = Integration(id: UUID().uuidString, rev: "", assets: assets, bot: nil, buildResultSummary: BuildResultSummary(analyzerWarningChange: 0, analyzerWarningCount: 0, codeCoveragePercentage: 0, codeCoveragePercentageDelta: 0, errorChange: 0, errorCount: 0, improvedPerfTestCount: 0, regressedPerfTestCount: 0, testFailureChange: 0, testFailureCount: 0, testsChange: 0, testsCount: 0, warningChange: 0, warningCount: 0), buildServiceFingerprint: "", ccPercentage: 0, ccPercentageDelta: 0, currentStep: "completed", docType: "", duration: 230, endedTime: Date(), number: 1, queuedDate: nil, result: IntegrationResult.buildErrors, revisionBlueprint: nil, startedTime: Date().advanced(by: 120), testHierarchy: nil, testedDevices: nil, tinyID: "1817142698624")
+        let integration = Integration(id: UUID().uuidString, rev: "", assets: assets, bot: nil, buildResultSummary: BuildResultSummary(analyzerWarningChange: -3, analyzerWarningCount: 0, codeCoveragePercentage: 48, codeCoveragePercentageDelta: 5, errorChange: 0, errorCount: 0, improvedPerfTestCount: 0, regressedPerfTestCount: 0, testFailureChange: 1, testFailureCount: 2, testsChange: 0, testsCount: 80, warningChange: 0, warningCount: 10), buildServiceFingerprint: "", ccPercentage: 0, ccPercentageDelta: 0, currentStep: "completed", docType: "", duration: 230, endedTime: Date(), number: 1, queuedDate: nil, result: IntegrationResult.buildErrors, revisionBlueprint: nil, startedTime: Date().advanced(by: 120), testHierarchy: nil, testedDevices: nil, tinyID: "1817142698624")
         
         return Group {
             IntegrationDetailView(integration: IntegrationVM(integration: integration))
                 .environmentObject(XCSConnector.previewServerConnector)
-            IntegrationDetailView(integration: IntegrationVM(integration: integration))
-                .environment(\.sizeCategory, .extraLarge)
-                .environmentObject(XCSConnector.previewServerConnector)
+            //            IntegrationDetailView(integration: IntegrationVM(integration: integration))
+            //                .environment(\.sizeCategory, .extraLarge)
+            //                .environmentObject(XCSConnector.previewServerConnector)
         }
     }
 }

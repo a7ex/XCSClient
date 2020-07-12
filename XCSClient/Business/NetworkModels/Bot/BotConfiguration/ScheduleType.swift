@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum ScheduleType: Int, Codable {
+enum ScheduleType: Int, Codable, CaseIterable {
     case none = 0
     case periodically, onCommit, manually
 }

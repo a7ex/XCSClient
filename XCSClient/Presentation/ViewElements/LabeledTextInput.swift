@@ -14,8 +14,8 @@ struct LabeledTextInput: View {
     
     var body: some View {
         HStack {
-            Text(label)
-                .frame(minWidth: 200, alignment: .trailing)
+            InfoLabel(content: label)
+                .frame(minWidth: 100, maxWidth: 160, alignment: .leading)
             TextField("Enter \(label)", text: $content)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
         }
