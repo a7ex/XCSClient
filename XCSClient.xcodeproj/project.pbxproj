@@ -133,6 +133,8 @@
 		FABF8765249D211A005A9D48 /* SimpleTextViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleTextViewController.swift; sourceTree = "<group>"; };
 		FAC759C6249E6AEF0028BBFA /* FileHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileHelper.swift; sourceTree = "<group>"; };
 		FAC759C8249F89DA0028BBFA /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
+		FAD0F45A24BBCEE5006E8C0D /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
+		FAD0F45B24BBCF14006E8C0D /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		FAE5B862249FC26800E06155 /* JSONValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONValue.swift; sourceTree = "<group>"; };
 		FAE5B864249FC33900E06155 /* IntegrationResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationResult.swift; sourceTree = "<group>"; };
 		FAE5B866249FC3B700E06155 /* BotGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BotGroup.swift; sourceTree = "<group>"; };
@@ -208,6 +210,7 @@
 		FA5636C42493BC55002457DF /* XCSClient */ = {
 			isa = PBXGroup;
 			children = (
+				FAD0F45A24BBCEE5006E8C0D /* README.md */,
 				FA5636DC2493BDD8002457DF /* Application */,
 				FA5636DB2493BDCD002457DF /* Business */,
 				FA5636DA2493BDB8002457DF /* Presentation */,
@@ -269,6 +272,7 @@
 				FA5636C92493BC56002457DF /* Assets.xcassets */,
 				FA7B8A452493C49300C26B50 /* XCSClient.entitlements */,
 				FA7B8A442493C3C300C26B50 /* XCSClientDebug.entitlements */,
+				FAD0F45B24BBCF14006E8C0D /* LICENSE */,
 				FA7B8A482493D57600C26B50 /* .gitignore */,
 			);
 			name = SupportingFiles;
