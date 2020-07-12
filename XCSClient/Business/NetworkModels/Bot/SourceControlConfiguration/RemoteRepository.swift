@@ -9,9 +9,9 @@
 import Foundation
 
 struct RemoteRepository: Codable {
-    var identifierKey: String? // "D7781C35E1A99B472120941FF3F007A808515183",
-    var systemKey: String? // "com.apple.dt.Xcode.sourcecontrol.Git",
-    var urlKey: String? // "https://git.dhl.com/DHL-PAKET-APP/paketapp_ios.git"
+    var identifierKey: String?
+    var systemKey: String?
+    var urlKey: String?
     
     enum CodingKeys: String, CodingKey {
         case identifierKey = "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey"

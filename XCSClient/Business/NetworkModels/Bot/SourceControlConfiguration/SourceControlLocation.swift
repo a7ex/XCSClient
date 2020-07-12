@@ -9,8 +9,8 @@
 import Foundation
 
 struct SourceControlLocation: Codable {
-    var branchIdentifierKey: String? // branch name e.g. "release/testReleases"
-    var branchOptionsKey: BranchOptionsKey? // 4
+    var branchIdentifierKey: String? // branch name
+    var branchOptionsKey: BranchOptionsKey?
     var workspaceBlueprintLocationTypeKey: WorkspaceBlueprintLocationType? // "DVTSourceControlBranch"
     var pathIdentifierKey: String? // relative path in repository
     var locationRevisionKey: String? // revision

@@ -120,11 +120,11 @@ struct BotListView: View {
 struct BotList_Previews: PreviewProvider {
     static var previews: some View {
         return BotListView(window: nil, bots: [
-            Bot(id: UUID().uuidString, name: "DHLPaket_GIT_Testflight", tinyID: "1"),
-            Bot(id: UUID().uuidString, name: "DHLPaket_GIT_Testflight_Beta", tinyID: "2"),
-            Bot(id: UUID().uuidString, name: "DHLPaket_GIT_Fabric_DeviceCloud", tinyID: "3"),
-            Bot(id: UUID().uuidString, name: "LPS (Mock) Bot", tinyID: "4"),
-            Bot(id: UUID().uuidString, name: "XCS DHL Paket Dev Unit-Tests", tinyID: "5")
+            Bot(id: UUID().uuidString, name: "Project_Foo_Testflight", tinyID: "1"),
+            Bot(id: UUID().uuidString, name: "Project_Foo_Testflight_Beta", tinyID: "2"),
+            Bot(id: UUID().uuidString, name: "Project_Foo_Fabric_DeviceCloud", tinyID: "3"),
+            Bot(id: UUID().uuidString, name: "Project Bar (Mock) Bot", tinyID: "4"),
+            Bot(id: UUID().uuidString, name: "XCS Project Bar Dev Unit-Tests", tinyID: "5")
             ].map { BotVM(bot: $0) }).environmentObject(XCSConnector.previewServerConnector)
     }
 }

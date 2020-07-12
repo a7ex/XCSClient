@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Combine
 
 struct IntegrationDetailView: View {
     let integration: IntegrationVM
@@ -187,7 +188,7 @@ struct IntegrationDetailView: View {
             }
         }
         .onAppear {
-            self.timer.upstream.autoconnect()
+            _ = self.timer.upstream.autoconnect()
         }
     }
     
@@ -292,7 +293,7 @@ struct IntegrationDetailView_Previews: PreviewProvider {
         
         let logfile = LogFile(allowAnonymousAccess: true, fileName: "Source Control Logs", isDirectory: false, relativePath: "NotEmpty", size: 3474)
         let logfile2 = LogFile(allowAnonymousAccess: true, fileName: "Archive", isDirectory: false, relativePath: "NotEmpty", size: 143456474)
-        let logfile3 = LogFile(allowAnonymousAccess: true, fileName: "Ein ganz langer Name", isDirectory: false, relativePath: "NotEmpty", size: 34536474)
+        let logfile3 = LogFile(allowAnonymousAccess: true, fileName: "A very very long name", isDirectory: false, relativePath: "NotEmpty", size: 34536474)
         
         let assets = IntegrationAssets(archive: logfile, buildServiceLog: logfile2, sourceControlLog: logfile3, xcodebuildLog: logfile2, xcodebuildOutput: logfile, triggerAssets: [logfile3])
         

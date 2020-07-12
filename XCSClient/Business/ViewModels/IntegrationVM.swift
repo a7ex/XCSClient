@@ -232,30 +232,3 @@ struct IntegrationVM {
         integrationModel = integration
     }
 }
-
-struct FileDescriptor {
-    static let byteFormatter = ByteCountFormatter()
-    let name: String
-    let path: String
-    let size: Int
-    
-    var title: String {
-        return "\(name) (\(Self.byteFormatter.string(fromByteCount: Int64(size))))"
-    }
-    
-    init(logFile: LogFile?) {
-        
-        if let logFile = logFile,
-            let path = logFile.relativePath, !path.isEmpty,
-            let size = logFile.size, size > 0 {
-            
-            name = logFile.fileName ?? String(path.split(separator: "/").last ?? "")
-            self.path = path
-            self.size = size
-        } else {
-            name = ""
-            path = ""
-            size = 0
-        }
-    }
-}

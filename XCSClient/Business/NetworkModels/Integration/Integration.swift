@@ -9,31 +9,31 @@
 import Foundation
 
 struct Integration: Decodable {
-    let id: String // "824d4cdc2b61984cfc4e6556656d36c0",
-    let rev: String? // "23-1505c13a74bcf06a4afb4b8c303f3c98",
+    let id: String
+    let rev: String?
     let assets: IntegrationAssets?
     let bot: Bot?
     let buildResultSummary: BuildResultSummary?
-    let buildServiceFingerprint: String? // "35:A5:04:06:09:C6:8A:24:CE:58:F3:2C:30:BA:87:0C:FF:A2:E0:E0",
-    let ccPercentage: Int? // 0,
-    let ccPercentageDelta: Int? // 0,
+    let buildServiceFingerprint: String?
+    let ccPercentage: Int?
+    let ccPercentageDelta: Int?
     let currentStep: String? // "completed",
     let docType: String? // "integration",
-    let duration: Double? // 491.034,
+    let duration: Double?
     let endedTime: Date? // "2020-05-28T07:59:23.098Z",
 //    let endedTimeDate: String // [],
-    let number: Int? // 94,
+    let number: Int?
 //    let perfMetricKeyPaths: String // [],
 //    let perfMetricNames: String // [],
     let queuedDate: Date? // "2020-05-28T07:42:04.909Z",
     let result: IntegrationResult? // "warnings",
     let revisionBlueprint: SourceControlBlueprint?
     let startedTime: Date? // "2020-05-28T07:51:12.064Z",
-//    let success_streak: String // 0,
+//    let success_streak: String
 //    let tags: String // [],
     let testHierarchy: [String: JSONValue]?
     let testedDevices: [TestDevice]?
-    let tinyID: String? // "3B5C700"
+    let tinyID: String?
     
     enum CodingKeys: String, CodingKey {
         case id = "_id"

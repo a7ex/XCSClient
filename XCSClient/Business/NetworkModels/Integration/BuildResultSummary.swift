@@ -9,18 +9,17 @@
 import Foundation
 
 struct BuildResultSummary: Codable {
-    let analyzerWarningChange: Int? // 0,
-    let analyzerWarningCount: Int? // 0,
-    let codeCoveragePercentage: Int? // 0,
-    let codeCoveragePercentageDelta: Int? // 0,
-    let errorChange: Int? // 2,
-    let errorCount: Int? // 2,
-    let improvedPerfTestCount: Int? // 0,
-    let regressedPerfTestCount: Int? // 0,
-    let testFailureChange: Int? // 0,
-    let testFailureCount: Int? // 0,
-    let testsChange: Int? // 0,
-    let testsCount: Int? // 0,
-    let warningChange: Int? // 0,
-    let warningCount: Int? // 0
-}
+    let analyzerWarningChange: Int?
+    let analyzerWarningCount: Int?
+    let codeCoveragePercentage: Int?
+    let codeCoveragePercentageDelta: Int?
+    let errorChange: Int?
+    let errorCount: Int?
+    let improvedPerfTestCount: Int?
+    let regressedPerfTestCount: Int?
+    let testFailureChange: Int?
+    let testFailureCount: Int?
+    let testsChange: Int?
+    let testsCount: Int?
+    let warningChange: Int?
+    let warningCount: Int?}

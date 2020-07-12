@@ -13,8 +13,8 @@ import Foundation
 /// `sudo xcscontrol --list-platforms
 /// ```
 struct Platform: Codable {
-    var id: String? // "cc9d81746914212693b3b4b3ba0043af",
-    var rev: String? // "4-702448a6f15c1a9daeb380d2e7e8c863",
+    var id: String?
+    var rev: String?
     var buildNumber: String? // "17B102",
     var displayName: String? // "iOS",
     var identifier: String? // "com.apple.platform.iphoneos",

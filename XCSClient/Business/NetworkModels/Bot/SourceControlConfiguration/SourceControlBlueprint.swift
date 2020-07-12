@@ -13,15 +13,15 @@ struct SourceControlBlueprint: Codable {
     var identifierKey: String? // unique id for each blueprint
     var locationsKey: [String: SourceControlLocation]?
     
-    // The name for the blueprint, typically the name of the Xcode project or workspace. e.g. "DHLPaket"
+    // The name for the blueprint, typically the name of the Xcode project or workspace.
     var nameKey: String?
     
     // The identifier of the working copy containing the Xcode project or workspace to build,
     // considered the primary working copy. Value: string (repository identifier)
-    var primaryRemoteRepositoryKey: String? // "D7781C35E1A99B472120941FF3F007A808515183"
+    var primaryRemoteRepositoryKey: String?
     
     // The relative path in the primary working copy to the Xcode project or workspace to build
-    var relativePathToProjectKey: String? // "DHLPaket.xcworkspace"
+    var relativePathToProjectKey: String?
     
     var remoteRepositoriesKey: [RemoteRepository]?
     var remoteRepositoryAuthenticationStrategiesKey: [String: [String: String]]?

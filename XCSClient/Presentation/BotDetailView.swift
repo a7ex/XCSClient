@@ -312,7 +312,7 @@ struct BotDetailView: View {
 struct BotDetailView_Previews: PreviewProvider {
     
     static var previews: some View {
-        var bot = Bot(id: UUID().uuidString, name: "DHLPaket_GIT_Fabric_DeviceCloud", tinyID: "3")
+        var bot = Bot(id: UUID().uuidString, name: "Project_Foo_Fabric_DeviceCloud", tinyID: "3")
         var configuration = BotConfiguration()
         configuration.performsArchiveAction = true
         bot.configuration = configuration

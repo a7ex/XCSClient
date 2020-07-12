@@ -51,36 +51,10 @@ struct BotVM {
         return "\(botModel.configuration?.minutesAfterHourToIntegrate ?? 0)"
     }
     var weeklyScheduleDay: String {
-        switch botModel.configuration?.weeklyScheduleDay {
-            case .monday:
-                return "Monday"
-            case .tuesday:
-                return "Tuesday"
-            case .wednesday:
-                return "Wednesday"
-            case .thursday:
-                return "Thursday"
-            case .friday:
-                return "Friday"
-            case .saturday:
-                return "Saturday"
-            case .sunday:
-                return "Sunday"
-            default:
-                return ""
-        }
+        return botModel.configuration?.weeklyScheduleDay?.string ?? ""
     }
     var periodicScheduleInterval: String {
-        switch botModel.configuration?.periodicScheduleInterval {
-            case .daily:
-                return "Daily"
-            case .hourly:
-                return "Hourly"
-            case .weekly:
-                return "Weekly"
-            default:
-                return ""
-        }
+        return botModel.configuration?.periodicScheduleInterval?.string ?? ""
     }
     var scheduleType: String {
         return botModel.configuration?.scheduleType?.string ?? ""
@@ -124,10 +98,47 @@ extension ScheduleType {
             return ""
         }
     }
-    
     static var allStringValues: [String] {
         return ScheduleType.allCases
             .map { $0.string }
             .filter { !$0.isEmpty }
+    }
+}
+
+extension WeeklyScheduleDay {
+    var string: String {
+        switch self {
+        case .monday:
+            return "Monday"
+        case .tuesday:
+            return "Tuesday"
+        case .wednesday:
+            return "Wednesday"
+        case .thursday:
+            return "Thursday"
+        case .friday:
+            return "Friday"
+        case .saturday:
+            return "Saturday"
+        case .sunday:
+            return "Sunday"
+        case .none:
+            return ""
+        }
+    }
+}
+
+extension PeriodicScheduleInterval {
+    var string: String {
+        switch self {
+        case .daily:
+            return "Daily"
+        case .hourly:
+            return "Hourly"
+        case .weekly:
+            return "Weekly"
+        case .none:
+            return ""
+        }
     }
 }
