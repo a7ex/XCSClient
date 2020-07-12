@@ -9,6 +9,7 @@
 import Foundation
 
 enum BranchOptionsKey: Int, Codable {
+    case none = 0
     case normalRemoteBranch = 4
     case primaryRemoteBranch = 5 // necessary for trunk-like branch in Subversion
 }

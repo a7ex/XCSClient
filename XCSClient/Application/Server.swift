@@ -41,11 +41,12 @@ struct Server {
         netrcFilename: String
     ) {
         self.xcodeServerAddress = xcodeServerAddress
-        self.sshEndpoint = sshEndpoint
+        self.sshEndpoint = sshEndpoint == "@" ? "": sshEndpoint
         decoder.dateDecodingStrategy = .formatted(DateFormatter.backendDate)
         
         let defaultArgs: [String]
-        if !sshEndpoint.isEmpty {
+        if !sshEndpoint.isEmpty,
+            sshEndpoint != "@" {
             cliProgram = "/usr/bin/ssh"
             defaultArgs = [sshEndpoint] + ["curl", "-k"]
         } else {
@@ -72,20 +73,17 @@ struct Server {
         if bot.isEmpty {
             arguments = defaultArguments + [
                 "--request", "GET",
-                "-H", "\"X-XCSClientVersion: 7\"",
                 "\(apiUrl)/integrations"
             ]
         } else {
             if let last = last {
                 arguments = defaultArguments + [
                     "--request", "GET",
-                    "-H", "\"X-XCSClientVersion: 7\"",
                     "\(apiUrl)/bots/\(bot)/integrations?last=\(last)"
                 ]
             } else {
                 arguments = defaultArguments + [
                     "--request", "GET",
-                    "-H", "\"X-XCSClientVersion: 7\"",
                     "\(apiUrl)/bots/\(bot)/integrations"
                 ]
             }
