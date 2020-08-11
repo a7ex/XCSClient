@@ -119,6 +119,9 @@ struct BotDetailView: View {
                 Button(action: { self.uploadChanged(self.bot) }) {
                     ButtonLabel(text: "Save changes")
                 }
+                Button(action: { self.integrate(self.bot) }) {
+                    ButtonLabel(text: "Start Integration")
+                }
                 Spacer()
             }
             .padding()
