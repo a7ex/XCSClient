@@ -10,7 +10,7 @@ import Foundation
 
 struct BotConfiguration: Codable {
     var additionalBuildArguments: [String]?
-//    var buildEnvironmentVariables: [String: Any]
+    var buildEnvironmentVariables: [String: String]?
     var deviceSpecification: TestDeviceSpecification?
     var builtFromClean: Int?
     var codeCoveragePreference: CodeCoveragePreference? // only if 'performsTestAction' set to true
@@ -28,10 +28,11 @@ struct BotConfiguration: Codable {
     var scheduleType: ScheduleType?
     var schemeName: String?
     var sourceControlBlueprint: SourceControlBlueprint?
-//    var testLocalizations: [Any]
+    var testLocalizations: [String]?
     var testingDestinationType: Int?
     var triggers: [Trigger]?
     var useParallelDeviceTesting: Bool?
     var weeklyScheduleDay: WeeklyScheduleDay? // only if 'periodicScheduleInterval' set to 3 (Weekly)
     var buildConfiguration: String?
+    var archiveExportOptions: ArchiveExportOptions?
 }

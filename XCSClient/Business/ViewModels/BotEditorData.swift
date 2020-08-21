@@ -22,6 +22,7 @@ class BotEditorData: ObservableObject {
     @Published var exportsProductFromArchive = false
     @Published var scheduleType = ""
     @Published var triggerScripts = [TriggerScript]()
+    @Published var environmentVariables = [VariablePair]()
     
     func setup(with bot: BotVM) {
         branch = bot.sourceControlBranch
@@ -37,6 +38,11 @@ class BotEditorData: ObservableObject {
         exportsProductFromArchive = bot.exportsProductFromArchive
         scheduleType = bot.scheduleType
         triggerScripts = bot.triggerScripts
+        var vars = [VariablePair]()
+        for (key, value) in bot.buildEnvironmentVariables {
+            vars.append(VariablePair(id: key, value: value))
+        }
+        environmentVariables = vars
     }
 }
 
@@ -55,6 +61,8 @@ extension Bot {
         duplicate.sourceControlBlueprintIdentifier = nil
         
         duplicate.configuration?.sourceControlBlueprint?.identifierKey = UUID().uuidString
+        let srcCtrlId = duplicate.configuration?.sourceControlBlueprint?.primaryRemoteRepositoryKey ?? ""
+        duplicate.configuration?.sourceControlBlueprint?.locationsKey?[srcCtrlId]?.branchIdentifierKey = editableData.branch
         
         duplicate.name = editableData.name
         if !editableData.scheme.isEmpty {
@@ -85,6 +93,12 @@ extension Bot {
             newTriggerScripts.append(oldTrigger)
         }
         duplicate.configuration?.triggers = newTriggerScripts
+        
+        var vars = [String: String]()
+        for pair in editableData.environmentVariables {
+            vars[pair.id] = pair.value
+        }
+        duplicate.configuration?.buildEnvironmentVariables = vars
         
         return duplicate
     }

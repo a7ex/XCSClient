@@ -292,6 +292,7 @@ struct Server {
             if let error = try? decoder.decode(ErrorResponse.self, from: data) {
                 return .failure(NSError(message: error.message, status: error.status))
             }
+            // print(String(decoding: data, as: UTF8.self))
             return .success(data)
         }
     }

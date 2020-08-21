@@ -85,6 +85,18 @@ struct BotDetailView: View {
                             }
                         }
                     }
+                    if !bot.buildEnvironmentVariables.isEmpty {
+                        HStack(alignment: .top) {
+                            InfoLabel(content: "Environment vars")
+                                .frame(minWidth: 100, maxWidth: 160, alignment: .leading)
+                                .padding([.bottom], 4)
+                            VStack(alignment: .leading, spacing: 4) {
+                                ForEach(self.botEditableData.environmentVariables) { pair in
+                                    Text("\(pair.id) = \(pair.value)")
+                                }
+                            }
+                        }
+                    }
                     if !botEditableData.triggerScripts.isEmpty {
                         HStack {
                             InfoLabel(content: "Triggers")
@@ -155,7 +167,6 @@ struct BotDetailView: View {
     
     private func editTrigger(_ triggerScript: TriggerScript) {
         openTextEditorWindow(with: triggerScript.script, title: triggerScript.name) { newText in
-            
             guard let newTriggerScript = TriggerScript(name: triggerScript.name, script: newText) else {
                 return
             }
@@ -318,6 +329,7 @@ struct BotDetailView_Previews: PreviewProvider {
         var bot = Bot(id: UUID().uuidString, name: "Project_Foo_Fabric_DeviceCloud", tinyID: "3")
         var configuration = BotConfiguration()
         configuration.performsArchiveAction = true
+        configuration.buildEnvironmentVariables = ["EINS": "zwei", "DREI": "vier"]
         bot.configuration = configuration
         bot.integrationCounter = 12
         return BotDetailView(bot: BotVM(bot: bot)).environmentObject(XCSConnector.previewServerConnector)

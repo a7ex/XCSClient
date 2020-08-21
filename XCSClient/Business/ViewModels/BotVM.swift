@@ -38,6 +38,15 @@ struct BotVM {
     var additionalBuildArguments: String {
         return botModel.configuration?.additionalBuildArguments?.joined(separator: ", ") ?? ""
     }
+    var buildEnvironmentVariables: [String: String] {
+        guard let envVars = botModel.configuration?.buildEnvironmentVariables else {
+            return [String: String]()
+        }
+        return envVars
+    }
+    var archiveExportOptionsName: String {
+        return botModel.configuration?.archiveExportOptions?.name ?? ""
+    }
     var disableAppThinning: Bool {
         return botModel.configuration?.disableAppThinning ?? false
     }

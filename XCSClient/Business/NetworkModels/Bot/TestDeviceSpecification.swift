@@ -13,7 +13,7 @@ import Foundation
 /// sudo xcscontrol --list-devices
 /// sudo xcscontrol --list-simulators
 /// ```
-/// The filter deines which OS shall run on the simulator
+/// The filter defines which OS shall run on the simulator
 ///
 struct TestDeviceSpecification: Codable {
     var deviceIdentifiers: [String]?
