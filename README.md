@@ -10,9 +10,13 @@ It is a pet project and it also works when connecting directly to an Xcode Serve
 
 ### Usage
 Compile the app (or download the latest [binary](https://github.com/a7ex/XCSClient/releases/latest/download/XCSClient.app.zip)) and launch.
+
 To connect to a Xcode Server regularly you need the IP address or hostname of the Mac, which runs the Xcode Server.
+
 If you can only connect to the server by ssh, provide the username and IP Adress or hostname of the SSH jumphost. (Note for now there is no password support for ssh. You must transfer your public key to the remote server, which is anyway a safer approach.)
+
 Some of the calls to the Xcode Server require authentication (POST and PUT commands, which trigger changes). For those commands the password for the machine running the xcode server can be stored in a netrc file and provided to the app, so that curl can read it from there.
+
 Example netrc file:
 ```
 machine 127.0.0.1 login <user-name-of-the-user-running-the-xcode-server> password <password-for-that-user>
