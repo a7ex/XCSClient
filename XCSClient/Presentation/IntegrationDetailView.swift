@@ -17,7 +17,7 @@ struct IntegrationDetailView: View {
     @State private var hasError = false
     @State private var errorMessage = ""
     @State private var activityShowing = false
-    @State private var revisionInfo = RevisionInfo(block: "")
+    @State private var revisionInfo = RevisionInfo(snippet: "")
     
     @State private var durationInSeconds = "0"
     private let timer = Timer.publish(every: 1, tolerance: 0.5, on: .main, in: .common).autoconnect()
@@ -244,7 +244,7 @@ struct IntegrationDetailView: View {
                 let substr = str.matches(regex: "log items:\\n\\s*Revision:.+?Revision:")
                 if let rev = substr.first {
                     let revString = String(rev.dropFirst(11).dropLast(10))
-                    self.revisionInfo = RevisionInfo(block: revString)
+                    self.revisionInfo = RevisionInfo(snippet: revString)
                 }
             case .failure:
                 break
