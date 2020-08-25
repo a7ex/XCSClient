@@ -157,4 +157,13 @@ class XCSConnector: ObservableObject {
         }
     }
     
+    func scpAsset(at path: String, to targetUrl: URL, completion: @escaping (Result<Bool, Error>) -> Void) {
+        DispatchQueue.global(qos: .userInitiated).async {
+            let rslt = self.server.scpFromBot(path, to: targetUrl)
+            DispatchQueue.main.async {
+                completion(rslt)
+            }
+        }
+    }
+    
 }

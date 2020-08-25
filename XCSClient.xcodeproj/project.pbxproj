@@ -58,6 +58,7 @@
 		FA7B8A472493D10900C26B50 /* BotDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7B8A462493D10900C26B50 /* BotDetailView.swift */; };
 		FA7B8A4A2493E12900C26B50 /* XCSConnector.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7B8A492493E12900C26B50 /* XCSConnector.swift */; };
 		FA92653E249A01F5001B4949 /* XcodeServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA92653D249A01F5001B4949 /* XcodeServer.swift */; };
+		FAB8576924F5D65100C646AC /* RevisionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB8576824F5D65100C646AC /* RevisionInfo.swift */; };
 		FABF8766249D211A005A9D48 /* SimpleTextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FABF8765249D211A005A9D48 /* SimpleTextViewController.swift */; };
 		FAC759C7249E6AEF0028BBFA /* FileHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC759C6249E6AEF0028BBFA /* FileHelper.swift */; };
 		FAC759C9249F89DA0028BBFA /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC759C8249F89DA0028BBFA /* SearchBar.swift */; };
@@ -133,6 +134,7 @@
 		FA7B8A482493D57600C26B50 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = SOURCE_ROOT; };
 		FA7B8A492493E12900C26B50 /* XCSConnector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCSConnector.swift; sourceTree = "<group>"; };
 		FA92653D249A01F5001B4949 /* XcodeServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcodeServer.swift; sourceTree = "<group>"; };
+		FAB8576824F5D65100C646AC /* RevisionInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RevisionInfo.swift; sourceTree = "<group>"; };
 		FABF8765249D211A005A9D48 /* SimpleTextViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleTextViewController.swift; sourceTree = "<group>"; };
 		FAC759C6249E6AEF0028BBFA /* FileHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileHelper.swift; sourceTree = "<group>"; };
 		FAC759C8249F89DA0028BBFA /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
@@ -177,6 +179,7 @@
 				FA20876724BBAD5B0013CC21 /* TriggerScript.swift */,
 				FA20876924BBB5410013CC21 /* FileDescriptor.swift */,
 				FAD9B85624F0492100301714 /* VariablePair.swift */,
+				FAB8576824F5D65100C646AC /* RevisionInfo.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -506,6 +509,7 @@
 				FA5636F62493BEC7002457DF /* TriggerConditions.swift in Sources */,
 				FAE5B877249FC4BA00E06155 /* WorkspaceBlueprintLocationType.swift in Sources */,
 				FA26964324960F2600C7F084 /* LabeledStringValue.swift in Sources */,
+				FAB8576924F5D65100C646AC /* RevisionInfo.swift in Sources */,
 				FA5637022493BEC7002457DF /* SourceControlLocation.swift in Sources */,
 				FA5637072493BEC7002457DF /* SourceControlBlueprint.swift in Sources */,
 				FA5637032493BEC7002457DF /* BuildResultSummary.swift in Sources */,

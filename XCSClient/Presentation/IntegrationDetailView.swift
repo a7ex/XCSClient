@@ -17,6 +17,7 @@ struct IntegrationDetailView: View {
     @State private var hasError = false
     @State private var errorMessage = ""
     @State private var activityShowing = false
+    @State private var revisionInfo = RevisionInfo(block: "")
     
     @State private var durationInSeconds = "0"
     private let timer = Timer.publish(every: 1, tolerance: 0.5, on: .main, in: .common).autoconnect()
@@ -86,11 +87,23 @@ struct IntegrationDetailView: View {
                                 self.durationInSeconds = self.timeSpanFromNow(to: self.integration.integrationModel.startedTime)
                         }
                     }
+                    LabeledStringValue(label: "Code Coverage percentage", value: integration.codeCoverage)
+                    LabeledStringValue(label: "Performance Test changes", value: integration.performanceTests)
                     if !integration.sourceControlCommitId.isEmpty {
                         LabeledStringValue(label: "Commit ID", value: integration.sourceControlCommitId)
                     }
-                    LabeledStringValue(label: "Code Coverage percentage", value: integration.codeCoverage)
-                    LabeledStringValue(label: "Performance Test changes", value: integration.performanceTests)
+                }
+                if !revisionInfo.isEmpty {
+                    Divider()
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Text(revisionInfo.author)
+                            Text(revisionInfo.date)
+                            Text(revisionInfo.comment)
+                                .font(.headline)
+                        }
+                        Spacer()
+                    }
                 }
                 Divider()
                 HStack(alignment: .top) {
@@ -166,6 +179,11 @@ struct IntegrationDetailView: View {
                                 ButtonLabel(text: "Logs and Test Results")
                             }
                         }
+                        if integration.archive.size > 0 {
+                            Button(action: { self.downloadIPA() }) {
+                                ButtonLabel(text: "Download ipa")
+                            }
+                        }
                     }
                 }
                 .alert(isPresented: $hasError) {
@@ -189,6 +207,7 @@ struct IntegrationDetailView: View {
         }
         .onAppear {
             _ = self.timer.upstream.autoconnect()
+            self.loadCommitData()
         }
     }
     
@@ -209,6 +228,84 @@ struct IntegrationDetailView: View {
             case .failure(let error):
                 self.errorMessage = error.localizedDescription
                 self.hasError = true
+            }
+        }
+    }
+    
+    private func loadCommitData() {
+        let asset = integration.sourceControlLog
+        connector.loadAsset(at: asset.path) { (result) in
+            switch result {
+            case .success(let logData):
+                guard let str = String(data: logData, encoding: .utf8) else {
+                    return
+                    
+                }
+                let substr = str.matches(regex: "log items:\\n\\s*Revision:.+?Revision:")
+                if let rev = substr.first {
+                    let revString = String(rev.dropFirst(11).dropLast(10))
+                    self.revisionInfo = RevisionInfo(block: revString)
+                }
+            case .failure:
+                break
+            }
+        }
+    }
+    
+    private func downloadIPA() {
+        guard let asset = integration.triggerAssets.first(where: { (thisAsset) -> Bool in
+            return thisAsset.name == "trigger-after-0.log"
+        }) else {
+            self.errorMessage = "No trigger-after-0.log found"
+            self.hasError = true
+            return
+        }
+        withAnimation {
+            self.activityShowing = true
+        }
+        connector.loadAsset(at: asset.path) { (result) in
+            switch result {
+            case .success(let logData):
+                guard let str = String(data: logData, encoding: .utf8) else {
+                    withAnimation {
+                        self.activityShowing = false
+                    }
+                    self.errorMessage = "No data in log"
+                    self.hasError = true
+                    return
+                }
+                let substr = str.matches(regex: "Distribute .+?\\.ipa")
+                if let ipaPath = substr.first {
+                    let fullpath = String(ipaPath.dropFirst(11))
+                    let components = Array(fullpath.components(separatedBy: "/").dropLast())
+                    let archiveName = components.last ?? "archive"
+                    guard let url = self.fileHelper.getSaveURLFromUser(for: "\(archiveName).zip") else {
+                        return
+                    }
+                    self.connector.scpAsset(at: components.joined(separator: "/"), to: url) { (result) in
+                        withAnimation {
+                            self.activityShowing = false
+                        }
+                        switch result {
+                        case .success(let done):
+                            self.errorMessage = done ? "Downloaded ipa with success.": "failed to doanload ipa"
+                            self.hasError = true
+                        case .failure(let error):
+                            self.errorMessage = error.localizedDescription
+                            self.hasError = true
+                        }
+                    }
+                } else {
+                    withAnimation {
+                        self.activityShowing = false
+                    }
+                    self.errorMessage = "String 'Distribute ...ipa' not found"
+                    self.hasError = true
+                }
+            case .failure:
+                withAnimation {
+                    self.activityShowing = false
+                }
             }
         }
     }
@@ -305,6 +402,16 @@ struct IntegrationDetailView_Previews: PreviewProvider {
             //            IntegrationDetailView(integration: IntegrationVM(integration: integration))
             //                .environment(\.sizeCategory, .extraLarge)
             //                .environmentObject(XCSConnector.previewServerConnector)
+        }
+    }
+}
+
+private extension String {
+    func matches(regex: String) -> [String] {
+        guard let regex = try? NSRegularExpression(pattern: regex, options: [.caseInsensitive, .dotMatchesLineSeparators]) else { return [] }
+        let matches  = regex.matches(in: self, options: [], range: NSMakeRange(0, self.count))
+        return matches.map { match in
+            return String(self[Range(match.range, in: self)!])
         }
     }
 }

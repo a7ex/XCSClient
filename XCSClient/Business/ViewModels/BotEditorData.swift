@@ -23,6 +23,7 @@ class BotEditorData: ObservableObject {
     @Published var scheduleType = ""
     @Published var triggerScripts = [TriggerScript]()
     @Published var environmentVariables = [VariablePair]()
+    @Published var exportOptions = ArchiveExportOptions(name: "", createdAt: Date.distantPast, exportOptions: nil)
     
     func setup(with bot: BotVM) {
         branch = bot.sourceControlBranch
@@ -43,6 +44,7 @@ class BotEditorData: ObservableObject {
             vars.append(VariablePair(id: key, value: value))
         }
         environmentVariables = vars
+        exportOptions = bot.botModel.configuration?.archiveExportOptions ?? ArchiveExportOptions(name: "", createdAt: Date.distantPast, exportOptions: nil)
     }
 }
 
@@ -63,6 +65,8 @@ extension Bot {
         duplicate.configuration?.sourceControlBlueprint?.identifierKey = UUID().uuidString
         let srcCtrlId = duplicate.configuration?.sourceControlBlueprint?.primaryRemoteRepositoryKey ?? ""
         duplicate.configuration?.sourceControlBlueprint?.locationsKey?[srcCtrlId]?.branchIdentifierKey = editableData.branch
+        
+        duplicate.configuration?.archiveExportOptions = editableData.exportOptions
         
         duplicate.name = editableData.name
         if !editableData.scheme.isEmpty {

@@ -109,6 +109,16 @@ struct BotDetailView: View {
                             }
                         }
                     }
+                    if bot.botModel.configuration?.archiveExportOptions != nil {
+                        HStack {
+                            InfoLabel(content: "Archive Options")
+                                .frame(minWidth: 100, maxWidth: 160, alignment: .leading)
+                                .padding([.bottom], 4)
+                            Button(action: { self.selectExportOptions() }) {
+                                Text("\(bot.botModel.configuration?.archiveExportOptions?.name ?? "") {…}")
+                                }
+                        }
+                    }
                     Group {
                         Divider()
                         HStack {
@@ -162,6 +172,23 @@ struct BotDetailView: View {
                         .foregroundColor(.white)
                 }
             }
+        }
+    }
+    
+    private func selectExportOptions() {
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = true
+        panel.allowedFileTypes = ["plist"]
+        let result = panel.runModal()
+        guard result == .OK,
+            let url = panel.url,
+            let data = try? Data(contentsOf: url) else {
+                return
+        }
+        let decoder = PropertyListDecoder()
+        if let exportOptions = try? decoder.decode(IPAExportOptions.self, from: data) {
+            let expOptions = ArchiveExportOptions(name: url.lastPathComponent, createdAt: Date(), exportOptions: exportOptions)
+            botEditableData.exportOptions = expOptions
         }
     }
     
@@ -330,6 +357,7 @@ struct BotDetailView_Previews: PreviewProvider {
         var configuration = BotConfiguration()
         configuration.performsArchiveAction = true
         configuration.buildEnvironmentVariables = ["EINS": "zwei", "DREI": "vier"]
+        configuration.archiveExportOptions = ArchiveExportOptions(name: "ExportOptions", createdAt: Date(), exportOptions: nil)
         bot.configuration = configuration
         bot.integrationCounter = 12
         return BotDetailView(bot: BotVM(bot: bot)).environmentObject(XCSConnector.previewServerConnector)

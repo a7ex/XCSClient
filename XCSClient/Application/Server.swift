@@ -16,11 +16,12 @@ struct Server {
         case executionError(code: Int)
         case jsonDecodingError(_ error: Error)
         case noResult
+        case parameterError
     }
     
     // MARK: - Private instance variables
     
-    private let cliProgram: String
+    private let curlToBot: String
     
     private let sshEndpoint: String
     private let xcodeServerAddress: String
@@ -47,10 +48,10 @@ struct Server {
         let defaultArgs: [String]
         if !sshEndpoint.isEmpty,
             sshEndpoint != "@" {
-            cliProgram = "/usr/bin/ssh"
+            curlToBot = "/usr/bin/ssh"
             defaultArgs = [sshEndpoint] + ["curl", "-k"]
         } else {
-            cliProgram = "/usr/bin/curl"
+            curlToBot = "/usr/bin/curl"
             defaultArgs = ["-k"]
         }
         if !netrcFilename.isEmpty {
@@ -109,7 +110,7 @@ struct Server {
     
     func downloadAssets(for integrationId: String, to targetUrl: URL) -> Result<Bool, Error> {
         let newArguments = defaultArguments + ["\(apiUrl)/integrations/\(integrationId)/assets --output \(sshEndpoint.isEmpty ? targetUrl.path: "logResults.tgz")"]
-        let rslt = execute(program: cliProgram, with: newArguments)
+        let rslt = execute(program: curlToBot, with: newArguments)
         switch rslt {
         case .success:
             if !sshEndpoint.isEmpty {
@@ -130,7 +131,7 @@ struct Server {
     
     func downloadAsset(_ path: String, to targetUrl: URL) -> Result<Bool, Error> {
         let newArguments = defaultArguments + ["\(apiUrl)/assets/\(path.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? path) --output \(sshEndpoint.isEmpty ? targetUrl.path: "tmpFile")"]
-        let rslt = execute(program: cliProgram, with: newArguments)
+        let rslt = execute(program: curlToBot, with: newArguments)
         switch rslt {
         case .success:
             if !sshEndpoint.isEmpty {
@@ -149,9 +150,46 @@ struct Server {
         }
     }
     
+    func scpFromBot(_ absolutePath: String, to targetUrl: URL) -> Result<Bool, Error> {
+        let userNameAndPatch = getUsernameFrom(absolutePath: absolutePath)
+        guard let userName = userNameAndPatch.username else {
+            return .failure(ServerError.parameterError)
+        }
+        let srcPath = userNameAndPatch.remainingPath
+        
+        var rmArguments = ["\(userName)@\(xcodeServerAddress)", "rm", "tmp.zip"]
+        var zipArguments = ["\(userName)@\(xcodeServerAddress)", "zip", "-r", "tmp.zip", srcPath]
+        if !sshEndpoint.isEmpty {
+            zipArguments = [sshEndpoint, "/usr/bin/ssh"] + zipArguments
+            rmArguments = [sshEndpoint, "/usr/bin/ssh"] + rmArguments
+        }
+        _ = execute(program: "/usr/bin/ssh", with: rmArguments)
+        _ = execute(program: "/usr/bin/ssh", with: zipArguments)
+        let scpAddress: String
+        if !sshEndpoint.isEmpty {
+            let r1 = execute(program: "/usr/bin/ssh", with: [sshEndpoint, "/usr/bin/scp", "\(userName)@\(xcodeServerAddress):tmp.zip", "tmp.zip"])
+            switch r1 {
+            case .success(let data):
+                print(String(decoding: data, as: UTF8.self))
+            case .failure(let error):
+                return .failure(error)
+            }
+            scpAddress = sshEndpoint
+        } else {
+            scpAddress = "\(userName)@\(xcodeServerAddress)"
+        }
+        let result = execute(program: secureCopy, with: ["\(scpAddress):tmp.zip", "\(targetUrl.path)"])
+        switch result {
+        case .success:
+            return .success(true)
+        case .failure(let error):
+            return .failure(error)
+        }
+    }
+    
     func loadAsset(_ path: String) -> Result<Data, Error> {
         let newArguments = defaultArguments + ["\(apiUrl)/assets/\(path.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? path)"]
-        let rslt = execute(program: cliProgram, with: newArguments)
+        let rslt = execute(program: curlToBot, with: newArguments)
         switch rslt {
             case .success(let data):
                 return .success(data)
@@ -166,7 +204,7 @@ struct Server {
             //            "-H", "\"X-XCSClientVersion: 7\"",
             "\(apiUrl)/bots/\(botId)/\(revId)"
         ]
-        let rslt = execute(program: cliProgram, with: arguments)
+        let rslt = execute(program: curlToBot, with: arguments)
         switch rslt {
         case .success(let data):
             if let errorResponse = try? JSONDecoder().decode(ErrorResponse.self, from: data) {
@@ -254,14 +292,14 @@ struct Server {
             "-H", "\"Content-Type: application/json; charset=utf-8\"",
             "\(apiUrl)/integrations/\(integrationId)/cancel"
         ]
-        return execute(program: cliProgram, with: arguments)
+        return execute(program: curlToBot, with: arguments)
             .map { _ in true }
     }
     
     // MARK: - Private interface
     
     private func executeJSONTask<T: Decodable>(with arguments: [String]) -> Result<T, Error> {
-        let rslt = execute(program: cliProgram, with: arguments)
+        let rslt = execute(program: curlToBot, with: arguments)
         return rslt.flatMap { data in
             let rslt = Result { try decoder.decode(T.self, from: data) }
             return rslt
@@ -295,6 +333,26 @@ struct Server {
             // print(String(decoding: data, as: UTF8.self))
             return .success(data)
         }
+    }
+    
+    private func getUsernameFrom(absolutePath: String) -> (username: String?, remainingPath: String) {
+        var pathComps = absolutePath.components(separatedBy: "/")
+        guard let root = pathComps.first,
+            root == "" else {
+                return (username: nil, remainingPath: absolutePath)
+        }
+        pathComps.remove(at: 0)
+        guard let users = pathComps.first,
+            users == "Users" else {
+                return (username: nil, remainingPath: absolutePath)
+        }
+        pathComps.remove(at: 0)
+        guard let machine = pathComps.first,
+            !machine.isEmpty else {
+                return (username: nil, remainingPath: absolutePath)
+        }
+        pathComps.remove(at: 0)
+        return (username: machine, remainingPath: pathComps.joined(separator: "/"))
     }
 }
 
