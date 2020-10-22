@@ -65,9 +65,9 @@ extension Bot {
         duplicate.configuration?.sourceControlBlueprint?.identifierKey = UUID().uuidString
         let srcCtrlId = duplicate.configuration?.sourceControlBlueprint?.primaryRemoteRepositoryKey ?? ""
         duplicate.configuration?.sourceControlBlueprint?.locationsKey?[srcCtrlId]?.branchIdentifierKey = editableData.branch
-        
-        duplicate.configuration?.archiveExportOptions = editableData.exportOptions
-        
+        if !(editableData.exportOptions.name?.isEmpty == true) {
+            duplicate.configuration?.archiveExportOptions = editableData.exportOptions
+        }
         duplicate.name = editableData.name
         if !editableData.scheme.isEmpty {
             duplicate.configuration?.schemeName = editableData.scheme
