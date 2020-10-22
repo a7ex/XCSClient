@@ -60,7 +60,7 @@ struct BotListView: View {
                 }
                 .listStyle(SidebarListStyle())
             }
-            .frame(minWidth: 280, maxWidth: .infinity)
+            .frame(minWidth: 380, maxWidth: .infinity)
             Text("Select bot in the list of bots to see details.")
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
