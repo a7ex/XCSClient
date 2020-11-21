@@ -28,6 +28,18 @@ class XCSConnector: ObservableObject {
         )
     }
     
+    func findIpa(
+        machineName: String,
+        botID: String,
+        botName: String,
+        integrationNumber: Int,
+        completion: @escaping (String) -> Void
+    ) {
+        DispatchQueue.global(qos: .userInitiated).async {
+            completion(self.server.findIpaPath(machineName: machineName, botID: botID, botName: botName, integrationNumber: integrationNumber))
+        }
+    }
+    
     func getBotList(completion: @escaping (Result<[Bot], Error>) -> Void) {
         DispatchQueue.global(qos: .userInitiated).async {
             let rslt = self.server.getBotList()
@@ -157,9 +169,9 @@ class XCSConnector: ObservableObject {
         }
     }
     
-    func scpAsset(at path: String, to targetUrl: URL, completion: @escaping (Result<Bool, Error>) -> Void) {
+    func scpAsset(at path: String, to targetUrl: URL, machineName: String, completion: @escaping (Result<Bool, Error>) -> Void) {
         DispatchQueue.global(qos: .userInitiated).async {
-            let rslt = self.server.scpFromBot(path, to: targetUrl)
+            let rslt = self.server.scpFromBot(path, to: targetUrl, machineName: machineName)
             DispatchQueue.main.async {
                 completion(rslt)
             }

@@ -22,4 +22,5 @@ struct BuildResultSummary: Codable {
     let testsChange: Int?
     let testsCount: Int?
     let warningChange: Int?
-    let warningCount: Int?}
+    let warningCount: Int?
+}

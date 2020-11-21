@@ -22,10 +22,11 @@ struct Server {
     // MARK: - Private instance variables
     
     private let curlToBot: String
+    private let sshToBotArguments: [String]
     
     private let sshEndpoint: String
     private let xcodeServerAddress: String
-
+    
     private let secureCopy = "/usr/bin/scp"
     
     private var apiUrl: String {
@@ -47,12 +48,14 @@ struct Server {
         
         let defaultArgs: [String]
         if !sshEndpoint.isEmpty,
-            sshEndpoint != "@" {
+           sshEndpoint != "@" {
             curlToBot = "/usr/bin/ssh"
             defaultArgs = [sshEndpoint] + ["curl", "-k"]
+            sshToBotArguments = [sshEndpoint, "/usr/bin/ssh"]
         } else {
             curlToBot = "/usr/bin/curl"
             defaultArgs = ["-k"]
+            sshToBotArguments = [String]()
         }
         if !netrcFilename.isEmpty {
             defaultArguments = defaultArgs + ["--netrc-file", netrcFilename]
@@ -150,15 +153,43 @@ struct Server {
         }
     }
     
-    func scpFromBot(_ absolutePath: String, to targetUrl: URL) -> Result<Bool, Error> {
-        let userNameAndPatch = getUsernameFrom(absolutePath: absolutePath)
-        guard let userName = userNameAndPatch.username else {
-            return .failure(ServerError.parameterError)
+    func findIpaPath(machineName: String, botID: String, botName: String, integrationNumber: Int) -> String {
+        // Unfortunately we need hardcoded paths here! :-(
+        // Once Apple changes the paths this won't work anymore
+        // But the API only allows us to download the whole Archive with all results:
+        // xcarchive AND ipa.
+        // That's often a pretty huge archive, when all we want is the ipa...
+        var directory = "\"/Library/Developer/XcodeServer/IntegrationAssets/\(botID)-\(botName)/\(integrationNumber)\""
+        let ipaPath = findIpaInDirectory(machineName: machineName, fullPath: directory)
+        guard ipaPath.isEmpty else {
+            return ipaPath
         }
-        let srcPath = userNameAndPatch.remainingPath
-        
+        // Not there...
+        // So now we try the directory, where some after-trigger scripts
+        // create the ipa to using the xcodebuild commandline tool from the xcarchive...
+        let botNameWithoutSpaces = botName.replacingOccurrences(of: " ", with: "_")
+        directory = "\"/Users/\(machineName)/Desktop/XcodeServerBuilds/\(botNameWithoutSpaces)_\(integrationNumber)\""
+        let customIpaPath = findIpaInDirectory(machineName: machineName, fullPath: directory)
+        guard !customIpaPath.isEmpty else {
+            return ""
+        }
+        let comps = customIpaPath.components(separatedBy: "/").dropLast()
+        return comps.joined(separator: "/")
+    }
+    
+    func scpFromBot(_ absolutePath: String, to targetUrl: URL, machineName: String) -> Result<Bool, Error> {
+        let userName: String
+        if machineName.isEmpty {
+            let userNameAndPatch = getUsernameFrom(absolutePath: absolutePath)
+            guard let uname = userNameAndPatch.username else {
+                return .failure(ServerError.parameterError)
+            }
+            userName = uname
+        } else {
+            userName = machineName
+        }
         var rmArguments = ["\(userName)@\(xcodeServerAddress)", "rm", "tmp.zip"]
-        var zipArguments = ["\(userName)@\(xcodeServerAddress)", "zip", "-r", "tmp.zip", srcPath]
+        var zipArguments = ["\(userName)@\(xcodeServerAddress)", "zip", "-r", "tmp.zip", absolutePath]
         if !sshEndpoint.isEmpty {
             zipArguments = [sshEndpoint, "/usr/bin/ssh"] + zipArguments
             rmArguments = [sshEndpoint, "/usr/bin/ssh"] + rmArguments
@@ -191,10 +222,10 @@ struct Server {
         let newArguments = defaultArguments + ["\(apiUrl)/assets/\(path.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? path)"]
         let rslt = execute(program: curlToBot, with: newArguments)
         switch rslt {
-            case .success(let data):
-                return .success(data)
-            case .failure(let error):
-                return .failure(error)
+        case .success(let data):
+            return .success(data)
+        case .failure(let error):
+            return .failure(error)
         }
     }
     
@@ -234,10 +265,10 @@ struct Server {
     func applySettings(at fileUrl: URL, fileName: String, toBot botId: String) -> Result<Bot, Error> {
         let rslt = copyBotSettingsToServer(botId, fileUrl: fileUrl, fileName: fileName)
         switch rslt {
-            case .success(let path):
-                return self.modifyBot(botId, settingsFile: path)
-            case .failure(let error):
-                return .failure(error)
+        case .success(let path):
+            return self.modifyBot(botId, settingsFile: path)
+        case .failure(let error):
+            return .failure(error)
         }
     }
     
@@ -254,15 +285,15 @@ struct Server {
         return executeJSONTask(with: arguments)
     }
     
-//    func createBot(_ botJSON: String) -> Result<Bot, Error> {
-//        let arguments = defaultArguments + [
-//            "--request", "POST",
-//            "-H", "\"Content-Type: application/json; charset=utf-8\"",
-//            "--data", "\"@\(botJSON)\"",
-//            "\(apiUrl)/bots"
-//        ]
-//        return executeJSONTask(with: arguments)
-//    }
+    //    func createBot(_ botJSON: String) -> Result<Bot, Error> {
+    //        let arguments = defaultArguments + [
+    //            "--request", "POST",
+    //            "-H", "\"Content-Type: application/json; charset=utf-8\"",
+    //            "--data", "\"@\(botJSON)\"",
+    //            "\(apiUrl)/bots"
+    //        ]
+    //        return executeJSONTask(with: arguments)
+    //    }
     
     private func copyBotSettingsToServer(_ botId: String, fileUrl: URL, fileName: String) -> Result<String, Error> {
         guard !sshEndpoint.isEmpty else {
@@ -311,7 +342,8 @@ struct Server {
         task.launchPath = program
         task.arguments = arguments
         
-//        print("executing now:\n\(program) \(arguments.joined(separator: " "))")
+        // // comment out for debugging purposes:
+        // print("executing now:\n\(program) \(arguments.joined(separator: " "))")
         
         let outPipe = Pipe()
         task.standardOutput = outPipe // to capture standard error, use task.standardError = outPipe
@@ -338,21 +370,34 @@ struct Server {
     private func getUsernameFrom(absolutePath: String) -> (username: String?, remainingPath: String) {
         var pathComps = absolutePath.components(separatedBy: "/")
         guard let root = pathComps.first,
-            root == "" else {
-                return (username: nil, remainingPath: absolutePath)
+              root == "" else {
+            return (username: nil, remainingPath: absolutePath)
         }
         pathComps.remove(at: 0)
         guard let users = pathComps.first,
-            users == "Users" else {
-                return (username: nil, remainingPath: absolutePath)
+              users == "Users" else {
+            return (username: nil, remainingPath: absolutePath)
         }
         pathComps.remove(at: 0)
         guard let machine = pathComps.first,
-            !machine.isEmpty else {
-                return (username: nil, remainingPath: absolutePath)
+              !machine.isEmpty else {
+            return (username: nil, remainingPath: absolutePath)
         }
         pathComps.remove(at: 0)
         return (username: machine, remainingPath: pathComps.joined(separator: "/"))
+    }
+    
+    private func findIpaInDirectory(machineName: String, fullPath: String) -> String {
+        let machine = "\(machineName)@\(xcodeServerAddress)"
+        let args = sshToBotArguments + [machine, "find", fullPath, "-name", "\"*.ipa\""]
+        let result = execute(program: "/usr/bin/ssh", with: args)
+        switch result {
+        case .success(let data):
+            let str = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines)
+            return str ?? ""
+        case.failure:
+            return ""
+        }
     }
 }
 

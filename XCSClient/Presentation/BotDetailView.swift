@@ -109,14 +109,15 @@ struct BotDetailView: View {
                             }
                         }
                     }
-                    if bot.botModel.configuration?.archiveExportOptions != nil {
-                        HStack {
-                            InfoLabel(content: "Archive Options")
-                                .frame(minWidth: 100, maxWidth: 160, alignment: .leading)
-                                .padding([.bottom], 4)
-                            Button(action: { self.selectExportOptions() }) {
-                                Text("\(bot.botModel.configuration?.archiveExportOptions?.name ?? "") {…}")
-                                }
+                    HStack {
+                        InfoLabel(content: "Archive Options")
+                            .frame(minWidth: 100, maxWidth: 160, alignment: .leading)
+                            .padding([.bottom], 4)
+                        Button(action: { self.selectExportOptions() }) {
+                            Text("\(bot.archiveExportOptionsName) {…}")
+                        }
+                        if !bot.archiveExportOptionsName.isEmpty {
+                            Text("Provisioning: \(bot.archiveExportOptionsProvisioningProfiles)")
                         }
                     }
                     Group {
@@ -160,7 +161,6 @@ struct BotDetailView: View {
                       secondaryButton: .cancel()
                 )
             }
-            
             if activityShowing {
                 Color.black
                     .opacity(0.5)

@@ -47,6 +47,11 @@ struct BotVM {
     var archiveExportOptionsName: String {
         return botModel.configuration?.archiveExportOptions?.name ?? ""
     }
+    var archiveExportOptionsProvisioningProfiles: String {
+        let profiles = botModel.configuration?.archiveExportOptions?.exportOptions?.provisioningProfiles
+        let allProfiles = profiles?.values
+        return allProfiles?.joined(separator: ", ") ?? ""
+    }
     var disableAppThinning: Bool {
         return botModel.configuration?.disableAppThinning ?? false
     }

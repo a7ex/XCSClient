@@ -18,6 +18,8 @@ struct IntegrationDetailView: View {
     @State private var errorMessage = ""
     @State private var activityShowing = false
     @State private var revisionInfo = RevisionInfo(snippet: "")
+    @State private var ipaPath = "loading"
+    @State private var machineName = ""
     
     @State private var durationInSeconds = "0"
     private let timer = Timer.publish(every: 1, tolerance: 0.5, on: .main, in: .common).autoconnect()
@@ -180,8 +182,16 @@ struct IntegrationDetailView: View {
                             }
                         }
                         if integration.archive.size > 0 {
-                            Button(action: { self.downloadIPA() }) {
-                                ButtonLabel(text: "Download ipa")
+                            if ipaPath == "loading" {
+                                Text("Loading path to ipa…")
+                            } else {
+                                if !ipaPath.isEmpty {
+                                    Button(action: { self.downloadIPA() }) {
+                                        ButtonLabel(text: "Download ipa")
+                                    }
+                                } else {
+                                    Text("No ipa available.")
+                                }
                             }
                         }
                     }
@@ -208,6 +218,9 @@ struct IntegrationDetailView: View {
         .onAppear {
             _ = self.timer.upstream.autoconnect()
             self.loadCommitData()
+            if integration.archive.size > 0 {
+                self.findIpa()
+            }
         }
     }
     
@@ -252,60 +265,58 @@ struct IntegrationDetailView: View {
         }
     }
     
+    private func findIpa() {
+        let asset = integration.buildServiceLog
+        connector.loadAsset(at: asset.path) { (result) in
+            switch result {
+            case .success(let logData):
+                guard let str = String(data: logData, encoding: .utf8),
+                      let regex = try? NSRegularExpression(pattern: "\\/Users\\/(.+?)\\/", options: [.caseInsensitive, .dotMatchesLineSeparators]) else {
+                    return
+                }
+                let matches  = regex.matches(in: str, options: [], range: NSMakeRange(0, str.count))
+                guard let firstMatch = matches.first,
+                      firstMatch.numberOfRanges > 1,
+                      let machineNameRange = Range(firstMatch.range(at: 1), in: str) else {
+                    return
+                }
+                machineName = String(str[machineNameRange])
+                connector.findIpa(
+                    machineName: machineName,
+                    botID: integration.botId,
+                    botName: integration.botName,
+                    integrationNumber: integration.number) { path in
+                    ipaPath = path
+                }
+            case .failure:
+                break
+            }
+        }
+    }
+    
     private func downloadIPA() {
-        guard let asset = integration.triggerAssets.first(where: { (thisAsset) -> Bool in
-            return thisAsset.name == "trigger-after-0.log"
-        }) else {
-            self.errorMessage = "No trigger-after-0.log found"
-            self.hasError = true
+        guard !ipaPath.isEmpty else {
+            return
+        }
+        let components = ipaPath.components(separatedBy: "/")
+        guard let ipaName = components.last,
+              let url = self.fileHelper.getSaveURLFromUser(for: "\(ipaName).zip") else {
             return
         }
         withAnimation {
             self.activityShowing = true
         }
-        connector.loadAsset(at: asset.path) { (result) in
+        connector.scpAsset(at: ipaPath, to: url, machineName: machineName) { (result) in
+            withAnimation {
+                self.activityShowing = false
+            }
             switch result {
-            case .success(let logData):
-                guard let str = String(data: logData, encoding: .utf8) else {
-                    withAnimation {
-                        self.activityShowing = false
-                    }
-                    self.errorMessage = "No data in log"
-                    self.hasError = true
-                    return
-                }
-                let substr = str.matches(regex: "Distribute .+?\\.ipa")
-                if let ipaPath = substr.first {
-                    let fullpath = String(ipaPath.dropFirst(11))
-                    let components = Array(fullpath.components(separatedBy: "/").dropLast())
-                    let archiveName = components.last ?? "archive"
-                    guard let url = self.fileHelper.getSaveURLFromUser(for: "\(archiveName).zip") else {
-                        return
-                    }
-                    self.connector.scpAsset(at: components.joined(separator: "/"), to: url) { (result) in
-                        withAnimation {
-                            self.activityShowing = false
-                        }
-                        switch result {
-                        case .success(let done):
-                            self.errorMessage = done ? "Downloaded ipa with success.": "failed to doanload ipa"
-                            self.hasError = true
-                        case .failure(let error):
-                            self.errorMessage = error.localizedDescription
-                            self.hasError = true
-                        }
-                    }
-                } else {
-                    withAnimation {
-                        self.activityShowing = false
-                    }
-                    self.errorMessage = "String 'Distribute ...ipa' not found"
-                    self.hasError = true
-                }
-            case .failure:
-                withAnimation {
-                    self.activityShowing = false
-                }
+            case .success(let done):
+                self.errorMessage = done ? "Downloaded ipa with success.": "failed to doanload ipa"
+                self.hasError = true
+            case .failure(let error):
+                self.errorMessage = error.localizedDescription
+                self.hasError = true
             }
         }
     }
