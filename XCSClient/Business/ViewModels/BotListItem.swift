@@ -8,15 +8,14 @@
 
 import SwiftUI
 
-protocol ExpandableBotListItem {
+protocol BotListItem {
     var id: String { get }
     var title: String { get }
     var type: ListviewModelType { get }
-    var isExpandable: Bool { get }
-    var isExpanded: Bool { get set }
     var destination: AnyView { get }
     var statusColor: Color { get }
     var searchableContent: String { get }
+    var items: [BotListItem]? { get set }
 }
 
 enum ListviewModelType {

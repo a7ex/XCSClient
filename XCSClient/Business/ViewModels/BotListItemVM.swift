@@ -8,12 +8,11 @@
 
 import SwiftUI
 
-struct BotListItemVM: ExpandableBotListItem {
+struct BotListItemVM: BotListItem {
     let bot: BotVM
-    var isExpanded: Bool
+    var items: [BotListItem]?
     
     let type = ListviewModelType.bot
-    let isExpandable = true
     
     var id: String {
         return bot.id

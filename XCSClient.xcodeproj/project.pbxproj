@@ -16,7 +16,7 @@
 		FA20876824BBAD5B0013CC21 /* TriggerScript.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA20876724BBAD5B0013CC21 /* TriggerScript.swift */; };
 		FA20876A24BBB5410013CC21 /* FileDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA20876924BBB5410013CC21 /* FileDescriptor.swift */; };
 		FA2696382495FC8900C7F084 /* BotListVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA2696372495FC8900C7F084 /* BotListVM.swift */; };
-		FA26963A2495FD3100C7F084 /* ExpandableBotListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA2696392495FD3100C7F084 /* ExpandableBotListItem.swift */; };
+		FA26963A2495FD3100C7F084 /* BotListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA2696392495FD3100C7F084 /* BotListItem.swift */; };
 		FA26963C2495FD7900C7F084 /* BotListItemVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA26963B2495FD7900C7F084 /* BotListItemVM.swift */; };
 		FA26963E2495FD9800C7F084 /* IntegrationListItemVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA26963D2495FD9800C7F084 /* IntegrationListItemVM.swift */; };
 		FA26964124960E9900C7F084 /* InfoLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA26964024960E9900C7F084 /* InfoLabel.swift */; };
@@ -87,7 +87,7 @@
 		FA20876724BBAD5B0013CC21 /* TriggerScript.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TriggerScript.swift; sourceTree = "<group>"; };
 		FA20876924BBB5410013CC21 /* FileDescriptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDescriptor.swift; sourceTree = "<group>"; };
 		FA2696372495FC8900C7F084 /* BotListVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BotListVM.swift; sourceTree = "<group>"; };
-		FA2696392495FD3100C7F084 /* ExpandableBotListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableBotListItem.swift; sourceTree = "<group>"; };
+		FA2696392495FD3100C7F084 /* BotListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BotListItem.swift; sourceTree = "<group>"; };
 		FA26963B2495FD7900C7F084 /* BotListItemVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BotListItemVM.swift; sourceTree = "<group>"; };
 		FA26963D2495FD9800C7F084 /* IntegrationListItemVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationListItemVM.swift; sourceTree = "<group>"; };
 		FA26964024960E9900C7F084 /* InfoLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoLabel.swift; sourceTree = "<group>"; };
@@ -172,7 +172,7 @@
 				FA2696462496124800C7F084 /* BotVM.swift */,
 				FA2696482496126200C7F084 /* IntegrationVM.swift */,
 				FA2696372495FC8900C7F084 /* BotListVM.swift */,
-				FA2696392495FD3100C7F084 /* ExpandableBotListItem.swift */,
+				FA2696392495FD3100C7F084 /* BotListItem.swift */,
 				FA26963B2495FD7900C7F084 /* BotListItemVM.swift */,
 				FA26963D2495FD9800C7F084 /* IntegrationListItemVM.swift */,
 				FA20876524BBACD60013CC21 /* BotEditorData.swift */,
@@ -484,7 +484,7 @@
 				FA5636FD2493BEC7002457DF /* IntegrationsQueryResponse.swift in Sources */,
 				FA5636FE2493BEC7002457DF /* RemoteRepository.swift in Sources */,
 				FA190BF1249545B500B70206 /* IntegrationDetailView.swift in Sources */,
-				FA26963A2495FD3100C7F084 /* ExpandableBotListItem.swift in Sources */,
+				FA26963A2495FD3100C7F084 /* BotListItem.swift in Sources */,
 				FA56370C2493BEED002457DF /* NSError+ConvenienceInit.swift in Sources */,
 				FA17F9172496B5BE000A149D /* Windows.swift in Sources */,
 				FA20876824BBAD5B0013CC21 /* TriggerScript.swift in Sources */,
@@ -595,7 +595,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MACOSX_DEPLOYMENT_TARGET = 11.1;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -649,7 +649,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MACOSX_DEPLOYMENT_TARGET = 11.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
@@ -675,7 +675,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MACOSX_DEPLOYMENT_TARGET = 11.1;
 				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.farbflash.XCSClient;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -700,7 +700,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MACOSX_DEPLOYMENT_TARGET = 11.1;
 				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.farbflash.XCSClient;
 				PRODUCT_NAME = "$(TARGET_NAME)";

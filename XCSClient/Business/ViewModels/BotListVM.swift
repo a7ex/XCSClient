@@ -9,9 +9,9 @@
 import Foundation
 
 class BotListVM: ObservableObject {
-    @Published var items = [ExpandableBotListItem]()
+    @Published var items = [BotListItem]()
     
-    var allItems = [ExpandableBotListItem]() {
+    var allItems = [BotListItem]() {
         didSet {
             items = filteredItems
         }
@@ -24,7 +24,7 @@ class BotListVM: ObservableObject {
         }
     }
     
-    var filteredItems: [ExpandableBotListItem] {
+    var filteredItems: [BotListItem] {
         return allItems.filter { item in
             guard searchQuery.count > 2 else {
                 return true
@@ -33,29 +33,18 @@ class BotListVM: ObservableObject {
         }
     }
     
-    func collapseIntegrations(of id: String) {
+    func insertIntegrations(for id: String, integrations: [IntegrationVM]) {
         guard var bot = allItems.first(where: { $0.id == id }) else {
             return
         }
-        bot.isExpanded = false
+        bot.items = integrations.map({ IntegrationListItemVM(integration: $0) })
         allItems = allItems
             .replacingItem(with: id, newItem: bot)
-            .removingIntegrations(of: id)
-    }
-    
-    func expandIntegrations(for id: String, integrations: [IntegrationVM]) {
-        guard var bot = allItems.first(where: { $0.id == id }) else {
-            return
-        }
-        bot.isExpanded = true
-        allItems = allItems
-            .replacingItem(with: id, newItem: bot)
-            .addingIntegrations(for: id, integrations: integrations)
     }
 }
 
-private extension Array where Element == ExpandableBotListItem {
-    func replacingItem(with id: String, newItem: ExpandableBotListItem) -> [ExpandableBotListItem] {
+private extension Array where Element == BotListItem {
+    func replacingItem(with id: String, newItem: BotListItem) -> [BotListItem] {
         var tmp = self
         guard let pos = tmp.firstIndex(where: { $0.id == id }) else {
             return self
@@ -63,35 +52,5 @@ private extension Array where Element == ExpandableBotListItem {
         tmp.remove(at: pos)
         tmp.insert(newItem, at: pos)
         return  tmp
-    }
-    
-    func removingIntegrations(of id: String) -> [ExpandableBotListItem] {
-        var tmp = self
-        guard let pos = tmp.firstIndex(where: { $0.id == id }) else {
-            return self
-        }
-        let first = pos + 1
-        var last = first
-        while last < tmp.count,
-            tmp[last] is IntegrationListItemVM {
-                last += 1
-        }
-        last -= 1
-        guard last >= first else {
-            return self
-        }
-        tmp.replaceSubrange(first...last, with: [])
-        return tmp
-    }
-    
-    func addingIntegrations(for id: String, integrations: [IntegrationVM]) -> [ExpandableBotListItem] {
-        var tmp = removingIntegrations(of: id)
-        
-        guard let pos = tmp.firstIndex(where: { $0.id == id }) else {
-            return tmp
-        }
-        
-        tmp.insert(contentsOf: integrations.map { IntegrationListItemVM(integration: $0) }, at: pos+1)
-        return tmp
     }
 }

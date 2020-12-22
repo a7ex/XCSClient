@@ -8,11 +8,10 @@
 
 import SwiftUI
 
-struct IntegrationListItemVM: ExpandableBotListItem {
+struct IntegrationListItemVM: BotListItem {
     let integration: IntegrationVM
     let type = ListviewModelType.integration
-    let isExpandable = false
-    var isExpanded = false
+    var items: [BotListItem]?
     
     var id: String {
         return integration.id

@@ -20,7 +20,7 @@ struct BotListView: View {
     init(window: NSWindow?, bots: [BotVM]) {
         myWindow = window
         myWindow?.delegate = botlistWindowDelegate
-        viewModel.allItems = bots.map { BotListItemVM(bot: $0, isExpanded: false) }
+        viewModel.allItems = bots.map { BotListItemVM(bot: $0, items: nil) }
     }
     
     var body: some View {
@@ -39,23 +39,9 @@ struct BotListView: View {
                 }
                 Divider()
                 SearchBar(query: $viewModel.searchQuery)
-                List(viewModel.items, id: \.id) { item in
-                    VStack(alignment: .leading) {
-                        HStack {
-                                Button(action: {
-                                    self.toggleExpandedState(of: item.id)
-                                }) {
-                                    Text(item.isExpandable ? "▼": "●")
-                                }
-                                .buttonStyle(BorderlessButtonStyle())
-                                .rotationEffect(Angle(degrees: item.isExpanded ? 0: -90))
-                                .foregroundColor(item.statusColor)
-                                .offset(CGSize(width: item.isExpandable ? 0: 24, height: 0))
-                            NavigationLink(destination: item.destination) {
-                                Text(item.title)
-                                    .padding(.leading, item.isExpandable ? 0: 30)
-                            }
-                        }
+                List(viewModel.items, id: \.id, children: \.items) { item in
+                    NavigationLink(destination: item.destination) {
+                        Text(item.title)
                     }
                 }
                 .listStyle(SidebarListStyle())
@@ -68,6 +54,9 @@ struct BotListView: View {
         .onReceive(refreshPublisher) { (output) in
             self.reLoadBots()
         }
+        .onAppear() {
+            loadAllIntegrations()
+        }
     }
     
     private func reLoadBots() {
@@ -76,38 +65,25 @@ struct BotListView: View {
                 case .success(let bots):
                     self.viewModel.allItems = bots
                         .sorted(by: { $0.name < $1.name })
-                        .map { BotListItemVM(bot: BotVM(bot: $0), isExpanded: false) }
+                        .map { BotListItemVM(bot: BotVM(bot: $0), items: nil) }
+                    self.loadAllIntegrations()
                 case .failure(let error):
                     print("Error occurred: \(error.localizedDescription)")
             }
         }
     }
     
-    private func toggleExpandedState(of botId: String) {
-        guard let bot = viewModel.items.first(where: { $0.id == botId }) else {
-            return
-        }
-        if bot.isExpanded {
-            viewModel.collapseIntegrations(of: botId)
-        } else {
-            viewModel.expandIntegrations(for: botId, integrations: [loadingPlaceholder(for: bot.title)])
-            connector.getIntegrationsList(for: botId, last: 10) { (result) in
+    private func loadAllIntegrations() {
+        for bot in viewModel.allItems {
+            connector.getIntegrationsList(for: bot.id, last: 10) { (result) in
                 switch result {
                 case .success(let integrations):
-                    self.viewModel.expandIntegrations(for: botId, integrations: integrations.map { IntegrationVM(integration: $0) })
+                    self.viewModel.insertIntegrations(for: bot.id, integrations: integrations.map { IntegrationVM(integration: $0) })
                 case .failure(let error):
                     print("\(error)")
                 }
             }
         }
-    }
-    
-    private func loadingPlaceholder(for botName: String) -> IntegrationVM {
-        return IntegrationVM(integration: Integration(
-            id: UUID().uuidString,
-            tinyId: "Loading integrations…",
-            bot: Bot(name: botName))
-        )
     }
     
     class BotlistWindowDelegate: NSObject, NSWindowDelegate {

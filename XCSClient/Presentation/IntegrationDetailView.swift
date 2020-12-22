@@ -312,7 +312,7 @@ struct IntegrationDetailView: View {
             }
             switch result {
             case .success(let done):
-                self.errorMessage = done ? "Downloaded ipa with success.": "failed to doanload ipa"
+                self.errorMessage = done ? "Downloaded ipa with success.": "failed to download ipa"
                 self.hasError = true
             case .failure(let error):
                 self.errorMessage = error.localizedDescription
