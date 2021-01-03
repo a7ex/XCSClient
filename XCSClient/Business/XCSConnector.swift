@@ -152,6 +152,10 @@ class XCSConnector: ObservableObject {
     }
     
     func downloadAssets(at path: String, to targetUrl: URL, completion: @escaping (Result<Bool, Error>) -> Void) {
+        guard !path.isEmpty else {
+            completion(.failure(Server.ServerError.parameterError))
+            return
+        }
         DispatchQueue.global(qos: .userInitiated).async {
             let rslt = self.server.downloadAsset(path, to: targetUrl)
             DispatchQueue.main.async {
@@ -161,6 +165,10 @@ class XCSConnector: ObservableObject {
     }
     
     func loadAsset(at path: String, completion: @escaping (Result<Data, Error>) -> Void) {
+        guard !path.isEmpty else {
+            completion(.failure(Server.ServerError.parameterError))
+            return
+        }
         DispatchQueue.global(qos: .userInitiated).async {
             let rslt = self.server.loadAsset(path)
             DispatchQueue.main.async {
@@ -170,6 +178,10 @@ class XCSConnector: ObservableObject {
     }
     
     func scpAsset(at path: String, to targetUrl: URL, machineName: String, completion: @escaping (Result<Bool, Error>) -> Void) {
+        guard !path.isEmpty else {
+            completion(.failure(Server.ServerError.parameterError))
+            return
+        }
         DispatchQueue.global(qos: .userInitiated).async {
             let rslt = self.server.scpFromBot(path, to: targetUrl, machineName: machineName)
             DispatchQueue.main.async {

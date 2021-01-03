@@ -133,6 +133,9 @@ struct Server {
     }
     
     func downloadAsset(_ path: String, to targetUrl: URL) -> Result<Bool, Error> {
+        guard !path.isEmpty else {
+            return .failure(Server.ServerError.parameterError)
+        }
         let newArguments = defaultArguments + ["\(apiUrl)/assets/\(path.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? path) --output \(sshEndpoint.isEmpty ? targetUrl.path: "tmpFile")"]
         let rslt = execute(program: curlToBot, with: newArguments)
         switch rslt {
@@ -178,6 +181,9 @@ struct Server {
     }
     
     func scpFromBot(_ absolutePath: String, to targetUrl: URL, machineName: String) -> Result<Bool, Error> {
+        guard !absolutePath.isEmpty else {
+            return .failure(Server.ServerError.parameterError)
+        }
         let userName: String
         if machineName.isEmpty {
             let userNameAndPatch = getUsernameFrom(absolutePath: absolutePath)
@@ -219,6 +225,9 @@ struct Server {
     }
     
     func loadAsset(_ path: String) -> Result<Data, Error> {
+        guard !path.isEmpty else {
+            return .failure(Server.ServerError.parameterError)
+        }
         let newArguments = defaultArguments + ["\(apiUrl)/assets/\(path.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? path)"]
         let rslt = execute(program: curlToBot, with: newArguments)
         switch rslt {

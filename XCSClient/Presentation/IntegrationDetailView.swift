@@ -322,6 +322,9 @@ struct IntegrationDetailView: View {
     }
     
     private func downloadAsset(_ asset: FileDescriptor) {
+        guard !asset.path.isEmpty else {
+            return
+        }
         if asset.size < 500000 { // 500 KB
             withAnimation {
                 self.activityShowing = true
