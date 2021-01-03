@@ -120,5 +120,6 @@ struct ServerOutlineList: View {
 struct ServerOutlineList_Previews: PreviewProvider {
     static var previews: some View {
         ServerOutlineList()
+            .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext) 
     }
 }

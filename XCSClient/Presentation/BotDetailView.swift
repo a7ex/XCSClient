@@ -369,13 +369,10 @@ struct BotDetailView: View {
 struct BotDetailView_Previews: PreviewProvider {
     
     static var previews: some View {
-        var bot = Bot(id: UUID().uuidString, name: "Project_Foo_Fabric_DeviceCloud", tinyID: "3")
-        var configuration = BotConfiguration()
-        configuration.performsArchiveAction = true
-        configuration.buildEnvironmentVariables = ["EINS": "zwei", "DREI": "vier"]
-        configuration.archiveExportOptions = ArchiveExportOptions(name: "ExportOptions", createdAt: Date(), exportOptions: nil)
-        bot.configuration = configuration
-        bot.integrationCounter = 12
-        return BotDetailView(bot: BotVM(bot: bot), changeClosure: { _ in }).environmentObject(XCSConnector.previewServerConnector)
+        let moc = PersistenceController.preview.container.viewContext
+        let request: NSFetchRequest<CDBot> = CDBot.fetchRequest()
+        let obj = (try? moc.fetch(request).first)!
+        
+        return BotDetailView(bot: obj, changeClosure: { _ in }).environmentObject(XCSConnector.previewServerConnector)
     }
 }

@@ -30,31 +30,14 @@ struct IntegrationDetailView: View {
         guard let startDate = startDate else {
             return ""
         }
-        
         if !integration.endedTimeString.isEmpty {
             timer.upstream.connect().cancel()
             return integration.durationString
         }
-        
         let interval = startDate.timeIntervalSinceNow * -1
-//        if (Int(interval) % 10) == 0 {
-//            refreshLastIntegration(of: integration.botId)
-//        }
         let fmt = DateComponentsFormatter()
         return fmt.string(from: interval) ?? ""
     }
-    
-//    private func refreshLastIntegration(of botId: String) {
-//        connector.getIntegrationsList(for: botId, last: 1) { (result) in
-//            if case let .success(integrations) = result {
-//                if let integration = integrations.first,
-//                    let result = integration.result,
-//                    result == .unknown {
-//                    //                    self.integration.integrationModel = integration
-//                }
-//            }
-//        }
-//    }
     
     
     var body: some View {
@@ -403,21 +386,14 @@ struct IntegrationDetailView: View {
 
 struct IntegrationDetailView_Previews: PreviewProvider {
     static var previews: some View {
-        
-        let logfile = LogFile(allowAnonymousAccess: true, fileName: "Source Control Logs", isDirectory: false, relativePath: "NotEmpty", size: 3474)
-        let logfile2 = LogFile(allowAnonymousAccess: true, fileName: "Archive", isDirectory: false, relativePath: "NotEmpty", size: 143456474)
-        let logfile3 = LogFile(allowAnonymousAccess: true, fileName: "A very very long name", isDirectory: false, relativePath: "NotEmpty", size: 34536474)
-        
-        let assets = IntegrationAssets(archive: logfile, buildServiceLog: logfile2, sourceControlLog: logfile3, xcodebuildLog: logfile2, xcodebuildOutput: logfile, triggerAssets: [logfile3])
-        
-        let integration = Integration(id: UUID().uuidString, rev: "", assets: assets, bot: nil, buildResultSummary: BuildResultSummary(analyzerWarningChange: -3, analyzerWarningCount: 0, codeCoveragePercentage: 48, codeCoveragePercentageDelta: 5, errorChange: 0, errorCount: 0, improvedPerfTestCount: 0, regressedPerfTestCount: 0, testFailureChange: 1, testFailureCount: 2, testsChange: 0, testsCount: 80, warningChange: 0, warningCount: 10), buildServiceFingerprint: "", ccPercentage: 0, ccPercentageDelta: 0, currentStep: "completed", docType: "", duration: 230, endedTime: Date(), number: 1, queuedDate: nil, result: IntegrationResult.buildErrors, revisionBlueprint: nil, startedTime: Date().advanced(by: 120), testHierarchy: nil, testedDevices: nil, tinyID: "1817142698624")
+     
+        let moc = PersistenceController.preview.container.viewContext
+        let request: NSFetchRequest<CDIntegration> = CDIntegration.fetchRequest()
+        let obj = (try? moc.fetch(request).first)!
         
         return Group {
-            IntegrationDetailView(integration: IntegrationVM(integration: integration))
+            IntegrationDetailView(integration: obj)
                 .environmentObject(XCSConnector.previewServerConnector)
-            //            IntegrationDetailView(integration: IntegrationVM(integration: integration))
-            //                .environment(\.sizeCategory, .extraLarge)
-            //                .environmentObject(XCSConnector.previewServerConnector)
         }
     }
 }

@@ -50,6 +50,6 @@ struct CDBotView: View {
 
 struct CDBotView_Previews: PreviewProvider {
     static var previews: some View {
-        CDBotView(botID: "")
+        CDBotView(botID: "123")
     }
 }

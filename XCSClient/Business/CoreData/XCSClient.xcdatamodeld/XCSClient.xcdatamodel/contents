@@ -6,8 +6,8 @@
         <relationship name="botConfiguration" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDBotConfiguration" inverseName="archiveExportOptions" inverseEntity="CDBotConfiguration"/>
         <relationship name="exportOptions" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CDIPAExportOptions" inverseName="archiveExportOption" inverseEntity="CDIPAExportOptions"/>
     </entity>
-    <entity name="CDBot" representedClassName="CDBot" syncable="YES" codeGenerationType="class">
-        <attribute name="id" attributeType="String"/>
+    <entity name="CDBot" representedClassName="CDBot" syncable="YES" codeGenerationType="category">
+        <attribute name="id" attributeType="String" defaultValueString=""/>
         <attribute name="integrationCounter" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="rev" optional="YES" attributeType="String"/>
@@ -78,13 +78,13 @@
         <attribute name="weeklyScheduleDay" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="trigger" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDTrigger" inverseName="emailConfiguration" inverseEntity="CDTrigger"/>
     </entity>
-    <entity name="CDIntegration" representedClassName="CDIntegration" syncable="YES" codeGenerationType="class">
+    <entity name="CDIntegration" representedClassName="CDIntegration" syncable="YES" codeGenerationType="category">
         <attribute name="ccPercentage" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="ccPercentageDelta" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="currentStep" optional="YES" attributeType="String"/>
         <attribute name="duration" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="endedTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="id" attributeType="String"/>
+        <attribute name="id" attributeType="String" defaultValueString=""/>
         <attribute name="number" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="queuedDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="result" optional="YES" attributeType="String"/>
@@ -222,15 +222,15 @@
         <element name="CDArchiveExportOptions" positionX="-63" positionY="9" width="128" height="89"/>
         <element name="CDBot" positionX="-491.1072998046875" positionY="-219.3464813232422" width="128" height="164"/>
         <element name="CDBotConfiguration" positionX="38.507568359375" positionY="-71.05398559570312" width="128" height="374"/>
-        <element name="CDBuildResultSummary" positionX="-243" positionY="-27" width="128" height="14"/>
-        <element name="CDEmailConfiguration" positionX="-54" positionY="18" width="128" height="14"/>
+        <element name="CDBuildResultSummary" positionX="-243" positionY="-27" width="128" height="254"/>
+        <element name="CDEmailConfiguration" positionX="-54" positionY="18" width="128" height="284"/>
         <element name="CDIntegration" positionX="-86.988525390625" positionY="-211.8628845214844" width="128" height="269"/>
         <element name="CDIntegrationAssets" positionX="-297" positionY="-81" width="128" height="134"/>
-        <element name="CDIPAExportOptions" positionX="-54" positionY="18" width="128" height="14"/>
-        <element name="CDLogFile" positionX="-288" positionY="-72" width="128" height="14"/>
-        <element name="CDPlatform" positionX="-72" positionY="0" width="128" height="14"/>
-        <element name="CDProvisioningConfiguration" positionX="-45" positionY="27" width="128" height="14"/>
-        <element name="CDRemoteRepository" positionX="-225.8842163085938" positionY="141.7715148925781" width="128" height="14"/>
+        <element name="CDIPAExportOptions" positionX="-54" positionY="18" width="128" height="179"/>
+        <element name="CDLogFile" positionX="-288" positionY="-72" width="128" height="194"/>
+        <element name="CDPlatform" positionX="-72" positionY="0" width="128" height="149"/>
+        <element name="CDProvisioningConfiguration" positionX="-45" positionY="27" width="128" height="74"/>
+        <element name="CDRemoteRepository" positionX="-225.8842163085938" positionY="141.7715148925781" width="128" height="89"/>
         <element name="CDServer" positionX="-313.3782958984375" positionY="21.42233276367188" width="128" height="149"/>
         <element name="CDSingleSourceControlLocation" positionX="-288" positionY="-54" width="128" height="74"/>
         <element name="CDSourceControlBlueprint" positionX="-45" positionY="27" width="128" height="209"/>
@@ -238,6 +238,6 @@
         <element name="CDTestDeviceFilter" positionX="-81" positionY="-9" width="128" height="89"/>
         <element name="CDTestDeviceSpecification" positionX="-81" positionY="-9" width="128" height="74"/>
         <element name="CDTrigger" positionX="-72" positionY="0" width="128" height="134"/>
-        <element name="CDTriggerConditions" positionX="-63" positionY="9" width="128" height="14"/>
+        <element name="CDTriggerConditions" positionX="-63" positionY="9" width="128" height="149"/>
     </elements>
 </model>

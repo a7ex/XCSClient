@@ -35,6 +35,6 @@ struct CDIntegrationView: View {
 
 struct CDIntegrationView_Previews: PreviewProvider {
     static var previews: some View {
-        CDIntegrationView(integrationID: "")
+        CDIntegrationView(integrationID: "345")
     }
 }
