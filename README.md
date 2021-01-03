@@ -10,7 +10,7 @@ It is a pet project and it also works when connecting directly to an Xcode Serve
 
 ### Usage
 Mac OS 11 "Big Sur" and above: Compile the latest version of the application (or download the latest [binary](https://github.com/a7ex/XCSClient/releases/latest/download/XCSClient.app.zip)) and launch.
-For older Mac OS Versions < 11: Use the branch *release/pre-macos-11-release* (or download the compiled [binary](https://github.com/a7ex/XCSClient/releases/download/1.2/XCSClient.app.zip)) and launch.
+For older Mac OS Versions < 11: Use the branch *release/pre-macos-11-release* (or download the compiled [binary for older Mac OS](https://github.com/a7ex/XCSClient/releases/download/1.2/XCSClient.app.zip)) and launch.
 
 To connect to a Xcode Server regularly you need the IP address or hostname of the Mac, which runs the Xcode Server.
 
