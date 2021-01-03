@@ -49,4 +49,5 @@ protocol IntegrationViewModel {
     var triggerAssets: [FileDescriptor] { get }
     var hasAssets: Bool { get }
     var sourceControlCommitId: String { get }
+    var sourceControlBranch: String { get }
 }

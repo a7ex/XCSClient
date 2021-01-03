@@ -71,10 +71,17 @@ struct IntegrationDetailView: View {
                                 self.durationInSeconds = self.timeSpanFromNow(to: self.integration.startedTime)
                             }
                     }
-                    LabeledStringValue(label: "Code Coverage percentage", value: integration.codeCoverage)
-                    LabeledStringValue(label: "Performance Test changes", value: integration.performanceTests)
+                    if !integration.codeCoverage.isEmpty {
+                        LabeledStringValue(label: "Code Coverage percentage", value: integration.codeCoverage)
+                    }
+                    if !integration.performanceTests.isEmpty {
+                        LabeledStringValue(label: "Performance Test changes", value: integration.performanceTests)
+                    }
                     if !integration.sourceControlCommitId.isEmpty {
                         LabeledStringValue(label: "Commit ID", value: integration.sourceControlCommitId)
+                    }
+                    if !integration.sourceControlBranch.isEmpty {
+                        LabeledStringValue(label: "Branch", value: integration.sourceControlBranch)
                     }
                 }
                 if !revisionInfo.isEmpty {

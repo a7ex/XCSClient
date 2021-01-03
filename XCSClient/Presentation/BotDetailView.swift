@@ -89,14 +89,21 @@ struct BotDetailView: View {
                             }
                         }
                         if bot.scheduleType == ScheduleType.periodically {
-                            LabeledStringValue(label: "Periodic Schedule Interval", value: bot.periodicScheduleIntervalString)
                             if bot.periodicScheduleInterval == .weekly {
-                                LabeledStringValue(label: "Weekly Schedule Day", value: bot.weeklyScheduleDay)
-                                LabeledStringValue(label: "Hour", value: bot.integrationTimeSchedule)
+                                LabeledStringValue(
+                                    label: "Periodic Schedule",
+                                    value: "Every \(bot.weeklyScheduleDay) at \(bot.integrationTimeSchedule):00"
+                                )
                             } else if bot.periodicScheduleInterval == .daily {
-                                LabeledStringValue(label: "Hour", value: bot.integrationTimeSchedule)
+                                LabeledStringValue(
+                                    label: "Periodic Schedule",
+                                    value: "\(bot.periodicScheduleIntervalString) at \(bot.integrationTimeSchedule):00"
+                                )
                             } else if bot.periodicScheduleInterval == .hourly {
-                                LabeledStringValue(label: "Minute", value: bot.integrationMinuteSchedule)
+                                LabeledStringValue(
+                                    label: "Periodic Schedule",
+                                    value: "Every hour at minute \(bot.integrationMinuteSchedule)"
+                                )
                             }
                         }
                     }

@@ -88,7 +88,7 @@ extension CDBot: BotViewModel {
     }
     
     var periodicScheduleInterval: PeriodicScheduleInterval {
-        return PeriodicScheduleInterval.none
+        return PeriodicScheduleInterval(rawValue: Int(configuration?.periodicScheduleIntervalValue ?? 0)) ?? PeriodicScheduleInterval.none
     }
     
     var scheduleTypeAsString: String {

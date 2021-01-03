@@ -165,10 +165,17 @@ extension CDIntegration: IntegrationViewModel {
     }
     
     var codeCoverage: String {
+        guard (ccPercentage + ccPercentageDelta) != 0 else {
+            return ""
+        }
         return "\(ccPercentage)% (delta: \(ccPercentageDelta))"
     }
     
     var performanceTests: String {
+        guard ((buildResultSummary?.improvedPerfTestCount ?? 0) +
+                (buildResultSummary?.regressedPerfTestCount ?? 0)) != 0 else {
+            return ""
+        }
         return "Improved: \(buildResultSummary?.improvedPerfTestCount ?? 0); Regressed: \(buildResultSummary?.regressedPerfTestCount ?? 0)"
     }
     
@@ -263,5 +270,13 @@ extension CDIntegration: IntegrationViewModel {
             return .unknown
         }
         return integrationResult
+    }
+    
+    var sourceControlBranch: String {
+        guard let firstLocation = revisionBlueprint?.locations?.anyObject() as? CDSingleSourceControlLocation,
+              let scData = firstLocation.value else {
+            return ""
+        }
+        return scData.branchIdentifierKey ?? ""
     }
 }
