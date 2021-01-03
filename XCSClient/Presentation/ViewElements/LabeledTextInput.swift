@@ -13,10 +13,20 @@ struct LabeledTextInput: View {
     @Binding var content: String
     
     var body: some View {
+        LiveLabeledTextInput(label: label, content: $content, onCommit: {})
+    }
+}
+
+struct LiveLabeledTextInput: View {
+    let label: String
+    @Binding var content: String
+    let onCommit: (() -> Void)
+    
+    var body: some View {
         HStack {
             InfoLabel(content: label)
                 .frame(minWidth: 100, maxWidth: 160, alignment: .leading)
-            TextField("Enter \(label)", text: $content)
+            TextField("Enter \(label)", text: $content, onCommit: onCommit)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
         }
     }

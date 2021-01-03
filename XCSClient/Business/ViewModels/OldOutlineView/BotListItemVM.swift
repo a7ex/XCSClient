@@ -15,18 +15,21 @@ struct BotListItemVM: BotListItem {
     let type = ListviewModelType.bot
     
     var id: String {
-        return bot.id
+        return bot.idString
     }
     
     var title: String {
-        return bot.name
+        return bot.nameString
     }
     
     var destination: AnyView {
-        AnyView(BotDetailView(bot: bot))
+        AnyView(BotDetailView(bot: bot, changeClosure: { _ in }))
     }
     
     var statusColor: Color {
+        if let firstintegration = items?.first as? IntegrationListItemVM {
+            return firstintegration.statusColor
+        }
         return Color.primary
     }
     

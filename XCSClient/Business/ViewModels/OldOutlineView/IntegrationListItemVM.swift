@@ -9,12 +9,12 @@
 import SwiftUI
 
 struct IntegrationListItemVM: BotListItem {
-    let integration: IntegrationVM
+    let integration: IntegrationViewModel
     let type = ListviewModelType.integration
     var items: [BotListItem]?
     
     var id: String {
-        return integration.id
+        return integration.idString
     }
     
     var title: String {
@@ -30,6 +30,6 @@ struct IntegrationListItemVM: BotListItem {
     }
     
     var searchableContent: String {
-        return integration.bot?.name.lowercased() ?? ""
+        return integration.botName.lowercased()
     }
 }

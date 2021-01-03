@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17709" systemVersion="20C69" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="CDArchiveExportOptions" representedClassName="CDArchiveExportOptions" syncable="YES" codeGenerationType="class">
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <relationship name="botConfiguration" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDBotConfiguration" inverseName="archiveExportOptions" inverseEntity="CDBotConfiguration"/>
+        <relationship name="exportOptions" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CDIPAExportOptions" inverseName="archiveExportOption" inverseEntity="CDIPAExportOptions"/>
+    </entity>
+    <entity name="CDBot" representedClassName="CDBot" syncable="YES" codeGenerationType="class">
+        <attribute name="id" attributeType="String"/>
+        <attribute name="integrationCounter" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="rev" optional="YES" attributeType="String"/>
+        <attribute name="tinyID" optional="YES" attributeType="String"/>
+        <attribute name="visibleItems" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="configuration" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CDBotConfiguration" inverseName="bot" inverseEntity="CDBotConfiguration"/>
+        <relationship name="items" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDIntegration" inverseName="bot" inverseEntity="CDIntegration"/>
+        <relationship name="server" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDServer" inverseName="items" inverseEntity="CDServer"/>
+    </entity>
+    <entity name="CDBotConfiguration" representedClassName="CDBotConfiguration" syncable="YES" codeGenerationType="class">
+        <attribute name="additionalBuildArguments" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[String]"/>
+        <attribute name="buildConfiguration" optional="YES" attributeType="String"/>
+        <attribute name="buildEnvironmentVariables" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[String: String]"/>
+        <attribute name="builtFromCleanValue" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="codeCoveragePreferenceValue" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="disableAppThinning" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="exportsProductFromArchive" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="hourOfIntegration" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="minutesAfterHourToIntegrate" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="performsAnalyzeAction" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="performsArchiveAction" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="performsTestAction" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="performsUpgradeIntegration" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="periodicScheduleIntervalValue" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="scheduleTypeValue" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="schemeName" optional="YES" attributeType="String"/>
+        <attribute name="weeklyScheduleDayValue" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="archiveExportOptions" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CDArchiveExportOptions" inverseName="botConfiguration" inverseEntity="CDArchiveExportOptions"/>
+        <relationship name="bot" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDBot" inverseName="configuration" inverseEntity="CDBot"/>
+        <relationship name="deviceSpecification" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CDTestDeviceSpecification" inverseName="botConfiguration" inverseEntity="CDTestDeviceSpecification"/>
+        <relationship name="provisioningConfiguration" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CDProvisioningConfiguration" inverseName="botConfiguration" inverseEntity="CDProvisioningConfiguration"/>
+        <relationship name="sourceControlBlueprint" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CDSourceControlBlueprint" inverseName="botConfiguration" inverseEntity="CDSourceControlBlueprint"/>
+        <relationship name="triggers" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CDTrigger" inverseName="configuration" inverseEntity="CDTrigger"/>
+    </entity>
+    <entity name="CDBuildResultSummary" representedClassName="CDBuildResultSummary" syncable="YES" codeGenerationType="class">
+        <attribute name="analyzerWarningChange" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="analyzerWarningCount" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="codeCoveragePercentage" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="codeCoveragePercentageDelta" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="errorChange" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="errorCount" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="improvedPerfTestCount" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="regressedPerfTestCount" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="testFailureChange" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="testFailureCount" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="testsChange" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="testsCount" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="warningChange" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="warningCount" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="integration" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDIntegration" inverseName="buildResultSummary" inverseEntity="CDIntegration"/>
+    </entity>
+    <entity name="CDEmailConfiguration" representedClassName="CDEmailConfiguration" syncable="YES" codeGenerationType="class">
+        <attribute name="additionalRecipients" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[String]"/>
+        <attribute name="allowedDomainNames" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[String]"/>
+        <attribute name="ccAddresses" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[String]"/>
+        <attribute name="emailCommitters" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="fromAddress" optional="YES" attributeType="String"/>
+        <attribute name="hour" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="includeBotConfiguration" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="includeCommitMessages" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="includeIssueDetails" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="includeLogs" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="includeResolvedIssues" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="minutesAfterHour" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="replyToAddress" optional="YES" attributeType="String"/>
+        <attribute name="scmOptions" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[String: Int]"/>
+        <attribute name="type" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="weeklyScheduleDay" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="trigger" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDTrigger" inverseName="emailConfiguration" inverseEntity="CDTrigger"/>
+    </entity>
+    <entity name="CDIntegration" representedClassName="CDIntegration" syncable="YES" codeGenerationType="class">
+        <attribute name="ccPercentage" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="ccPercentageDelta" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="currentStep" optional="YES" attributeType="String"/>
+        <attribute name="duration" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="endedTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="String"/>
+        <attribute name="number" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="queuedDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="result" optional="YES" attributeType="String"/>
+        <attribute name="startedTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="tinyID" optional="YES" attributeType="String"/>
+        <relationship name="assets" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CDIntegrationAssets" inverseName="integration" inverseEntity="CDIntegrationAssets"/>
+        <relationship name="bot" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDBot" inverseName="items" inverseEntity="CDBot"/>
+        <relationship name="buildResultSummary" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CDBuildResultSummary" inverseName="integration" inverseEntity="CDBuildResultSummary"/>
+        <relationship name="items" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDIntegration" inverseName="items" inverseEntity="CDIntegration"/>
+        <relationship name="revisionBlueprint" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CDSourceControlBlueprint" inverseName="integration" inverseEntity="CDSourceControlBlueprint"/>
+    </entity>
+    <entity name="CDIntegrationAssets" representedClassName="CDIntegrationAssets" syncable="YES" codeGenerationType="class">
+        <relationship name="archive" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CDLogFile" inverseName="archiveIntegration" inverseEntity="CDLogFile"/>
+        <relationship name="buildServiceLog" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CDLogFile" inverseName="buildServiceLogIntegration" inverseEntity="CDLogFile"/>
+        <relationship name="integration" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDIntegration" inverseName="assets" inverseEntity="CDIntegration"/>
+        <relationship name="sourceControlLog" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CDLogFile" inverseName="sourceControlLogIntegration" inverseEntity="CDLogFile"/>
+        <relationship name="triggerAssets" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CDLogFile" inverseName="triggerAssetsIntegration" inverseEntity="CDLogFile"/>
+        <relationship name="xcodebuildLog" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CDLogFile" inverseName="xcodebuildLogIntgeration" inverseEntity="CDLogFile"/>
+        <relationship name="xcodebuildOutput" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CDLogFile" inverseName="xcodebuildOutputIntgeration" inverseEntity="CDLogFile"/>
+    </entity>
+    <entity name="CDIPAExportOptions" representedClassName="CDIPAExportOptions" syncable="YES" codeGenerationType="class">
+        <attribute name="compileBitcode" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="destination" optional="YES" attributeType="String"/>
+        <attribute name="method" optional="YES" attributeType="String"/>
+        <attribute name="provisioningProfiles" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[String: String]"/>
+        <attribute name="signingCertificate" optional="YES" attributeType="String"/>
+        <attribute name="signingStyle" optional="YES" attributeType="String"/>
+        <attribute name="stripSwiftSymbols" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="teamID" optional="YES" attributeType="String"/>
+        <attribute name="thinning" optional="YES" attributeType="String"/>
+        <relationship name="archiveExportOption" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDArchiveExportOptions" inverseName="exportOptions" inverseEntity="CDArchiveExportOptions"/>
+    </entity>
+    <entity name="CDLogFile" representedClassName="CDLogFile" syncable="YES" codeGenerationType="class">
+        <attribute name="allowAnonymousAccess" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="fileName" optional="YES" attributeType="String"/>
+        <attribute name="isDirectory" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="relativePath" optional="YES" attributeType="String"/>
+        <attribute name="size" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="archiveIntegration" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDIntegrationAssets" inverseName="archive" inverseEntity="CDIntegrationAssets"/>
+        <relationship name="buildServiceLogIntegration" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDIntegrationAssets" inverseName="buildServiceLog" inverseEntity="CDIntegrationAssets"/>
+        <relationship name="sourceControlLogIntegration" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDIntegrationAssets" inverseName="sourceControlLog" inverseEntity="CDIntegrationAssets"/>
+        <relationship name="triggerAssetsIntegration" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDIntegrationAssets" inverseName="triggerAssets" inverseEntity="CDIntegrationAssets"/>
+        <relationship name="xcodebuildLogIntgeration" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDIntegrationAssets" inverseName="xcodebuildLog" inverseEntity="CDIntegrationAssets"/>
+        <relationship name="xcodebuildOutputIntgeration" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDIntegrationAssets" inverseName="xcodebuildOutput" inverseEntity="CDIntegrationAssets"/>
+    </entity>
+    <entity name="CDPlatform" representedClassName="CDPlatform" syncable="YES" codeGenerationType="class">
+        <attribute name="buildNumber" optional="YES" attributeType="String"/>
+        <attribute name="displayName" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="String"/>
+        <attribute name="identifier" optional="YES" attributeType="String"/>
+        <attribute name="rev" optional="YES" attributeType="String"/>
+        <attribute name="simulatorIdentifier" optional="YES" attributeType="String"/>
+        <attribute name="version" optional="YES" attributeType="String"/>
+        <relationship name="deviceFilter" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDTestDeviceFilter" inverseName="platform" inverseEntity="CDTestDeviceFilter"/>
+    </entity>
+    <entity name="CDProvisioningConfiguration" representedClassName="CDProvisioningConfiguration" syncable="YES" codeGenerationType="class">
+        <attribute name="addMissingDevicesToTeams" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="manageCertsAndProfiles" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <relationship name="botConfiguration" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDBotConfiguration" inverseName="provisioningConfiguration" inverseEntity="CDBotConfiguration"/>
+    </entity>
+    <entity name="CDRemoteRepository" representedClassName="CDRemoteRepository" syncable="YES" codeGenerationType="class">
+        <attribute name="identifierKey" optional="YES" attributeType="String"/>
+        <attribute name="systemKey" optional="YES" attributeType="String"/>
+        <attribute name="urlKey" optional="YES" attributeType="String"/>
+        <relationship name="blueprint" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDSourceControlBlueprint" inverseName="remoteRepositoriesKey" inverseEntity="CDSourceControlBlueprint"/>
+    </entity>
+    <entity name="CDServer" representedClassName="CDServer" syncable="YES" codeGenerationType="class">
+        <attribute name="id" attributeType="String"/>
+        <attribute name="ipAddress" attributeType="String"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="netRCFilename" optional="YES" attributeType="String"/>
+        <attribute name="reachability" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="sshAddress" optional="YES" attributeType="String"/>
+        <attribute name="sshUser" optional="YES" attributeType="String"/>
+        <relationship name="items" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDBot" inverseName="server" inverseEntity="CDBot"/>
+    </entity>
+    <entity name="CDSingleSourceControlLocation" representedClassName="CDSingleSourceControlLocation" syncable="YES" codeGenerationType="class">
+        <attribute name="key" optional="YES" attributeType="String"/>
+        <relationship name="blueprint" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDSourceControlBlueprint" inverseName="locations" inverseEntity="CDSourceControlBlueprint"/>
+        <relationship name="value" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDSourceControlLocation" inverseName="container" inverseEntity="CDSourceControlLocation"/>
+    </entity>
+    <entity name="CDSourceControlBlueprint" representedClassName="CDSourceControlBlueprint" syncable="YES" codeGenerationType="class">
+        <attribute name="identifierKey" optional="YES" attributeType="String"/>
+        <attribute name="nameKey" optional="YES" attributeType="String"/>
+        <attribute name="primaryRemoteRepositoryKey" optional="YES" attributeType="String"/>
+        <attribute name="relativePathToProjectKey" optional="YES" attributeType="String"/>
+        <attribute name="remoteRepositoryAuthenticationStrategiesKey" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[String: [String: String]]"/>
+        <attribute name="version" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="workingCopyPathsKey" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[String: String]"/>
+        <attribute name="workingCopyStatesKey" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[String: Int]"/>
+        <relationship name="botConfiguration" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDBotConfiguration" inverseName="sourceControlBlueprint" inverseEntity="CDBotConfiguration"/>
+        <relationship name="integration" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDIntegration" inverseName="revisionBlueprint" inverseEntity="CDIntegration"/>
+        <relationship name="locations" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CDSingleSourceControlLocation" inverseName="blueprint" inverseEntity="CDSingleSourceControlLocation"/>
+        <relationship name="remoteRepositoriesKey" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CDRemoteRepository" inverseName="blueprint" inverseEntity="CDRemoteRepository"/>
+    </entity>
+    <entity name="CDSourceControlLocation" representedClassName="CDSourceControlLocation" syncable="YES" codeGenerationType="class">
+        <attribute name="branchIdentifierKey" optional="YES" attributeType="String"/>
+        <attribute name="branchOptionsKeyValue" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="locationRevisionKey" optional="YES" attributeType="String"/>
+        <attribute name="pathIdentifierKey" optional="YES" attributeType="String"/>
+        <attribute name="workspaceBlueprintLocationTypeKeyValue" optional="YES" attributeType="String"/>
+        <relationship name="container" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDSingleSourceControlLocation" inverseName="value" inverseEntity="CDSingleSourceControlLocation"/>
+    </entity>
+    <entity name="CDTestDeviceFilter" representedClassName="CDTestDeviceFilter" syncable="YES" codeGenerationType="class">
+        <attribute name="architectureType" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="filterType" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="platform" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CDPlatform" inverseName="deviceFilter" inverseEntity="CDPlatform"/>
+        <relationship name="specification" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDTestDeviceSpecification" inverseName="filters" inverseEntity="CDTestDeviceSpecification"/>
+    </entity>
+    <entity name="CDTestDeviceSpecification" representedClassName="CDTestDeviceSpecification" syncable="YES" codeGenerationType="class">
+        <attribute name="deviceIdentifiers" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[String]"/>
+        <relationship name="botConfiguration" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDBotConfiguration" inverseName="deviceSpecification" inverseEntity="CDBotConfiguration"/>
+        <relationship name="filters" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CDTestDeviceFilter" inverseName="specification" inverseEntity="CDTestDeviceFilter"/>
+    </entity>
+    <entity name="CDTrigger" representedClassName="CDTrigger" syncable="YES" codeGenerationType="class">
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="phaseValue" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="scriptBody" optional="YES" attributeType="String"/>
+        <attribute name="type" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="conditions" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CDTriggerConditions" inverseName="trigger" inverseEntity="CDTriggerConditions"/>
+        <relationship name="configuration" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDBotConfiguration" inverseName="triggers" inverseEntity="CDBotConfiguration"/>
+        <relationship name="emailConfiguration" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CDEmailConfiguration" inverseName="trigger" inverseEntity="CDEmailConfiguration"/>
+    </entity>
+    <entity name="CDTriggerConditions" representedClassName="CDTriggerConditions" syncable="YES" codeGenerationType="class">
+        <attribute name="onAllIssuesResolved" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="onAnalyzerWarnings" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="onBuildErrors" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="onFailingTests" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="onSuccess" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="onWarnings" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="status" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="trigger" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDTrigger" inverseName="conditions" inverseEntity="CDTrigger"/>
+    </entity>
+    <elements>
+        <element name="CDArchiveExportOptions" positionX="-63" positionY="9" width="128" height="89"/>
+        <element name="CDBot" positionX="-491.1072998046875" positionY="-219.3464813232422" width="128" height="164"/>
+        <element name="CDBotConfiguration" positionX="38.507568359375" positionY="-71.05398559570312" width="128" height="374"/>
+        <element name="CDBuildResultSummary" positionX="-243" positionY="-27" width="128" height="14"/>
+        <element name="CDEmailConfiguration" positionX="-54" positionY="18" width="128" height="14"/>
+        <element name="CDIntegration" positionX="-86.988525390625" positionY="-211.8628845214844" width="128" height="269"/>
+        <element name="CDIntegrationAssets" positionX="-297" positionY="-81" width="128" height="134"/>
+        <element name="CDIPAExportOptions" positionX="-54" positionY="18" width="128" height="14"/>
+        <element name="CDLogFile" positionX="-288" positionY="-72" width="128" height="14"/>
+        <element name="CDPlatform" positionX="-72" positionY="0" width="128" height="14"/>
+        <element name="CDProvisioningConfiguration" positionX="-45" positionY="27" width="128" height="14"/>
+        <element name="CDRemoteRepository" positionX="-225.8842163085938" positionY="141.7715148925781" width="128" height="14"/>
+        <element name="CDServer" positionX="-313.3782958984375" positionY="21.42233276367188" width="128" height="149"/>
+        <element name="CDSingleSourceControlLocation" positionX="-288" positionY="-54" width="128" height="74"/>
+        <element name="CDSourceControlBlueprint" positionX="-45" positionY="27" width="128" height="209"/>
+        <element name="CDSourceControlLocation" positionX="-36" positionY="36" width="128" height="119"/>
+        <element name="CDTestDeviceFilter" positionX="-81" positionY="-9" width="128" height="89"/>
+        <element name="CDTestDeviceSpecification" positionX="-81" positionY="-9" width="128" height="74"/>
+        <element name="CDTrigger" positionX="-72" positionY="0" width="128" height="134"/>
+        <element name="CDTriggerConditions" positionX="-63" positionY="9" width="128" height="14"/>
+    </elements>
+</model>

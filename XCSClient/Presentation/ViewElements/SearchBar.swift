@@ -15,7 +15,7 @@ struct SearchBar: View {
         HStack(spacing: 0) {
             Spacer()
             Text("🔍")
-            TextField("Search", text: $query)
+            TextField("Filter bots", text: $query)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding(8)
             Button(action: { self.query = "" }) {

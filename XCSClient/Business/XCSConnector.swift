@@ -58,8 +58,8 @@ class XCSConnector: ObservableObject {
         }
     }
     
-    func integrate(_ bot: Bot, completion: @escaping (Result<Integration, Error>) -> Void) {
-        guard let botId = bot.id, !botId.isEmpty else {
+    func integrate(_ botId: String?, completion: @escaping (Result<Integration, Error>) -> Void) {
+        guard let botId = botId, !botId.isEmpty else {
             completion(.failure(NSError(message: "Parameter error")))
             return
         }
@@ -84,8 +84,8 @@ class XCSConnector: ObservableObject {
         }
     }
     
-    func duplicate(_ bot: Bot, completion: @escaping (Result<Bot, Error>) -> Void) {
-        guard let botId = bot.id, !botId.isEmpty else {
+    func duplicateBot(with botId: String, completion: @escaping (Result<Bot, Error>) -> Void) {
+        guard !botId.isEmpty else {
             completion(.failure(NSError(message: "Parameter error")))
             return
         }
@@ -97,9 +97,9 @@ class XCSConnector: ObservableObject {
         }
     }
     
-    func delete(_ bot: Bot, completion: @escaping (Result<Bool, Error>) -> Void) {
-        guard let botId = bot.id, !botId.isEmpty,
-            let revId = bot.rev, !revId.isEmpty else {
+    func deleteBot(with botId: String, revId: String, completion: @escaping (Result<Bool, Error>) -> Void) {
+        guard !botId.isEmpty,
+              !revId.isEmpty else {
                 completion(.failure(NSError(message: "Parameter error")))
                 return
         }
@@ -111,26 +111,8 @@ class XCSConnector: ObservableObject {
         }
     }
     
-    func exportBotSettings(of bot: Bot, completion: @escaping (Result<Data, Error>) -> Void) {
-        var duplicate = bot
-        duplicate.requiresUpgrade = false
-        duplicate.duplicatedFrom = bot.id ?? ""
-        
-        duplicate.id = nil
-        duplicate.rev = nil
-        duplicate.tinyID = nil
-        duplicate.docType = nil
-        duplicate.integrationCounter = nil
-        duplicate.lastRevisionBlueprint = nil
-        duplicate.sourceControlBlueprintIdentifier = nil
-        
-        duplicate.configuration?.sourceControlBlueprint?.identifierKey = UUID().uuidString
-        
-        completion(.success(Data(duplicate.asBodyParamater.utf8)))
-    }
-    
-    func applySettings(at fileUrl: URL, fileName: String, toBot bot: Bot, completion: @escaping (Result<Bot, Error>) -> Void) {
-        guard let botId = bot.id, !botId.isEmpty else {
+    func applySettings(at fileUrl: URL, fileName: String, toBot botId: String, completion: @escaping (Result<Bot, Error>) -> Void) {
+        guard !botId.isEmpty else {
             completion(.failure(NSError(message: "Parameter error")))
             return
         }
@@ -142,9 +124,9 @@ class XCSConnector: ObservableObject {
         }
     }
     
-    func exportIntegrationAssets(of integration: Integration, to targetUrl: URL, completion: @escaping (Result<Bool, Error>) -> Void) {
+    func exportIntegrationAssets(of integrationId: String, to targetUrl: URL, completion: @escaping (Result<Bool, Error>) -> Void) {
         DispatchQueue.global(qos: .userInitiated).async {
-            let rslt = self.server.downloadAssets(for: integration.id, to: targetUrl)
+            let rslt = self.server.downloadAssets(for: integrationId, to: targetUrl)
             DispatchQueue.main.async {
                 completion(rslt)
             }
@@ -152,6 +134,10 @@ class XCSConnector: ObservableObject {
     }
     
     func downloadAssets(at path: String, to targetUrl: URL, completion: @escaping (Result<Bool, Error>) -> Void) {
+        guard !path.isEmpty else {
+            completion(.failure(Server.ServerError.parameterError))
+            return
+        }
         DispatchQueue.global(qos: .userInitiated).async {
             let rslt = self.server.downloadAsset(path, to: targetUrl)
             DispatchQueue.main.async {
@@ -161,6 +147,10 @@ class XCSConnector: ObservableObject {
     }
     
     func loadAsset(at path: String, completion: @escaping (Result<Data, Error>) -> Void) {
+        guard !path.isEmpty else {
+            completion(.failure(Server.ServerError.parameterError))
+            return
+        }
         DispatchQueue.global(qos: .userInitiated).async {
             let rslt = self.server.loadAsset(path)
             DispatchQueue.main.async {

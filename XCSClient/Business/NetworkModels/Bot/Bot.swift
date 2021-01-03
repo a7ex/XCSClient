@@ -10,7 +10,7 @@ import Foundation
 
 // we use 'var's here, as we need to be able to create bots from scratch
 //
-struct Bot: Codable {
+struct Bot: Codable, RequestBodyParameterProvider {
     var id: String?
     var rev: String?
     var configuration: BotConfiguration?

@@ -13,6 +13,7 @@ struct BotListView: View {
     @EnvironmentObject var connector: XCSConnector
     @ObservedObject var viewModel = BotListVM()
     @State private var botlistWindowDelegate = BotlistWindowDelegate()
+    @State private var botIDsToLoad = [String]()
     
     let refreshPublisher = NotificationCenter.default
         .publisher(for: NSNotification.Name("RefreshBotList"))
@@ -40,8 +41,12 @@ struct BotListView: View {
                 Divider()
                 SearchBar(query: $viewModel.searchQuery)
                 List(viewModel.items, id: \.id, children: \.items) { item in
-                    NavigationLink(destination: item.destination) {
-                        Text(item.title)
+                    HStack {
+                        Image(systemName: "largecircle.fill.circle")
+                            .foregroundColor(item.statusColor)
+                        NavigationLink(destination: item.destination) {
+                            Text(item.title)
+                        }
                     }
                 }
                 .listStyle(SidebarListStyle())
@@ -73,16 +78,27 @@ struct BotListView: View {
         }
     }
     
+    
     private func loadAllIntegrations() {
-        for bot in viewModel.allItems {
-            connector.getIntegrationsList(for: bot.id, last: 10) { (result) in
-                switch result {
-                case .success(let integrations):
-                    self.viewModel.insertIntegrations(for: bot.id, integrations: integrations.map { IntegrationVM(integration: $0) })
-                case .failure(let error):
-                    print("\(error)")
-                }
+        botIDsToLoad = viewModel.allItems.map({ $0.id })
+        for _ in 1...4 {
+            loadNextIntegration()
+        }
+    }
+    
+    private func loadNextIntegration() {
+        guard !botIDsToLoad.isEmpty else {
+            return
+        }
+        let currentBotId = botIDsToLoad.removeFirst()
+        connector.getIntegrationsList(for: currentBotId, last: 10) { (result) in
+            switch result {
+            case .success(let integrations):
+                self.viewModel.insertIntegrations(for: currentBotId, integrations: integrations.map { IntegrationVM(integration: $0) })
+            case .failure(let error):
+                print("\(error)")
             }
+            loadNextIntegration()
         }
     }
     

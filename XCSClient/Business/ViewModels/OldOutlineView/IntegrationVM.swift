@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct IntegrationVM {
+struct IntegrationVM: IntegrationViewModel {
     private static let timeFormatter: DateComponentsFormatter = {
         let formatter = DateComponentsFormatter()
         formatter.allowedUnits = [.hour, .minute, .second]
@@ -45,10 +45,10 @@ struct IntegrationVM {
     
     let integrationModel: Integration
     
-    var id: String {
+    var idString: String {
         return integrationModel.id
     }
-    var tinyID: String {
+    var tinyIDString: String {
         return integrationModel.tinyID ?? "- missing -"
     }
     var botName: String {
@@ -57,30 +57,30 @@ struct IntegrationVM {
     var botId: String {
         return integrationModel.bot?.id ?? ""
     }
-    var bot: BotVM? {
-        guard let bot = integrationModel.bot else {
-            return nil
-        }
-        return BotVM(bot: bot)
-    }
-    var currentStep: String {
+//    var botVM: BotViewModel? {
+//        guard let bot = integrationModel.bot else {
+//            return nil
+//        }
+//        return BotVM(bot: bot)
+//    }
+    var currentStepString: String {
         return integrationModel.currentStep ?? ""
     }
-    var duration: String {
+    var durationString: String {
         return Self.timeFormatter.string(from: integrationModel.duration ?? 0) ?? ""
     }
     var listTitle: String {
-        if tinyID == "Loading integrations…" {
+        if tinyIDString == "Loading integrations…" {
             return "Loading integrations…"
         }
-        var title = "(\(number)) "
+        var title = "(\(numberInt)) "
         if let date = integrationModel.queuedDate {
             title += "\(Self.fullDateFormatter.string(from: date))\t"
         }
-        if result == "unknown" {
-            title += currentStep
+        if resultString == "unknown" {
+            title += currentStepString
         } else {
-            title += result
+            title += resultString
         }
         return title
     }
@@ -101,13 +101,17 @@ struct IntegrationVM {
         return times
     }
     
-    var endedTime: String {
+    var startedTime: Date? {
+        return integrationModel.startedTime
+    }
+    
+    var endedTimeString: String {
         if let date = integrationModel.endedTime {
             return "Ended: \(Self.onlyTimeDateFormatter.string(from: date))"
         }
         return ""
     }
-    var result: String {
+    var resultString: String {
         return (integrationModel.result ?? IntegrationResult.unknown).rawValue
     }
     var statusColor: Color {
@@ -132,7 +136,7 @@ struct IntegrationVM {
     var testedDevices: String {
         return Self.dateFormatter.string(from: integrationModel.startedTime ?? Date.distantPast)
     }
-    var number: Int {
+    var numberInt: Int {
         return integrationModel.number ?? 0
     }
     var errorCount: Int {

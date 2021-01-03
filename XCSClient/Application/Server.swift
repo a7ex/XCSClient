@@ -21,11 +21,11 @@ struct Server {
     
     // MARK: - Private instance variables
     
+    private let xcodeServerAddress: String
+    private let sshEndpoint: String
+    
     private let curlToBot: String
     private let sshToBotArguments: [String]
-    
-    private let sshEndpoint: String
-    private let xcodeServerAddress: String
     
     private let secureCopy = "/usr/bin/scp"
     
@@ -219,6 +219,9 @@ struct Server {
     }
     
     func loadAsset(_ path: String) -> Result<Data, Error> {
+        guard !path.isEmpty else {
+            return .failure(ServerError.parameterError)
+        }
         let newArguments = defaultArguments + ["\(apiUrl)/assets/\(path.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? path)"]
         let rslt = execute(program: curlToBot, with: newArguments)
         switch rslt {

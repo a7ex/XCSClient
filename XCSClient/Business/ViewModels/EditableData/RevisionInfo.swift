@@ -28,6 +28,14 @@ struct RevisionInfo {
         } else {
             date = ""
         }
+        if let firstline = revisionLines.first,
+           firstline.trimmingCharacters(in: .whitespaces).isEmpty {
+                revisionLines.remove(at: 0)
+        }
+        while let last = revisionLines.last,
+              last.trimmingCharacters(in: .whitespaces).isEmpty {
+                revisionLines.removeLast()
+        }
         comment = revisionLines.joined(separator: "\n")
     }
     

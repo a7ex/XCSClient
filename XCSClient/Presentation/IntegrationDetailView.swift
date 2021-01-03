@@ -10,7 +10,7 @@ import SwiftUI
 import Combine
 
 struct IntegrationDetailView: View {
-    let integration: IntegrationVM
+    let integration: IntegrationViewModel
     
     @EnvironmentObject var connector: XCSConnector
     
@@ -31,48 +31,47 @@ struct IntegrationDetailView: View {
             return ""
         }
         
-        if !integration.endedTime.isEmpty {
+        if !integration.endedTimeString.isEmpty {
             timer.upstream.connect().cancel()
-            return integration.duration
+            return integration.durationString
         }
         
         let interval = startDate.timeIntervalSinceNow * -1
-        if (Int(interval) % 10) == 0 {
-            refreshLastIntegration(of: integration.botId)
-        }
+//        if (Int(interval) % 10) == 0 {
+//            refreshLastIntegration(of: integration.botId)
+//        }
         let fmt = DateComponentsFormatter()
         return fmt.string(from: interval) ?? ""
     }
     
-    private func refreshLastIntegration(of botId: String) {
-        connector.getIntegrationsList(for: botId, last: 1) { (result) in
-            if case let .success(integrations) = result {
-                if let integration = integrations.first,
-                    let result = integration.result,
-                    result == .unknown {
-                    //                    self.integration.integrationModel = integration
-                }
-            }
-        }
-    }
+//    private func refreshLastIntegration(of botId: String) {
+//        connector.getIntegrationsList(for: botId, last: 1) { (result) in
+//            if case let .success(integrations) = result {
+//                if let integration = integrations.first,
+//                    let result = integration.result,
+//                    result == .unknown {
+//                    //                    self.integration.integrationModel = integration
+//                }
+//            }
+//        }
+//    }
     
     
     var body: some View {
         ZStack {
             VStack() {
                 HStack {
-                    Text("●")
+                    Image(systemName: "largecircle.fill.circle")
                         .foregroundColor(integration.statusColor)
-                    Text("Integration \(integration.tinyID) (\(integration.number)) - \(integration.result)")
+                    Text("Integration \(integration.tinyIDString) (\(integration.numberInt)) - \(integration.resultString)")
                         .font(.headline)
                 }
                 Divider()
                 Group {
-                    UpdatingStatusText(currentStatus: integration.currentStep, botId: integration.botId)
+                    UpdatingStatusText(currentStatus: integration.currentStepString, botId: integration.botId)
                         .font(.subheadline)
                         .padding(.bottom, 8)
-                    LabeledStringValue(label: "Result", value: integration.result)
-                    LabeledStringValue(label: "ID", value: integration.id)
+                    LabeledStringValue(label: "ID", value: integration.idString)
                     LabeledStringValue(label: "Bot", value: integration.botName)
                     LabeledStringValue(label: "Date", value: integration.startDate)
                     if !integration.startTimes.isEmpty {
@@ -80,14 +79,14 @@ struct IntegrationDetailView: View {
                     }
                 }
                 Group {
-                    if !integration.endedTime.isEmpty {
-                        LabeledStringValue(label: "End time", value: integration.endedTime)
+                    if !integration.endedTimeString.isEmpty {
+                        LabeledStringValue(label: "End time", value: integration.endedTimeString)
                     }
-                    if integration.integrationModel.startedTime != nil {
+                    if integration.startedTime != nil {
                         LabeledStringValue(label: "Duration", value: durationInSeconds)
                             .onReceive(timer) { (timer) in
-                                self.durationInSeconds = self.timeSpanFromNow(to: self.integration.integrationModel.startedTime)
-                        }
+                                self.durationInSeconds = self.timeSpanFromNow(to: self.integration.startedTime)
+                            }
                     }
                     LabeledStringValue(label: "Code Coverage percentage", value: integration.codeCoverage)
                     LabeledStringValue(label: "Performance Test changes", value: integration.performanceTests)
@@ -102,7 +101,7 @@ struct IntegrationDetailView: View {
                             Text(revisionInfo.author)
                             Text(revisionInfo.date)
                             Text(revisionInfo.comment)
-                                .font(.headline)
+                                .fontWeight(.bold)
                         }
                         Spacer()
                     }
@@ -137,19 +136,16 @@ struct IntegrationDetailView: View {
                     VStack {
                         Text(integration.testFailureCount > 0 ? "❌": "✅")
                             .font(.largeTitle)
-                        Text("\(integration.passedTestsCount) Passed tests")
+                        Text("Passed/Failed tests: \(integration.passedTestsCount)/\(integration.testFailureCount)")
                             .font(.headline)
-                        Text("(\(integration.passedTestsChange))")
-                        Text("\(integration.testFailureCount) Failed tests")
-                            .font(.headline)
-                        Text("(\(integration.testFailureChange))")
+                        Text("(\(integration.passedTestsChange)/\(integration.testFailureChange))")
                     }
                     Spacer()
                 }
                 Divider()
                 Group {
-                    if integration.result == IntegrationResult.unknown.rawValue {
-                        Button(action: { self.cancelIntegration(self.integration.id) }) {
+                    if integration.resultString == IntegrationResult.unknown.rawValue {
+                        Button(action: { self.cancelIntegration(self.integration.idString) }) {
                             ButtonLabel(text: "Cancel integration")
                         }
                     }
@@ -216,7 +212,6 @@ struct IntegrationDetailView: View {
             }
         }
         .onAppear {
-            _ = self.timer.upstream.autoconnect()
             self.loadCommitData()
             if integration.archive.size > 0 {
                 self.findIpa()
@@ -224,14 +219,14 @@ struct IntegrationDetailView: View {
         }
     }
     
-    private func export(_ integration: IntegrationVM) {
-        guard let url = fileHelper.getSaveURLFromUser(for: "Results-\(integration.tinyID).tgz") else {
+    private func export(_ integration: IntegrationViewModel) {
+        guard let url = fileHelper.getSaveURLFromUser(for: "Results-\(integration.tinyIDString).tgz") else {
             return
         }
         withAnimation {
             self.activityShowing = true
         }
-        connector.exportIntegrationAssets(of: integration.integrationModel, to: url) { (result) in
+        connector.exportIntegrationAssets(of: integration.idString, to: url) { (result) in
             withAnimation {
                 self.activityShowing = false
             }
@@ -246,8 +241,11 @@ struct IntegrationDetailView: View {
     }
     
     private func loadCommitData() {
-        let asset = integration.sourceControlLog
-        connector.loadAsset(at: asset.path) { (result) in
+        let assetPath = integration.sourceControlLog.path
+        guard !assetPath.isEmpty else {
+            return
+        }
+        connector.loadAsset(at: assetPath) { (result) in
             switch result {
             case .success(let logData):
                 guard let str = String(data: logData, encoding: .utf8) else {
@@ -266,8 +264,11 @@ struct IntegrationDetailView: View {
     }
     
     private func findIpa() {
-        let asset = integration.buildServiceLog
-        connector.loadAsset(at: asset.path) { (result) in
+        let assetPath = integration.buildServiceLog.path
+        guard !assetPath.isEmpty else {
+            return
+        }
+        connector.loadAsset(at: assetPath) { (result) in
             switch result {
             case .success(let logData):
                 guard let str = String(data: logData, encoding: .utf8),
@@ -285,7 +286,7 @@ struct IntegrationDetailView: View {
                     machineName: machineName,
                     botID: integration.botId,
                     botName: integration.botName,
-                    integrationNumber: integration.number) { path in
+                    integrationNumber: integration.numberInt) { path in
                     ipaPath = path
                 }
             case .failure:
@@ -322,11 +323,15 @@ struct IntegrationDetailView: View {
     }
     
     private func downloadAsset(_ asset: FileDescriptor) {
+        let assetPath = asset.path
+        guard !assetPath.isEmpty else {
+            return
+        }
         if asset.size < 500000 { // 500 KB
             withAnimation {
                 self.activityShowing = true
             }
-            connector.loadAsset(at: asset.path) { (result) in
+            connector.loadAsset(at: assetPath) { (result) in
                 withAnimation {
                     self.activityShowing = false
                 }
@@ -354,7 +359,7 @@ struct IntegrationDetailView: View {
             withAnimation {
                 self.activityShowing = true
             }
-            connector.downloadAssets(at: asset.path, to: url) { (result) in
+            connector.downloadAssets(at: assetPath, to: url) { (result) in
                 withAnimation {
                     self.activityShowing = false
                 }

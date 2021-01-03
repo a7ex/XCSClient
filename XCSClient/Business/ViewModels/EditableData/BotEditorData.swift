@@ -24,32 +24,34 @@ class BotEditorData: ObservableObject {
     @Published var triggerScripts = [TriggerScript]()
     @Published var environmentVariables = [VariablePair]()
     @Published var exportOptions = ArchiveExportOptions(name: "", createdAt: Date.distantPast, exportOptions: nil)
-    
-    func setup(with bot: BotVM) {
+}
+
+extension BotEditorData {
+    func setup(with bot: BotViewModel) {
         branch = bot.sourceControlBranch
         scheme = bot.schemeName
         buildConfig = bot.buildConfiguration
         additionalBuildArguments = bot.additionalBuildArguments
-        name = bot.name
+        name = bot.nameString
         performsAnalyzeAction = bot.performsAnalyzeAction
         performsTestAction = bot.performsTestAction
         performsArchiveAction = bot.performsArchiveAction
         performsUpgradeIntegration = bot.performsUpgradeIntegration
         disableAppThinning = bot.disableAppThinning
         exportsProductFromArchive = bot.exportsProductFromArchive
-        scheduleType = bot.scheduleType
+        scheduleType = bot.scheduleTypeAsString
         triggerScripts = bot.triggerScripts
         var vars = [VariablePair]()
         for (key, value) in bot.buildEnvironmentVariables {
             vars.append(VariablePair(id: key, value: value))
         }
         environmentVariables = vars
-        exportOptions = bot.botModel.configuration?.archiveExportOptions ?? ArchiveExportOptions(name: "", createdAt: Date.distantPast, exportOptions: nil)
+        exportOptions = bot.archiveExportOptions
     }
 }
 
 extension Bot {
-    func applying(_ editableData: BotEditorData) -> Bot {
+    func applying(_ editableData: BotEditorData) -> RequestBodyParameterProvider {
         var duplicate = self
         duplicate.requiresUpgrade = false
         duplicate.duplicatedFrom = id

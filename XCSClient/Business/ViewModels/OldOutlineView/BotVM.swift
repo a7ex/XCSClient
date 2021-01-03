@@ -8,19 +8,45 @@
 
 import Foundation
 
-struct BotVM {
+struct BotVM: BotViewModel {
     let botModel: Bot
     
-    var id: String {
+    init(bot: Bot) {
+        botModel = bot
+    }
+    
+    func applying(_ botEditableData: BotEditorData) -> RequestBodyParameterProvider {
+        return botModel.applying(botEditableData)
+    }
+    
+    var exportSettings: String {
+        var duplicate = self.botModel
+        duplicate.requiresUpgrade = false
+        duplicate.duplicatedFrom = botModel.id ?? ""
+        duplicate.id = nil
+        duplicate.rev = nil
+        duplicate.tinyID = nil
+        duplicate.docType = nil
+        duplicate.integrationCounter = nil
+        duplicate.lastRevisionBlueprint = nil
+        duplicate.sourceControlBlueprintIdentifier = nil
+        duplicate.configuration?.sourceControlBlueprint?.identifierKey = UUID().uuidString
+        return duplicate.asBodyParamater
+    }
+    
+    var idString: String {
         return botModel.id ?? UUID().uuidString
     }
-    var tinyID: String {
+    var revIdString: String {
+        return botModel.rev ?? UUID().uuidString
+    }
+    var tinyIDString: String {
         return botModel.tinyID ?? "- missing -"
     }
-    var name: String {
+    var nameString: String {
         return botModel.name
     }
-    var integrationCounter: Int {
+    var integrationCounterInt: Int {
         return botModel.integrationCounter ?? 0
     }
     var performsAnalyzeAction: Bool {
@@ -67,11 +93,17 @@ struct BotVM {
     var weeklyScheduleDay: String {
         return botModel.configuration?.weeklyScheduleDay?.string ?? ""
     }
-    var periodicScheduleInterval: String {
-        return botModel.configuration?.periodicScheduleInterval?.string ?? ""
+    var periodicScheduleIntervalString: String {
+        return periodicScheduleInterval.string
     }
-    var scheduleType: String {
-        return botModel.configuration?.scheduleType?.string ?? ""
+    var periodicScheduleInterval: PeriodicScheduleInterval {
+        botModel.configuration?.periodicScheduleInterval ?? PeriodicScheduleInterval.none
+    }
+    var scheduleTypeAsString: String {
+        return scheduleType.string
+    }
+    var scheduleType: ScheduleType {
+        return botModel.configuration?.scheduleType ?? ScheduleType.none
     }
     var schemeName: String {
         return botModel.configuration?.schemeName ?? ""
@@ -93,9 +125,8 @@ struct BotVM {
         }
         return triggers.compactMap { TriggerScript(name: $0.name, script: $0.scriptBody) }
     }
-    
-    init(bot: Bot) {
-        botModel = bot
+    var archiveExportOptions: ArchiveExportOptions {
+        return botModel.configuration?.archiveExportOptions ?? ArchiveExportOptions(name: "", createdAt: Date.distantPast, exportOptions: nil)
     }
 }
 

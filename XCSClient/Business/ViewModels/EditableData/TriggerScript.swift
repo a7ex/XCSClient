@@ -23,3 +23,12 @@ struct TriggerScript {
         self.script = script
     }
 }
+
+extension CDTrigger {
+    var asTriggerScript: TriggerScript? {
+        return TriggerScript(
+            name: name,
+            script: scriptBody
+        )
+    }
+}

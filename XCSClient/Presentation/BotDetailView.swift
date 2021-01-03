@@ -9,7 +9,9 @@
 import SwiftUI
 
 struct BotDetailView: View {
-    let bot: BotVM
+    let bot: BotViewModel
+    let changeClosure: (Bot) -> Void
+    
     @EnvironmentObject var connector: XCSConnector
     
     @State private var hasError = false
@@ -24,20 +26,21 @@ struct BotDetailView: View {
             VStack {
                 HStack {
                     Spacer()
-                Text(bot.name)
+                    Text(bot.nameString)
                     .font(.headline)
+                    Text("- \(bot.tinyIDString) (\(bot.integrationCounterInt))")
                     Spacer()
                     MenuButton(label: Text("⚙️").font(.headline)) {
-                        Button(action: { self.integrate(self.bot) }) {
+                        Button(action: { self.integrate() }) {
                             Text("Start Integration")
                         }
-                        Button(action: { self.duplicate(self.bot) }) {
+                        Button(action: { self.duplicate() }) {
                             Text("Duplicate Bot")
                         }
-                        Button(action: { self.export(self.bot) }) {
+                        Button(action: { self.export() }) {
                             Text("Export settings…")
                         }
-                        Button(action: { self.apply(to: self.bot) }) {
+                        Button(action: { self.applySettings() }) {
                             Text("Apply settings…")
                         }
                         Button(action: { self.deleteConfirm = true }) {
@@ -48,12 +51,24 @@ struct BotDetailView: View {
                     .menuButtonStyle(BorderlessButtonMenuButtonStyle())
                     .frame(width: 20)
                 }
+                HStack {
+                    Spacer()
+                    Text(bot.idString)
+                        .font(.footnote)
+                        .contextMenu {
+                            Button(action: {
+                                let pb = NSPasteboard.general
+                                pb.declareTypes([.string], owner: nil)
+                                pb.setString(bot.idString, forType: .string)
+                            }) {
+                                Text("Copy")
+                            }
+                        }
+                    Spacer()
+                }
                 Divider()
                 VStack(alignment: .leading, spacing: 8) {
                     Group {
-                        LabeledStringValue(label: "ID", value: bot.id)
-                        LabeledStringValue(label: "TinyId", value: bot.tinyID)
-                        LabeledStringValue(label: "Integration Counter", value: String(bot.integrationCounter))
                         LabeledTextInput(label: "Name", content: $botEditableData.name)
                         LabeledTextInput(label: "Additional Build Arguments", content: $botEditableData.additionalBuildArguments)
                         LabeledTextInput(label: "Scheme", content: $botEditableData.scheme)
@@ -73,14 +88,14 @@ struct BotDetailView: View {
                                 }
                             }
                         }
-                        if bot.botModel.configuration?.scheduleType == ScheduleType.periodically {
-                            LabeledStringValue(label: "Periodic Schedule Interval", value: bot.periodicScheduleInterval)
-                            if bot.botModel.configuration?.periodicScheduleInterval == .weekly {
+                        if bot.scheduleType == ScheduleType.periodically {
+                            LabeledStringValue(label: "Periodic Schedule Interval", value: bot.periodicScheduleIntervalString)
+                            if bot.periodicScheduleInterval == .weekly {
                                 LabeledStringValue(label: "Weekly Schedule Day", value: bot.weeklyScheduleDay)
                                 LabeledStringValue(label: "Hour", value: bot.integrationTimeSchedule)
-                            } else if bot.botModel.configuration?.periodicScheduleInterval == .daily {
+                            } else if bot.periodicScheduleInterval == .daily {
                                 LabeledStringValue(label: "Hour", value: bot.integrationTimeSchedule)
-                            } else if bot.botModel.configuration?.periodicScheduleInterval == .hourly {
+                            } else if bot.periodicScheduleInterval == .hourly {
                                 LabeledStringValue(label: "Minute", value: bot.integrationMinuteSchedule)
                             }
                         }
@@ -109,40 +124,45 @@ struct BotDetailView: View {
                             }
                         }
                     }
-                    HStack {
-                        InfoLabel(content: "Archive Options")
-                            .frame(minWidth: 100, maxWidth: 160, alignment: .leading)
-                            .padding([.bottom], 4)
-                        Button(action: { self.selectExportOptions() }) {
-                            Text("\(bot.archiveExportOptionsName) {…}")
-                        }
-                        if !bot.archiveExportOptionsName.isEmpty {
-                            Text("Provisioning: \(bot.archiveExportOptionsProvisioningProfiles)")
-                        }
-                    }
                     Group {
                         Divider()
                         HStack {
                             Group {
                             Toggle("Analyze", isOn: $botEditableData.performsAnalyzeAction)
                             Toggle("Test", isOn: $botEditableData.performsTestAction)
-                            Toggle("Archive", isOn: $botEditableData.performsArchiveAction)
                             Toggle("Integrate on Upgrade", isOn: $botEditableData.performsUpgradeIntegration)
                             }
                             .padding(.trailing)
                         }
                         Divider()
                         HStack {
+                            Toggle("Archive", isOn: $botEditableData.performsArchiveAction)
                             Toggle("Disable App Thinning", isOn: $botEditableData.disableAppThinning)
+                                .disabled(!botEditableData.performsArchiveAction)
                             Toggle("Exports Product From Archive", isOn: $botEditableData.exportsProductFromArchive)
+                                .disabled(!botEditableData.performsArchiveAction)
+                        }
+                        if botEditableData.exportsProductFromArchive {
+                            Divider()
+                            HStack {
+                                InfoLabel(content: "Archive Options")
+                                    .frame(minWidth: 100, maxWidth: 160, alignment: .leading)
+                                    .padding([.bottom], 4)
+                                Button(action: { self.selectExportOptions() }) {
+                                    Text("\(bot.archiveExportOptionsName) {…}")
+                                }
+                            }
+                            if !bot.archiveExportOptionsName.isEmpty {
+                                LabeledStringValue(label: "Provisioning Profile", value: "\(bot.archiveExportOptionsProvisioningProfiles)")
+                            }
                         }
                     }
                 }
                 Divider()
-                Button(action: { self.uploadChanged(self.bot) }) {
+                Button(action: { self.uploadChanges() }) {
                     ButtonLabel(text: "Save changes")
                 }
-                Button(action: { self.integrate(self.bot) }) {
+                Button(action: { self.integrate() }) {
                     ButtonLabel(text: "Start Integration")
                 }
                 Spacer()
@@ -157,7 +177,7 @@ struct BotDetailView: View {
             }
             .alert(isPresented: $deleteConfirm) {
                 Alert(title: Text("Deleting a bot can not be undone! All archived data for the bot will be erased."),
-                      primaryButton: .default(Text("Delete")) { self.delete(self.bot) },
+                      primaryButton: .default(Text("Delete")) { self.delete() },
                       secondaryButton: .cancel()
                 )
             }
@@ -207,11 +227,14 @@ struct BotDetailView: View {
         }
     }
     
-    private func integrate(_ bot: BotVM) {
-        connector.integrate(bot.botModel) { (result) in
+    private func integrate() {
+        connector.integrate(bot.idString) { (result) in
             switch result {
                 case .success(let integration):
                     self.errorMessage = "Successfully startet integration with ID: \(integration.tinyID ?? integration.id)"
+                    if let bot = bot as? CDBot {
+                        IntegrationUpdateWorker.add(bot)
+                    }
                 case .failure(let error):
                     self.errorMessage = error.localizedDescription
             }
@@ -219,13 +242,13 @@ struct BotDetailView: View {
         }
     }
     
-    private func uploadChanged(_ bot: BotVM) {
-        let newBot = bot.botModel.applying(botEditableData)
+    private func uploadChanges() {
+        let newBot = bot.applying(botEditableData)
         applyChanges(newBot.asBodyParamater, to: bot)
     }
     
-    private func delete(_ bot: BotVM) {
-        connector.delete(bot.botModel) { (result) in
+    private func delete() {
+        connector.deleteBot(with: bot.idString, revId: bot.revIdString) { (result) in
             switch result {
                 case .success(let success):
                     NotificationCenter.default.post(name: NSNotification.Name("RefreshBotList"), object: nil)
@@ -237,8 +260,8 @@ struct BotDetailView: View {
         }
     }
     
-    private func duplicate(_ bot: BotVM) {
-        connector.duplicate(bot.botModel) { (result) in
+    private func duplicate() {
+        connector.duplicateBot(with: bot.idString) { (result) in
             switch result {
                 case .success(let bot):
                     NotificationCenter.default.post(name: NSNotification.Name("RefreshBotList"), object: nil)
@@ -250,19 +273,11 @@ struct BotDetailView: View {
         }
     }
     
-    private func export(_ bot: BotVM) {
-        connector.exportBotSettings(of: bot.botModel) { (result) in
-            switch result {
-                case .success(let json):
-                    self.openBotSettingsEditorWindow(with: String(decoding: json, as: UTF8.self), for: bot)
-                case .failure(let error):
-                    self.errorMessage = error.localizedDescription
-                    self.hasError = true
-            }
-        }
+    private func export() {
+        openBotSettingsEditorWindow(with: bot.exportSettings, for: bot)
     }
     
-    private func apply(to bot: BotVM) {
+    private func applySettings() {
         let panel = NSOpenPanel()
         panel.canChooseFiles = true
         panel.allowedFileTypes = ["json"]
@@ -271,7 +286,7 @@ struct BotDetailView: View {
             let url = panel.url else {
                 return
         }
-        connector.applySettings(at: url, fileName: "\(bot.tinyID).json", toBot: bot.botModel) { (result) in
+        connector.applySettings(at: url, fileName: "\(bot.tinyIDString).json", toBot: bot.idString) { (result) in
             switch result {
                 case .success(let bot):
                     NotificationCenter.default.post(name: NSNotification.Name("RefreshBotList"), object: nil)
@@ -283,7 +298,7 @@ struct BotDetailView: View {
         }
     }
     
-    private func applyChanges(_ newJSON: String, to bot: BotVM) {
+    private func applyChanges(_ newJSON: String, to bot: BotViewModel) {
         let fileManager = FileManager.default
         guard let cachesDirectory = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first else {
             return
@@ -298,7 +313,7 @@ struct BotDetailView: View {
                 self.activityShowing = true
             }
             
-            connector.applySettings(at: tempFileUrl, fileName: "\(bot.tinyID).json", toBot: bot.botModel) { (result) in
+            connector.applySettings(at: tempFileUrl, fileName: "\(bot.tinyIDString).json", toBot: bot.idString) { (result) in
                 
                 withAnimation {
                     self.activityShowing = false
@@ -308,6 +323,7 @@ struct BotDetailView: View {
                 case .success(let bot):
                     NotificationCenter.default.post(name: NSNotification.Name("RefreshBotList"), object: nil)
                     self.errorMessage = "Successfully modified bot: \"\(bot.name)\""
+                    self.changeClosure(bot)
                 case .failure(let error):
                     self.errorMessage = error.localizedDescription
                 }
@@ -319,8 +335,8 @@ struct BotDetailView: View {
         }
     }
     
-    private func openBotSettingsEditorWindow(with textContent: String, for bot: BotVM) {
-        openTextEditorWindow(with: textContent, title: "\(bot.tinyID).json") { newText in
+    private func openBotSettingsEditorWindow(with textContent: String, for bot: BotViewModel) {
+        openTextEditorWindow(with: textContent, title: "\(bot.tinyIDString).json") { newText in
             self.applyChanges(newText, to: bot)
         }
     }
@@ -360,6 +376,6 @@ struct BotDetailView_Previews: PreviewProvider {
         configuration.archiveExportOptions = ArchiveExportOptions(name: "ExportOptions", createdAt: Date(), exportOptions: nil)
         bot.configuration = configuration
         bot.integrationCounter = 12
-        return BotDetailView(bot: BotVM(bot: bot)).environmentObject(XCSConnector.previewServerConnector)
+        return BotDetailView(bot: BotVM(bot: bot), changeClosure: { _ in }).environmentObject(XCSConnector.previewServerConnector)
     }
 }

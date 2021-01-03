@@ -13,6 +13,6 @@ struct ButtonLabel: View {
     
     var body: some View {
         Text(text)
-            .frame(width: 280)
+            .frame(minWidth: 200)
     }
 }

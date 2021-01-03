@@ -6,34 +6,22 @@
 //  Copyright © 2020 Farbflash. All rights reserved.
 //
 
-import Cocoa
 import SwiftUI
-import Combine
 
-@NSApplicationMain
-class AppDelegate: NSObject, NSApplicationDelegate {
-
-    var window: NSWindow!
-
-    func applicationDidFinishLaunching(_ aNotification: Notification) {
-
-        // Create the window and set the content view. 
-        window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 800, height: 600),
-            styleMask: [.titled, .resizable],
-            backing: .buffered, defer: false)
-        window.center()
-        window.setFrameAutosaveName("Main Window")
-        
-        let contentView = LoginView(window: window)
-        
-        window.contentView = NSHostingView(rootView: contentView)
-        window.makeKeyAndOrderFront(nil)
-        
-    }
-
-    func applicationWillTerminate(_ aNotification: Notification) {
-        // Insert code here to tear down your application
+@main
+struct XCSClientApp: App {
+    let window = NSWindow(
+        contentRect: NSRect(x: 0, y: 0, width: 800, height: 600),
+        styleMask: [.titled, .resizable],
+        backing: .buffered, defer: false
+    )
+    let persistenceController = PersistenceController.shared
+    
+    var body: some Scene {
+        WindowGroup {
+            MainView() // LoginView(window: window)
+                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+        }
     }
 }
 
