@@ -4,12 +4,13 @@ GUI Client for Xcode Server written in SwiftUI
 This is a client for a very special case:
 It communicates to an Xcode Server in an internal network.
 
-Since portforwarding to the Xcode Server was also not an option, the only option we have to reach the mac, where the Xcode Server is running, is by connecting via ssh to a jumphost in the internal network, which allows then to normally communicate with the Xcode Server via http opn port 20343.
+Since portforwarding to the Xcode Server was also not an option, the only option we have to reach the mac, where the Xcode Server is running, is by connecting via ssh to a jumphost in the internal network, which allows then to normally communicate with the Xcode Server via http on port 20343.
 
 It is a pet project and it also works when connecting directly to an Xcode Server. In such a case however you can use Xcode right away in the first place. 
 
 ### Usage
-Compile the app (or download the latest [binary](https://github.com/a7ex/XCSClient/releases/latest/download/XCSClient.app.zip)) and launch.
+Mac OS 11 "Big Sur" and above: Compile the latest version of the application (or download the latest [binary](https://github.com/a7ex/XCSClient/releases/latest/download/XCSClient.app.zip)) and launch.
+For older Mac OS Versions < 11: Use the branch *release/pre-macos-11-release* (or download the compiled [binary for older Mac OS](https://github.com/a7ex/XCSClient/releases/download/1.2/XCSClient.app.zip)) and launch.
 
 To connect to a Xcode Server regularly you need the IP address or hostname of the Mac, which runs the Xcode Server.
 
