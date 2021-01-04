@@ -107,6 +107,7 @@
 		FAE5B875249FC4AE00E06155 /* BranchOptionsKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAE5B874249FC4AE00E06155 /* BranchOptionsKey.swift */; };
 		FAE5B877249FC4BA00E06155 /* WorkspaceBlueprintLocationType.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAE5B876249FC4BA00E06155 /* WorkspaceBlueprintLocationType.swift */; };
 		FAE5B87A249FC4FD00E06155 /* TriggerPhase.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAE5B879249FC4FD00E06155 /* TriggerPhase.swift */; };
+		FAF924B825A38E5300F59978 /* XcodeServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAF924B725A38E5300F59978 /* XcodeServer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -219,6 +220,7 @@
 		FAE5B874249FC4AE00E06155 /* BranchOptionsKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BranchOptionsKey.swift; sourceTree = "<group>"; };
 		FAE5B876249FC4BA00E06155 /* WorkspaceBlueprintLocationType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceBlueprintLocationType.swift; sourceTree = "<group>"; };
 		FAE5B879249FC4FD00E06155 /* TriggerPhase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TriggerPhase.swift; sourceTree = "<group>"; };
+		FAF924B725A38E5300F59978 /* XcodeServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcodeServer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -348,6 +350,7 @@
 				FA56370D2493C16E002457DF /* Extensions */,
 				FAC759C6249E6AEF0028BBFA /* FileHelper.swift */,
 				FA12063725A28E7600E8190E /* Colors.swift */,
+				FAF924B725A38E5300F59978 /* XcodeServer.swift */,
 			);
 			path = Application;
 			sourceTree = "<group>";
@@ -683,6 +686,7 @@
 				FA8A359D259E7374001559A8 /* CDIntegration+ViewModel.swift in Sources */,
 				FA5637032493BEC7002457DF /* BuildResultSummary.swift in Sources */,
 				FA5637052493BEC7002457DF /* ErrorResponse.swift in Sources */,
+				FAF924B825A38E5300F59978 /* XcodeServer.swift in Sources */,
 				FA5637082493BEC7002457DF /* TestDeviceFilter.swift in Sources */,
 				FA5636FA2493BEC7002457DF /* ProvisioningConfiguration.swift in Sources */,
 				FAE5B872249FC43500E06155 /* CodeCoveragePreference.swift in Sources */,

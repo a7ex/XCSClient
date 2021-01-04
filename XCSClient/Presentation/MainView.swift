@@ -23,7 +23,7 @@ struct MainView: View {
                     }
                     .buttonStyle(LinkButtonStyle())
                     Spacer()
-                    Button(action: addServer) {
+                    Button(action: { addServer() }) {
                         HStack {
                             Image(systemName: "plus.circle")
                             Text("Add server")
@@ -40,7 +40,24 @@ struct MainView: View {
         }
         .navigationViewStyle(DoubleColumnNavigationViewStyle())
         .onAppear {
-            if numberOfServers < 1 {
+            migrateServersFromPreviousVersionIfNeccessary()
+        }
+    }
+    
+    private func migrateServersFromPreviousVersionIfNeccessary() {
+        if numberOfServers < 1 {
+            // the previous version stored the infos about the servers
+            // in the UserDefaults. This version stores them in CoreData
+            if let dictionary = UserDefaults.standard.object(forKey: "xcodeServers") as? [[String: String]] ,
+               let data = try? PropertyListSerialization.data(fromPropertyList: dictionary, format: .xml, options: 0),
+               let servers = try? PropertyListDecoder().decode([XcodeServer].self, from: data) {
+                if servers.isEmpty {
+                    addServer()
+                } else {
+                    servers.forEach { addServer($0) }
+                }
+                UserDefaults.standard.removeObject(forKey: "xcodeServers")
+            } else {
                 addServer()
             }
         }
@@ -52,11 +69,14 @@ struct MainView: View {
         return servers?.count ?? 0
     }
     
-    private func addServer() {
+    private func addServer(_ server: XcodeServer? = nil) {
         let srv = CDServer(context: self.viewContext)
-        srv.name = "Local"
-        srv.ipAddress = "127.0.0.1"
+        srv.name = server?.name ?? "Local"
+        srv.ipAddress = server?.ipAddress ?? "127.0.0.1"
         srv.id = UUID().uuidString
+        srv.sshAddress = server?.sshAddress
+        srv.sshUser = server?.sshUser
+        srv.netRCFilename = server?.netRCFilename
         do {
             try self.viewContext.save()
         } catch {
