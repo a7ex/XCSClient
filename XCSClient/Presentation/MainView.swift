@@ -39,12 +39,23 @@ struct MainView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .navigationViewStyle(DoubleColumnNavigationViewStyle())
+        .onAppear {
+            if numberOfServers < 1 {
+                addServer()
+            }
+        }
+    }
+    
+    private var numberOfServers: Int {
+        let request: NSFetchRequest<CDServer> = CDServer.fetchRequest()
+        let servers = try? viewContext.fetch(request)
+        return servers?.count ?? 0
     }
     
     private func addServer() {
         let srv = CDServer(context: self.viewContext)
-        srv.name = "Untitled Xcode Server"
-        srv.ipAddress = "1.2.3"
+        srv.name = "Local"
+        srv.ipAddress = "127.0.0.1"
         srv.id = UUID().uuidString
         do {
             try self.viewContext.save()

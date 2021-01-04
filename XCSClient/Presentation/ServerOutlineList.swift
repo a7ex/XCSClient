@@ -58,7 +58,18 @@ struct ServerOutlineList: View {
                             .foregroundColor(item.statusColor)
                     }
                     NavigationLink(destination: item.destination) {
-                        Text(item.title)
+                        HStack {
+                            Text(item.title)
+                            if let bot = item as? CDBot,
+                               bot.visibleItems > 2 {
+                                Spacer()
+                                Button(action: { resetNumberOfVisibleIntegrations(of: bot) }) {
+                                    Image(systemName: "arrow.up")
+                                        .frame(minWidth: 20)
+                                }
+                                .buttonStyle(LinkButtonStyle())
+                            }
+                        }
                     }
                 }
             }

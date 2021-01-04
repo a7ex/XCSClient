@@ -163,6 +163,7 @@
 		FA7B8A462493D10900C26B50 /* BotDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BotDetailView.swift; sourceTree = "<group>"; };
 		FA7B8A482493D57600C26B50 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = SOURCE_ROOT; };
 		FA7B8A492493E12900C26B50 /* XCSConnector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCSConnector.swift; sourceTree = "<group>"; };
+		FA84B1C525A344C700400F6E /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
 		FA8683A7259FC69C003ED214 /* DataSyncWorker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSyncWorker.swift; sourceTree = "<group>"; };
 		FA8683AF25A07614003ED214 /* ShowMoreLessCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowMoreLessCellModel.swift; sourceTree = "<group>"; };
 		FA8683B225A0777A003ED214 /* ShowMoreLessButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowMoreLessButton.swift; sourceTree = "<group>"; };
@@ -290,6 +291,7 @@
 			isa = PBXGroup;
 			children = (
 				FAD0F45A24BBCEE5006E8C0D /* README.md */,
+				FA84B1C525A344C700400F6E /* TODO.md */,
 				FA5636DC2493BDD8002457DF /* Application */,
 				FA5636DB2493BDCD002457DF /* Business */,
 				FA5636DA2493BDB8002457DF /* Presentation */,

@@ -20,13 +20,7 @@ extension CDBot: OutlineElement {
                 .sorted { $0.number > $1.number }
                 .prefix(max(2, Int(visibleItems)))
         ) as [OutlineElement]
-        let showLess: [OutlineElement]
-        if visibleItems > 2 {
-            showLess = [ShowLessCellModel(bot: self)]
-        } else {
-            showLess = [OutlineElement]()
-        }
-        return  showLess + integrationsSubset + [ShowMoreLessCellModel(bot: self)]
+        return  integrationsSubset + [ShowMoreLessCellModel(bot: self)]
     }
     
     var title: String {
