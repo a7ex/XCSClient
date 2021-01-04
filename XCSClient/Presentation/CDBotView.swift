@@ -26,24 +26,9 @@ struct CDBotView: View {
     
     var body: some View {
         if let bot = bot {
-            BotDetailView(bot: bot, changeClosure: self.saveContext)
+            BotDetailView(bot: bot)
         } else {
             Text("No data")
-        }
-    }
-    
-    private func saveContext(_ codableBot: Bot) {
-        bot?.update(with: codableBot)
-        
-        // in order to update the list,
-        // we just make a dummy change to our server
-        // since the list is observing the servers it will reload
-        bot?.server?.name = bot?.server?.name
-        
-        do {
-            try self.viewContext.save()
-        } catch {
-            print(error.localizedDescription)
         }
     }
 }

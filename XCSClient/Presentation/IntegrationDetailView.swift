@@ -182,9 +182,6 @@ struct IntegrationDetailView: View {
                         }
                     }
                 }
-                .alert(isPresented: $hasError) {
-                    Alert(title: Text(errorMessage))
-                }
                 Spacer()
             }
             .padding()
@@ -207,9 +204,17 @@ struct IntegrationDetailView: View {
                 self.findIpa()
             }
         }
+        .alert(isPresented: $hasError) {
+            Alert(title: Text(errorMessage))
+        }
     }
     
     private func export(_ integration: IntegrationViewModel) {
+        guard isServerReachable else {
+            errorMessage = "No connection to server."
+            hasError = true
+            return
+        }
         guard let url = fileHelper.getSaveURLFromUser(for: "Results-\(integration.tinyIDString).tgz") else {
             return
         }
@@ -231,6 +236,9 @@ struct IntegrationDetailView: View {
     }
     
     private func loadCommitData() {
+        guard isServerReachable else {
+            return
+        }
         let assetPath = integration.sourceControlLog.path
         guard !assetPath.isEmpty else {
             return
@@ -254,6 +262,11 @@ struct IntegrationDetailView: View {
     }
     
     private func findIpa() {
+        guard isServerReachable else {
+            errorMessage = "No connection to server."
+            hasError = true
+            return
+        }
         let assetPath = integration.buildServiceLog.path
         guard !assetPath.isEmpty else {
             return
@@ -286,6 +299,11 @@ struct IntegrationDetailView: View {
     }
     
     private func downloadIPA() {
+        guard isServerReachable else {
+            errorMessage = "No connection to server."
+            hasError = true
+            return
+        }
         guard !ipaPath.isEmpty else {
             return
         }
@@ -313,6 +331,11 @@ struct IntegrationDetailView: View {
     }
     
     private func downloadAsset(_ asset: FileDescriptor) {
+        guard isServerReachable else {
+            errorMessage = "No connection to server."
+            hasError = true
+            return
+        }
         let assetPath = asset.path
         guard !assetPath.isEmpty else {
             return
@@ -365,6 +388,11 @@ struct IntegrationDetailView: View {
     }
     
     private func cancelIntegration(_ integrationId: String) {
+        guard isServerReachable else {
+            errorMessage = "No connection to server."
+            hasError = true
+            return
+        }
         guard !integrationId.isEmpty else {
             return
         }
@@ -388,6 +416,13 @@ struct IntegrationDetailView: View {
             windowController.window?.title = windowTitle
             windowController.showWindow(nil)
         }
+    }
+    
+    private var isServerReachable: Bool {
+        guard let server = (integration as? CDIntegration)?.bot?.server else {
+            return false
+        }
+        return server.reachability == Int16(ServerReachabilty.reachable.rawValue)
     }
 }
 

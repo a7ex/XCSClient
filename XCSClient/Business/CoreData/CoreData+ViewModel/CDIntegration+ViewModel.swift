@@ -116,15 +116,15 @@ extension CDIntegration: IntegrationViewModel {
         }
         switch integrationResult {
         case .analyzerWarnings, .warnings:
-            return .orange
+            return Color(Colors.warning)
         case .buildErrors, .buildFailed, .checkoutError, .internalBuildError, .internalCheckoutError, .internalError, .internalProcessingError, .triggerError:
-            return .red
+            return Color(Colors.error)
         case .canceled:
-            return .gray
+            return Color(Colors.canceled)
         case .succeeded:
-            return .green
+            return Color(Colors.success)
         case .testFailures:
-            return .purple
+            return Color(Colors.testFailures)
         case .unknown:
             return .clear
         }

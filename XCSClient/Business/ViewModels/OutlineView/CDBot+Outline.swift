@@ -67,6 +67,10 @@ extension CDBot: OutlineElement {
             }
         }
     }
+    
+    var systemIconName: String {
+        return "gearshape.fill"
+    }
 }
 
 extension ScheduleType {

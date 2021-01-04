@@ -14,6 +14,6 @@ struct ShowLessCellModel: OutlineElement {
     var title = "ShowMoreOrLessCell"
     var statusColor = Color.clear
     var destination: AnyView = AnyView(Text("Dummy"))
-    
+    let systemIconName = ""
     let bot: CDBot
 }

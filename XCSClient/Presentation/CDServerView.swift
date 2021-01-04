@@ -96,14 +96,18 @@ struct CDServerView: View {
             server?.removeFromItems(items)
             saveContext()
         }
+        server?.reachability = Int16(ServerReachabilty.connecting.rawValue)
         server?.connector.getBotList { (result) in
             if case let .success(bots) = result {
+                server?.reachability = Int16(ServerReachabilty.reachable.rawValue)
                 bots.forEach { (bot) in
                     if let bot = viewContext.bot(from: bot) {
                         server?.addToItems(bot)
                     }
                 }
                 saveContext()
+            } else {
+                server?.reachability = Int16(ServerReachabilty.unreachable.rawValue)
             }
         }
     }

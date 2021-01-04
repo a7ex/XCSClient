@@ -54,7 +54,7 @@ struct ServerOutlineList: View {
                                 refreshIntegrationStatus(of: item)
                             }
                     } else {
-                        Image(systemName: "largecircle.fill.circle")
+                        Image(systemName: item.systemIconName)
                             .foregroundColor(item.statusColor)
                     }
                     NavigationLink(destination: item.destination) {

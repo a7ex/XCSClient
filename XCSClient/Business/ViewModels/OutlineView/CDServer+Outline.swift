@@ -26,15 +26,19 @@ extension CDServer: OutlineElement {
         case .unknown:
             return .clear
         case .connecting:
-            return .yellow
+            return Color(Colors.inProgress)
         case .reachable:
-            return .green
+            return Color(Colors.online)
         case .unreachable:
-            return .red
+            return Color(Colors.offline)
         }
     }
     
     var destination: AnyView {
         AnyView(CDServerView(serverID: self.id ?? ""))
+    }
+    
+    var systemIconName: String {
+        return "tv.fill"
     }
 }

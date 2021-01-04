@@ -10,7 +10,6 @@ import SwiftUI
 
 struct BotDetailView: View {
     let bot: BotViewModel
-    let changeClosure: (Bot) -> Void
     
     @EnvironmentObject var connector: XCSConnector
     
@@ -19,7 +18,9 @@ struct BotDetailView: View {
     @State private var deleteConfirm = false
     @State private var activityShowing = false
     
-    @ObservedObject private var botEditableData = BotEditorData()
+    @StateObject private var botEditableData = BotEditorData()
+    
+    private let deletConfirmMessage = "Deleting a bot can not be undone! All archived data for the bot will be erased."
     
     var body: some View {
         ZStack {
@@ -27,7 +28,7 @@ struct BotDetailView: View {
                 HStack {
                     Spacer()
                     Text(bot.nameString)
-                    .font(.headline)
+                        .font(.headline)
                     Text("- \(bot.tinyIDString) (\(bot.integrationCounterInt))")
                     Spacer()
                     MenuButton(label: Text("⚙️").font(.headline)) {
@@ -43,10 +44,13 @@ struct BotDetailView: View {
                         Button(action: { self.applySettings() }) {
                             Text("Apply settings…")
                         }
-                        Button(action: { self.deleteConfirm = true }) {
+                        Button(action: {
+                            hasError = true
+                            errorMessage = deletConfirmMessage
+                        }) {
                             Text("Delete Bot")
+                                .foregroundColor(.red)
                         }
-                        .foregroundColor(.red)
                     }
                     .menuButtonStyle(BorderlessButtonMenuButtonStyle())
                     .frame(width: 20)
@@ -175,18 +179,19 @@ struct BotDetailView: View {
                 Spacer()
             }
             .padding()
-            .alert(isPresented: $hasError) {
-                Alert(title: Text(errorMessage))
-            }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .onAppear {
                 self.botEditableData.setup(with: self.bot)
             }
-            .alert(isPresented: $deleteConfirm) {
-                Alert(title: Text("Deleting a bot can not be undone! All archived data for the bot will be erased."),
-                      primaryButton: .default(Text("Delete")) { self.delete() },
-                      secondaryButton: .cancel()
-                )
+            .alert(isPresented: $hasError) {
+                if errorMessage == deletConfirmMessage {
+                    return Alert(title: Text(errorMessage),
+                          primaryButton: .default(Text("Delete")) { self.delete() },
+                          secondaryButton: .cancel()
+                    )
+                } else {
+                    return Alert(title: Text(errorMessage))
+                }
             }
             if activityShowing {
                 Color.black
@@ -235,17 +240,25 @@ struct BotDetailView: View {
     }
     
     private func integrate() {
+        guard isServerReachable else {
+            errorMessage = "No connection to server."
+            hasError = true
+            return
+        }
         connector.integrate(bot.idString) { (result) in
             switch result {
                 case .success(let integration):
-                    self.errorMessage = "Successfully startet integration with ID: \(integration.tinyID ?? integration.id)"
-                    if let bot = bot as? CDBot {
-                        IntegrationUpdateWorker.add(bot)
+                    if let cdBot = bot as? CDBot {
+                        if let cdIntegration = cdBot.managedObjectContext?.integration(from: integration) {
+                            cdBot.addToItems(cdIntegration)
+                            saveContext(of: cdBot)
+                        }
+                        IntegrationUpdateWorker.add(cdBot)
                     }
                 case .failure(let error):
-                    self.errorMessage = error.localizedDescription
+                    errorMessage = error.localizedDescription
+                    hasError = true
             }
-            self.hasError = true
         }
     }
     
@@ -255,28 +268,50 @@ struct BotDetailView: View {
     }
     
     private func delete() {
+        guard isServerReachable else {
+            errorMessage = "No connection to server."
+            hasError = true
+            return
+        }
         connector.deleteBot(with: bot.idString, revId: bot.revIdString) { (result) in
             switch result {
                 case .success(let success):
-                    NotificationCenter.default.post(name: NSNotification.Name("RefreshBotList"), object: nil)
-                    self.errorMessage = success ? "Bot successfully deleted": "Failed to delete Bot"
+                    if success {
+                        if let cdBot = bot as? CDBot,
+                           let server = cdBot.server {
+                            server.removeFromItems(cdBot)
+                            saveContext(of: cdBot)
+                        }
+                    } else {
+                        errorMessage = "Unable to delete bot with ID: \(bot.idString)"
+                        hasError = true
+                    }
                 case .failure(let error):
-                    self.errorMessage = error.localizedDescription
+                    errorMessage = error.localizedDescription
+                    hasError = true
             }
-            self.hasError = true
         }
     }
     
     private func duplicate() {
+        guard isServerReachable else {
+            errorMessage = "No connection to server."
+            hasError = true
+            return
+        }
         connector.duplicateBot(with: bot.idString) { (result) in
             switch result {
-                case .success(let bot):
-                    NotificationCenter.default.post(name: NSNotification.Name("RefreshBotList"), object: nil)
-                    self.errorMessage = "Successfully duplicated bot: \"\(bot.name)\""
+                case .success(let codableBot):
+                    if let cdBot = bot as? CDBot,
+                       let context = cdBot.managedObjectContext,
+                       let newBot = context.bot(from: codableBot) {
+                        cdBot.server?.addToItems(newBot)
+                        saveContext(of: cdBot)
+                    }
                 case .failure(let error):
-                    self.errorMessage = error.localizedDescription
+                    errorMessage = error.localizedDescription
+                    hasError = true
             }
-            self.hasError = true
         }
     }
     
@@ -285,6 +320,11 @@ struct BotDetailView: View {
     }
     
     private func applySettings() {
+        guard isServerReachable else {
+            errorMessage = "No connection to server."
+            hasError = true
+            return
+        }
         let panel = NSOpenPanel()
         panel.canChooseFiles = true
         panel.allowedFileTypes = ["json"]
@@ -295,17 +335,24 @@ struct BotDetailView: View {
         }
         connector.applySettings(at: url, fileName: "\(bot.tinyIDString).json", toBot: bot.idString) { (result) in
             switch result {
-                case .success(let bot):
-                    NotificationCenter.default.post(name: NSNotification.Name("RefreshBotList"), object: nil)
-                    self.errorMessage = "Successfully modified bot: \"\(bot.name)\""
+                case .success(let codableBot):
+                    if let cdBot = bot as? CDBot {
+                        cdBot.update(with: codableBot)
+                        saveContext(of: cdBot)
+                    }
                 case .failure(let error):
                     self.errorMessage = error.localizedDescription
+                    self.hasError = true
             }
-            self.hasError = true
         }
     }
     
     private func applyChanges(_ newJSON: String, to bot: BotViewModel) {
+        guard isServerReachable else {
+            errorMessage = "No connection to server."
+            hasError = true
+            return
+        }
         let fileManager = FileManager.default
         guard let cachesDirectory = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first else {
             return
@@ -327,15 +374,16 @@ struct BotDetailView: View {
                 }
                 
                 switch result {
-                case .success(let bot):
-                    NotificationCenter.default.post(name: NSNotification.Name("RefreshBotList"), object: nil)
-                    self.errorMessage = "Successfully modified bot: \"\(bot.name)\""
-                    self.changeClosure(bot)
+                case .success(let codableBot):
+                    if let cdBot = bot as? CDBot {
+                        cdBot.update(with: codableBot)
+                        saveContext(of: cdBot)
+                    }
                 case .failure(let error):
-                    self.errorMessage = error.localizedDescription
+                    errorMessage = error.localizedDescription
+                    hasError = true
                 }
                 try? FileManager.default.removeItem(at: tempFileUrl)
-                self.hasError = true
             }
         } catch {
             print(error.localizedDescription)
@@ -360,6 +408,48 @@ struct BotDetailView: View {
         }
     }
     
+    private var isServerReachable: Bool {
+        guard let server = (bot as? CDBot)?.server else {
+            return false
+        }
+        return server.reachability == Int16(ServerReachabilty.reachable.rawValue)
+    }
+    
+    private func reloadBots() {
+        guard let cdBot = bot as? CDBot else {
+            return
+        }
+        cdBot.server?.reachability = Int16(ServerReachabilty.connecting.rawValue)
+        cdBot.server?.connector.getBotList { (result) in
+            if case let .success(bots) = result {
+                cdBot.server?.reachability = Int16(ServerReachabilty.reachable.rawValue)
+                bots.forEach { (bot) in
+                    if let bot = cdBot.managedObjectContext?.bot(from: bot) {
+                        cdBot.server?.addToItems(bot)
+                    }
+                }
+                saveContext(of: cdBot)
+            } else {
+                cdBot.server?.reachability = Int16(ServerReachabilty.unreachable.rawValue)
+            }
+        }
+    }
+    
+    private func saveContext(of cdBot: CDBot) {
+        guard let context = cdBot.managedObjectContext else {
+            return
+        }
+        // in order to update the list,
+        // we just make a dummy change to our server
+        // since the list is observing the servers it will reload
+        cdBot.server?.name = cdBot.server?.name
+        do {
+            try context.save()
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
+    
     // MARK: - Helper
     
     func getSaveURLFromUser(for fileName: String) -> URL? {
@@ -380,6 +470,7 @@ struct BotDetailView_Previews: PreviewProvider {
         let request: NSFetchRequest<CDBot> = CDBot.fetchRequest()
         let obj = (try? moc.fetch(request).first)!
         
-        return BotDetailView(bot: obj, changeClosure: { _ in }).environmentObject(XCSConnector.previewServerConnector)
+        return BotDetailView(bot: obj)
+            .environmentObject(XCSConnector.previewServerConnector)
     }
 }

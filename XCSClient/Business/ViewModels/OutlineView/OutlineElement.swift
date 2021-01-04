@@ -14,4 +14,5 @@ protocol OutlineElement {
     var title: String { get }
     var statusColor: Color { get } 
     var destination: AnyView { get }
+    var systemIconName: String { get }
 }

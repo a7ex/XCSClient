@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		FA0CE314259A6C28003E9E43 /* CDTriggerConditions+Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0CE313259A6C28003E9E43 /* CDTriggerConditions+Codable.swift */; };
 		FA0CE317259A6D31003E9E43 /* CDEmailConfiguration+Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0CE316259A6D31003E9E43 /* CDEmailConfiguration+Codable.swift */; };
+		FA12063825A28E7600E8190E /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA12063725A28E7600E8190E /* Colors.swift */; };
 		FA17F9132496890C000A149D /* ActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA17F9122496890C000A149D /* ActivityIndicator.swift */; };
 		FA17F9192496D1E6000A149D /* ButtonLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA17F9182496D1E6000A149D /* ButtonLabel.swift */; };
 		FA190BF1249545B500B70206 /* IntegrationDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA190BF0249545B500B70206 /* IntegrationDetailView.swift */; };
@@ -111,6 +112,7 @@
 /* Begin PBXFileReference section */
 		FA0CE313259A6C28003E9E43 /* CDTriggerConditions+Codable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDTriggerConditions+Codable.swift"; sourceTree = "<group>"; };
 		FA0CE316259A6D31003E9E43 /* CDEmailConfiguration+Codable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDEmailConfiguration+Codable.swift"; sourceTree = "<group>"; };
+		FA12063725A28E7600E8190E /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		FA17F9122496890C000A149D /* ActivityIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicator.swift; sourceTree = "<group>"; };
 		FA17F9182496D1E6000A149D /* ButtonLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonLabel.swift; sourceTree = "<group>"; };
 		FA190BF0249545B500B70206 /* IntegrationDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationDetailView.swift; sourceTree = "<group>"; };
@@ -343,6 +345,7 @@
 				FA5637092493BEDC002457DF /* Server.swift */,
 				FA56370D2493C16E002457DF /* Extensions */,
 				FAC759C6249E6AEF0028BBFA /* FileHelper.swift */,
+				FA12063725A28E7600E8190E /* Colors.swift */,
 			);
 			path = Application;
 			sourceTree = "<group>";
@@ -667,6 +670,7 @@
 				FA26964D249620A500C7F084 /* LabeledTextInput.swift in Sources */,
 				FA4A63792594CB76006DD873 /* MainView.swift in Sources */,
 				FA5636F62493BEC7002457DF /* TriggerConditions.swift in Sources */,
+				FA12063825A28E7600E8190E /* Colors.swift in Sources */,
 				FA0CE317259A6D31003E9E43 /* CDEmailConfiguration+Codable.swift in Sources */,
 				FAE5B877249FC4BA00E06155 /* WorkspaceBlueprintLocationType.swift in Sources */,
 				FA26964324960F2600C7F084 /* LabeledStringValue.swift in Sources */,

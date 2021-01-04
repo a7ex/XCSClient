@@ -42,4 +42,7 @@ extension CDIntegration: OutlineElement {
         )
     }
     
+    var systemIconName: String {
+        return "smallcircle.circle.fill"
+    }
 }

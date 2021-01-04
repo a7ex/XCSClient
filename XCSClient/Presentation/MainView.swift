@@ -19,7 +19,7 @@ struct MainView: View {
                         .font(.headline)
                         .padding([.leading])
                     Button(action: refreshAllServers) {
-                            Image(systemName: "arrow.counterclockwise.circle")
+                        Image(systemName: "arrow.counterclockwise.circle")
                     }
                     .buttonStyle(LinkButtonStyle())
                     Spacer()
