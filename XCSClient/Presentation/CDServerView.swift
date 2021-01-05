@@ -22,6 +22,8 @@ struct CDServerView: View {
     @State private var sshUser = ""
     @State private var netRCFilename = ""
     
+    @State private var botSortOrder = BotSortOrder.alphabetical
+    
     init(serverID: String) {
         fetchRequest = FetchRequest<CDServer>(
             entity: CDServer.entity(),
@@ -56,13 +58,28 @@ struct CDServerView: View {
                 server?.netRCFilename = netRCFilename
                 saveContext()
             })
-            Divider()
-            Button(action: reloadBots) {
-                ButtonLabel(text: "Reload Bots")
+            HStack(alignment: .top) {
+                InfoLabel(content: "Bot sort order")
+                    .frame(minWidth: 100, maxWidth: 160, alignment: .leading)
+                    .padding([.bottom], 4)
+                MenuButton(label: Text(botSortOrder.string)) {
+                    Button(action: { botSortOrder = .alphabetical }) {
+                        Text(BotSortOrder.alphabetical.string)
+                    }
+                    Button(action: { botSortOrder = .chronological }) {
+                        Text(BotSortOrder.chronological.string)
+                    }
+                }
             }
-            Button(action: deleteServer) {
-                ButtonLabel(text: "Delete")
-                    .foregroundColor(.red)
+            Group {
+                Divider()
+                Button(action: reloadBots) {
+                    ButtonLabel(text: "Reload Bots")
+                }
+                Button(action: deleteServer) {
+                    ButtonLabel(text: "Delete")
+                        .foregroundColor(.red)
+                }
             }
             Spacer()
         }

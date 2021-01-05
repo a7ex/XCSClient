@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		FA0CE314259A6C28003E9E43 /* CDTriggerConditions+Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0CE313259A6C28003E9E43 /* CDTriggerConditions+Codable.swift */; };
 		FA0CE317259A6D31003E9E43 /* CDEmailConfiguration+Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0CE316259A6D31003E9E43 /* CDEmailConfiguration+Codable.swift */; };
+		FA0FA21125A3FE7D00BBCB0C /* BotSortOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0FA21025A3FE7D00BBCB0C /* BotSortOrder.swift */; };
 		FA12063825A28E7600E8190E /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA12063725A28E7600E8190E /* Colors.swift */; };
 		FA17F9132496890C000A149D /* ActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA17F9122496890C000A149D /* ActivityIndicator.swift */; };
 		FA17F9192496D1E6000A149D /* ButtonLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA17F9182496D1E6000A149D /* ButtonLabel.swift */; };
@@ -113,6 +114,7 @@
 /* Begin PBXFileReference section */
 		FA0CE313259A6C28003E9E43 /* CDTriggerConditions+Codable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDTriggerConditions+Codable.swift"; sourceTree = "<group>"; };
 		FA0CE316259A6D31003E9E43 /* CDEmailConfiguration+Codable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDEmailConfiguration+Codable.swift"; sourceTree = "<group>"; };
+		FA0FA21025A3FE7D00BBCB0C /* BotSortOrder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BotSortOrder.swift; sourceTree = "<group>"; };
 		FA12063725A28E7600E8190E /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		FA17F9122496890C000A149D /* ActivityIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicator.swift; sourceTree = "<group>"; };
 		FA17F9182496D1E6000A149D /* ButtonLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonLabel.swift; sourceTree = "<group>"; };
@@ -478,6 +480,7 @@
 				FA9D47A92596D05900C38FF5 /* CDIntegration+Outline.swift */,
 				FA8683AF25A07614003ED214 /* ShowMoreLessCellModel.swift */,
 				FA8683B625A0B82C003ED214 /* ShowLessCellModel.swift */,
+				FA0FA21025A3FE7D00BBCB0C /* BotSortOrder.swift */,
 			);
 			path = OutlineView;
 			sourceTree = "<group>";
@@ -654,6 +657,7 @@
 				FA20876624BBACD60013CC21 /* BotEditorData.swift in Sources */,
 				FAD9B85724F0492100301714 /* VariablePair.swift in Sources */,
 				FAD06C3B259898BD00AD18A4 /* CDTestDeviceFilter+Codable.swift in Sources */,
+				FA0FA21125A3FE7D00BBCB0C /* BotSortOrder.swift in Sources */,
 				FA8690CD2599071C0014CE4E /* OptionalExtension.swift in Sources */,
 				FA68A962259E2B2700604BAE /* BotViewModel.swift in Sources */,
 				FAE5B875249FC4AE00E06155 /* BranchOptionsKey.swift in Sources */,
