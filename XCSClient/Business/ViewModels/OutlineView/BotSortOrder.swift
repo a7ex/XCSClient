@@ -8,15 +8,17 @@
 
 import Foundation
 
-enum BotSortOrder {
-    case alphabetical, chronological
+enum BotSortOrder: Int, CaseIterable {
+    case byName, byDate, byStatus
     
     var string: String {
         switch self {
-        case .alphabetical:
-            return "Alphabetical"
-        case .chronological:
-            return "Chronological"
+        case .byName:
+            return "By name"
+        case .byDate:
+            return "By date"
+        case .byStatus:
+            return "By status"
         }
     }
 }

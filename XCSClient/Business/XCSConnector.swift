@@ -84,6 +84,15 @@ class XCSConnector: ObservableObject {
         }
     }
     
+    func createBot(fileUrl: URL, fileName: String, completion: @escaping (Result<Bot, Error>) -> Void) {
+        DispatchQueue.global(qos: .userInitiated).async {
+            let rslt = self.server.createBot(fileUrl: fileUrl, fileName: fileName)
+            DispatchQueue.main.async {
+                completion(rslt)
+            }
+        }
+    }
+    
     func duplicateBot(with botId: String, completion: @escaping (Result<Bot, Error>) -> Void) {
         guard !botId.isEmpty else {
             completion(.failure(NSError(message: "Parameter error")))

@@ -21,6 +21,8 @@
 		FA26964324960F2600C7F084 /* LabeledStringValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA26964224960F2600C7F084 /* LabeledStringValue.swift */; };
 		FA26964B24961F6200C7F084 /* Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA26964A24961F6200C7F084 /* Platform.swift */; };
 		FA26964D249620A500C7F084 /* LabeledTextInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA26964C249620A500C7F084 /* LabeledTextInput.swift */; };
+		FA3E643825ACD47600EDD348 /* CreateNewBotForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA3E643725ACD47600EDD348 /* CreateNewBotForm.swift */; };
+		FA3E643B25AD8BB200EDD348 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FA3E643A25AD8BB200EDD348 /* Colors.xcassets */; };
 		FA4A636F2594C3F2006DD873 /* CoreDataPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4A636E2594C3F2006DD873 /* CoreDataPersistence.swift */; };
 		FA4A63742594C44C006DD873 /* XCSClient.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = FA4A63722594C44C006DD873 /* XCSClient.xcdatamodeld */; };
 		FA4A63792594CB76006DD873 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4A63782594CB76006DD873 /* MainView.swift */; };
@@ -126,6 +128,8 @@
 		FA26964224960F2600C7F084 /* LabeledStringValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledStringValue.swift; sourceTree = "<group>"; };
 		FA26964A24961F6200C7F084 /* Platform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Platform.swift; sourceTree = "<group>"; };
 		FA26964C249620A500C7F084 /* LabeledTextInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledTextInput.swift; sourceTree = "<group>"; };
+		FA3E643725ACD47600EDD348 /* CreateNewBotForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateNewBotForm.swift; sourceTree = "<group>"; };
+		FA3E643A25AD8BB200EDD348 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
 		FA4A636E2594C3F2006DD873 /* CoreDataPersistence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataPersistence.swift; sourceTree = "<group>"; };
 		FA4A63732594C44C006DD873 /* XCSClient.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = XCSClient.xcdatamodel; sourceTree = "<group>"; };
 		FA4A63782594CB76006DD873 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
@@ -250,6 +254,7 @@
 		FA26963F24960E7200C7F084 /* ViewElements */ = {
 			isa = PBXGroup;
 			children = (
+				FA3E643725ACD47600EDD348 /* CreateNewBotForm.swift */,
 				FA26964024960E9900C7F084 /* InfoLabel.swift */,
 				FA26964224960F2600C7F084 /* LabeledStringValue.swift */,
 				FA26964C249620A500C7F084 /* LabeledTextInput.swift */,
@@ -366,6 +371,7 @@
 				FA7B8A442493C3C300C26B50 /* XCSClientDebug.entitlements */,
 				FAD0F45B24BBCF14006E8C0D /* LICENSE */,
 				FA7B8A482493D57600C26B50 /* .gitignore */,
+				FA3E643A25AD8BB200EDD348 /* Colors.xcassets */,
 			);
 			name = SupportingFiles;
 			sourceTree = "<group>";
@@ -605,6 +611,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FA5636D02493BC56002457DF /* Main.storyboard in Resources */,
+				FA3E643B25AD8BB200EDD348 /* Colors.xcassets in Resources */,
 				FA5636CD2493BC56002457DF /* Preview Assets.xcassets in Resources */,
 				FA5636CA2493BC56002457DF /* Assets.xcassets in Resources */,
 			);
@@ -661,6 +668,7 @@
 				FA8690CD2599071C0014CE4E /* OptionalExtension.swift in Sources */,
 				FA68A962259E2B2700604BAE /* BotViewModel.swift in Sources */,
 				FAE5B875249FC4AE00E06155 /* BranchOptionsKey.swift in Sources */,
+				FA3E643825ACD47600EDD348 /* CreateNewBotForm.swift in Sources */,
 				FAD06C5F2598B79B00AD18A4 /* CDBuildResultSummary+Codable.swift in Sources */,
 				FA4A636F2594C3F2006DD873 /* CoreDataPersistence.swift in Sources */,
 				FA7B8A4A2493E12900C26B50 /* XCSConnector.swift in Sources */,

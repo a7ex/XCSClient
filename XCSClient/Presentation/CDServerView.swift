@@ -22,7 +22,7 @@ struct CDServerView: View {
     @State private var sshUser = ""
     @State private var netRCFilename = ""
     
-    @State private var botSortOrder = BotSortOrder.alphabetical
+    @State private var createNewBotSheetShowing = false
     
     init(serverID: String) {
         fetchRequest = FetchRequest<CDServer>(
@@ -32,58 +32,67 @@ struct CDServerView: View {
         )
     }
     var body: some View {
-        VStack {
-            Image("Image")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(maxWidth: 200)
-                .padding()
-            LiveLabeledTextInput(label: "Server name", content: $name, onCommit:  {
-                server?.name = name
-                saveContext()
-            })
-            LiveLabeledTextInput(label: "Server IP", content: $ipAddress, onCommit:  {
-                server?.ipAddress = ipAddress
-                saveContext()
-            })
-            LiveLabeledTextInput(label: "SSH IP", content: $sshAddress, onCommit:  {
-                server?.sshAddress = sshAddress
-                saveContext()
-            })
-            LiveLabeledTextInput(label: "SSH user", content: $sshUser, onCommit:  {
-                server?.sshUser = sshUser
-                saveContext()
-            })
-            LiveLabeledTextInput(label: "NetRC file", content: $netRCFilename, onCommit:  {
-                server?.netRCFilename = netRCFilename
-                saveContext()
-            })
-            HStack(alignment: .top) {
-                InfoLabel(content: "Bot sort order")
-                    .frame(minWidth: 100, maxWidth: 160, alignment: .leading)
-                    .padding([.bottom], 4)
-                MenuButton(label: Text(botSortOrder.string)) {
-                    Button(action: { botSortOrder = .alphabetical }) {
-                        Text(BotSortOrder.alphabetical.string)
+        ZStack {
+            VStack {
+                Image("Image")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(maxWidth: 200)
+                    .padding()
+                LiveLabeledTextInput(label: "Server name", content: $name, onCommit:  {
+                    server?.name = name
+                    saveContext()
+                })
+                LiveLabeledTextInput(label: "Server IP", content: $ipAddress, onCommit:  {
+                    server?.ipAddress = ipAddress
+                    saveContext()
+                })
+                LiveLabeledTextInput(label: "SSH IP", content: $sshAddress, onCommit:  {
+                    server?.sshAddress = sshAddress
+                    saveContext()
+                })
+                LiveLabeledTextInput(label: "SSH user", content: $sshUser, onCommit:  {
+                    server?.sshUser = sshUser
+                    saveContext()
+                })
+                LiveLabeledTextInput(label: "NetRC file", content: $netRCFilename, onCommit:  {
+                    server?.netRCFilename = netRCFilename
+                    saveContext()
+                })
+                HStack(alignment: .top) {
+                    InfoLabel(content: "Bot sort order")
+                        .frame(minWidth: 100, maxWidth: 160, alignment: .leading)
+                        .padding([.bottom], 4)
+                    MenuButton(label: Text(server?.botSortOrder.string ?? "")) {
+                        ForEach(BotSortOrder.allCases, id: \.self) { sortOrder in
+                            Button(action: { server?.botSortOrder = sortOrder }) {
+                                Text(sortOrder.string)
+                            }
+                        }
                     }
-                    Button(action: { botSortOrder = .chronological }) {
-                        Text(BotSortOrder.chronological.string)
+                }
+                Group {
+                    Divider()
+                    Button(action: createNewBot) {
+                        ButtonLabel(text: "Create new Bot")
+                    }
+                    Button(action: reloadBots) {
+                        ButtonLabel(text: "Reload Bots")
+                    }
+                    Button(action: deleteServer) {
+                        ButtonLabel(text: "Delete")
+                            .foregroundColor(.red)
                     }
                 }
+                Spacer()
             }
-            Group {
-                Divider()
-                Button(action: reloadBots) {
-                    ButtonLabel(text: "Reload Bots")
-                }
-                Button(action: deleteServer) {
-                    ButtonLabel(text: "Delete")
-                        .foregroundColor(.red)
-                }
+            .padding()
+            if createNewBotSheetShowing {
+                Color.black
+                    .opacity(0.5)
+                CreateNewBotForm(server: server, isShowing: $createNewBotSheetShowing)
             }
-            Spacer()
         }
-        .padding()
         .onAppear {
             name = server?.name ?? ""
             ipAddress = server?.ipAddress ?? ""
@@ -128,6 +137,13 @@ struct CDServerView: View {
             }
         }
     }
+    
+    private func createNewBot() {
+        withAnimation {
+            createNewBotSheetShowing = true
+        }
+    }
+    
 }
 
 struct CDServerView_Previews: PreviewProvider {

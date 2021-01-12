@@ -22,4 +22,14 @@ struct SourceControlLocation: Codable {
         case pathIdentifierKey = "DVTSourceControlPathIdentifierKey"
         case locationRevisionKey = "DVTSourceControlLocationRevisionKey"
     }
+    
+    static func standard(branchName: String) -> SourceControlLocation {
+        return SourceControlLocation(
+            branchIdentifierKey: branchName,
+            branchOptionsKey: .normalRemoteBranch,
+            workspaceBlueprintLocationTypeKey: .branch,
+            pathIdentifierKey: nil,
+            locationRevisionKey: nil
+        )
+    }
 }

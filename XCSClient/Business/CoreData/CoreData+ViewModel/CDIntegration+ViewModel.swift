@@ -130,6 +130,26 @@ extension CDIntegration: IntegrationViewModel {
         }
     }
     
+    var sortedStatus: Int {
+        guard currentStepString == "completed" else {
+            return 0
+        }
+        switch integrationResult {
+        case .analyzerWarnings, .warnings:
+            return 2
+        case .buildErrors, .buildFailed, .checkoutError, .internalBuildError, .internalCheckoutError, .internalError, .internalProcessingError, .triggerError:
+            return 4
+        case .canceled:
+            return 5
+        case .succeeded:
+            return 1
+        case .testFailures:
+            return 3
+        case .unknown:
+            return 0
+        }
+    }
+    
     var testedDevices: String {
         return Self.dateFormatter.string(from: startedTime ?? Date.distantPast)
     }

@@ -152,6 +152,7 @@
         <relationship name="blueprint" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDSourceControlBlueprint" inverseName="remoteRepositoriesKey" inverseEntity="CDSourceControlBlueprint"/>
     </entity>
     <entity name="CDServer" representedClassName="CDServer" syncable="YES" codeGenerationType="class">
+        <attribute name="botSortOrderInt" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="id" attributeType="String"/>
         <attribute name="ipAddress" attributeType="String"/>
         <attribute name="name" optional="YES" attributeType="String"/>
@@ -231,7 +232,7 @@
         <element name="CDPlatform" positionX="-72" positionY="0" width="128" height="149"/>
         <element name="CDProvisioningConfiguration" positionX="-45" positionY="27" width="128" height="74"/>
         <element name="CDRemoteRepository" positionX="-225.8842163085938" positionY="141.7715148925781" width="128" height="89"/>
-        <element name="CDServer" positionX="-313.3782958984375" positionY="21.42233276367188" width="128" height="149"/>
+        <element name="CDServer" positionX="-313.3782958984375" positionY="21.42233276367188" width="128" height="164"/>
         <element name="CDSingleSourceControlLocation" positionX="-288" positionY="-54" width="128" height="74"/>
         <element name="CDSourceControlBlueprint" positionX="-45" positionY="27" width="128" height="209"/>
         <element name="CDSourceControlLocation" positionX="-36" positionY="36" width="128" height="119"/>

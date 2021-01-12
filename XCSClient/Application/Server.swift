@@ -266,7 +266,7 @@ struct Server {
     }
     
     func applySettings(at fileUrl: URL, fileName: String, toBot botId: String) -> Result<Bot, Error> {
-        let rslt = copyBotSettingsToServer(botId, fileUrl: fileUrl, fileName: fileName)
+        let rslt = copyBotSettingsToServer(fileUrl: fileUrl, fileName: fileName)
         switch rslt {
         case .success(let path):
             return self.modifyBot(botId, settingsFile: path)
@@ -288,17 +288,27 @@ struct Server {
         return executeJSONTask(with: arguments)
     }
     
-    //    func createBot(_ botJSON: String) -> Result<Bot, Error> {
-    //        let arguments = defaultArguments + [
-    //            "--request", "POST",
-    //            "-H", "\"Content-Type: application/json; charset=utf-8\"",
-    //            "--data", "\"@\(botJSON)\"",
-    //            "\(apiUrl)/bots"
-    //        ]
-    //        return executeJSONTask(with: arguments)
-    //    }
+    func createBot(fileUrl: URL, fileName: String) -> Result<Bot, Error> {
+        let rslt = copyBotSettingsToServer(fileUrl: fileUrl, fileName: fileName)
+        switch rslt {
+        case .success(let path):
+            return self.createBotWithSettings(settingsFile: path)
+        case .failure(let error):
+            return .failure(error)
+        }
+    }
     
-    private func copyBotSettingsToServer(_ botId: String, fileUrl: URL, fileName: String) -> Result<String, Error> {
+    private func createBotWithSettings(settingsFile: String) -> Result<Bot, Error> {
+        let arguments = defaultArguments + [
+            "--request", "POST",
+            "-H", "\"Content-Type: application/json; charset=utf-8\"",
+            "--data", "\"@\(settingsFile)\"",
+            "\(apiUrl)/bots"
+        ]
+        return executeJSONTask(with: arguments)
+    }
+    
+    private func copyBotSettingsToServer(fileUrl: URL, fileName: String) -> Result<String, Error> {
         guard !sshEndpoint.isEmpty else {
             return .success(fileUrl.path)
         }

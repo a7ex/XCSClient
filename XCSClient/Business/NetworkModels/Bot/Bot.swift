@@ -46,6 +46,24 @@ struct Bot: Codable, RequestBodyParameterProvider {
         }
         return json
     }
+    
+    static func standard(name: String, configuration: BotConfiguration) -> Bot {
+        return Bot(
+            id: nil,
+            rev: nil,
+            configuration: configuration,
+            name: name,
+            tinyID: nil,
+            docType: nil,
+            type: nil,
+            group: BotGroup(name: "AllBots"),
+            integrationCounter: nil,
+            lastRevisionBlueprint: nil,
+            sourceControlBlueprintIdentifier: nil,
+            requiresUpgrade: false,
+            duplicatedFrom: nil
+        )
+    }
 }
 
 extension Array where Element == Bot {

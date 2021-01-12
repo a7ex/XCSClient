@@ -42,4 +42,34 @@ struct SourceControlBlueprint: Codable {
         case workingCopyPathsKey = "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey"
         case workingCopyStatesKey = "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey"
     }
+    
+    static func standard(
+        scmKey: String,
+        branchName: String,
+        project: String,
+        repoUrl: String,
+        repoPath: String,
+        repoUser: String,
+        repoPass: String
+        ) -> SourceControlBlueprint {
+        
+        return SourceControlBlueprint(
+            identifierKey: UUID().uuidString,
+            locationsKey: [scmKey: SourceControlLocation.standard(branchName: branchName)],
+            nameKey: project.components(separatedBy: ".").first ?? "Untitled",
+            primaryRemoteRepositoryKey: scmKey,
+            relativePathToProjectKey: project,
+            remoteRepositoriesKey: [RemoteRepository.standard(scmKey: scmKey, repoUrl: repoUrl)],
+            remoteRepositoryAuthenticationStrategiesKey: [
+                scmKey: [
+                    "DVTSourceControlWorkspaceBlueprintRemoteRepositoryAuthenticationTypeKey":
+                        "DVTSourceControlBasicAuthenticationStrategy",
+                    "DVTSourceControlWorkspaceBlueprintRemoteRepositoryUsernameKey": repoUser,
+                    "DVTSourceControlWorkspaceBlueprintRemoteRepositoryPasswordKey": repoPass
+                ]],
+            version: 205,
+            workingCopyPathsKey: [scmKey : repoPath],
+            workingCopyStatesKey: [scmKey : 0]
+        )
+    }
 }

@@ -18,4 +18,12 @@ struct RemoteRepository: Codable {
         case systemKey = "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey"
         case urlKey = "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey"
     }
+    
+    static func standard(scmKey: String, repoUrl: String) -> RemoteRepository {
+        return RemoteRepository(
+            identifierKey: scmKey,
+            systemKey: "com.apple.dt.Xcode.sourcecontrol.Git",
+            urlKey: repoUrl
+        )
+    }
 }

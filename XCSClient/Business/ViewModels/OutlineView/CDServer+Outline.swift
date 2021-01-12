@@ -12,8 +12,23 @@ extension CDServer: OutlineElement {
     
     var children: [OutlineElement]? {
         let bots = items as? Set<CDBot> ?? []
-        return Array(bots)
-            .sorted { ($0.name ?? "") < ($1.name ?? "") }
+        switch botSortOrder {
+        case .byName:
+            return Array(bots)
+                .sorted { ($0.name ?? "") < ($1.name ?? "") }
+        case .byDate:
+            return Array(bots)
+                .sorted { ($0.lastEventDate) > ($1.lastEventDate) }
+        case .byStatus:
+            return Array(bots)
+                .sorted {
+                    guard $0.sortedStatus != $1.sortedStatus else {
+                        return ($0.name ?? "") < ($1.name ?? "")
+                    }
+                    return ($0.sortedStatus) < ($1.sortedStatus)
+                }
+        }
+        
     }
     
     var title: String {
@@ -40,5 +55,14 @@ extension CDServer: OutlineElement {
     
     var systemIconName: String {
         return "tv.fill"
+    }
+    
+    var botSortOrder: BotSortOrder {
+        get {
+            return BotSortOrder(rawValue: Int(botSortOrderInt)) ?? .byName
+        }
+        set {
+            botSortOrderInt = Int16(newValue.rawValue)
+        }
     }
 }

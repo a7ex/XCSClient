@@ -35,4 +35,35 @@ struct BotConfiguration: Codable {
     var weeklyScheduleDay: WeeklyScheduleDay? // only if 'periodicScheduleInterval' set to 3 (Weekly)
     var buildConfiguration: String?
     var archiveExportOptions: ArchiveExportOptions?
+    
+    static func standard(scheme: String, sourceControlBlueprint: SourceControlBlueprint) -> BotConfiguration {
+        return BotConfiguration(
+            additionalBuildArguments: nil,
+            buildEnvironmentVariables: nil,
+            deviceSpecification: nil,
+            builtFromClean: nil,
+            codeCoveragePreference: nil,
+            disableAppThinning: nil,
+            exportsProductFromArchive: nil,
+            hourOfIntegration: nil,
+            minutesAfterHourToIntegrate: nil,
+            performsAnalyzeAction: nil,
+            performsArchiveAction: nil,
+            performsTestAction: nil,
+            performsUpgradeIntegration: nil,
+            periodicScheduleInterval: nil,
+            provisioningConfiguration: nil,
+            runOnlyDisabledTests: nil,
+            scheduleType: nil,
+            schemeName: scheme,
+            sourceControlBlueprint: sourceControlBlueprint,
+            testLocalizations: nil,
+            testingDestinationType: nil,
+            triggers: [Trigger](),
+            useParallelDeviceTesting: nil,
+            weeklyScheduleDay: nil,
+            buildConfiguration: nil,
+            archiveExportOptions: nil
+        )
+    }
 }

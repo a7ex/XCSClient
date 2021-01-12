@@ -28,13 +28,25 @@ extension CDBot: OutlineElement {
     }
     
     var statusColor: Color {
+        return firstIntegration?.statusColor ?? .gray
+    }
+    
+    var lastEventDate: Date {
+        return firstIntegration?.queuedDate ?? .distantPast
+    }
+    
+    var sortedStatus: Int {
+        return firstIntegration?.sortedStatus ?? 0
+    }
+    
+    private var firstIntegration: CDIntegration? {
         guard let integrations = children?.filter({ $0 is CDIntegration }) as? [CDIntegration],
               let firstIntegration = integrations.first(
                 where: { $0.integrationResult != .canceled }
               ) else {
-            return .gray
+            return nil
         }
-        return firstIntegration.statusColor
+        return firstIntegration
     }
     
     var destination: AnyView {
