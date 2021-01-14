@@ -22,6 +22,9 @@ struct CreateNewBotForm: View {
     @State private var repoUser = ""
     @State private var repoPass = ""
     
+    @State private var hasError = false
+    @State private var errorMessage = ""
+    
     @State private var activityShowing = false
     
     var body: some View {
@@ -79,9 +82,48 @@ struct CreateNewBotForm: View {
                 }
             }
         }
+        .alert(isPresented: $hasError) {
+            Alert(title: Text(errorMessage))
+        }
+    }
+    
+    private func validateInput() -> String {
+        guard !name.isEmpty else {
+            return "Please enter a name for the new bot into the field labeled \"Name\""
+        }
+        guard !scmKey.isEmpty else {
+            return "Please enter the repository hash into the field labeled \"Scm Key\""
+        }
+        guard !project.isEmpty else {
+            return "Please enter the releative path to the project file (.xcproject) or a workspace (.xcworkspace)" +
+                "into the field labeled \"Relative Path to project or workspace\""
+        }
+        guard !repoUrl.isEmpty else {
+            return "Please enter the repository url into the field labeled \"Repository URL\""
+        }
+        guard !branchName.isEmpty else {
+            return "Please enter the branch name into the field labeled \"Branch\""
+        }
+        guard !repoPath.isEmpty else {
+            return "Please enter the relative path to the source directory into the field labeled \"Repository path\""
+        }
+        guard !repoUser.isEmpty else {
+            return "Please enter the username to access the repository into the field labeled \"Repository username\""
+        }
+        guard !repoPass.isEmpty else {
+            return "Please enter the password to access the repository into the field labeled \"Repository password\""
+        }
+        return ""
     }
     
     private func createBot() {
+        let errorString = validateInput()
+        guard errorString.isEmpty else {
+            errorMessage = errorString
+            hasError = true
+            return
+        }
+        
         let sourceControlBlueprint = SourceControlBlueprint.standard(
             scmKey: scmKey,
             branchName: branchName,
