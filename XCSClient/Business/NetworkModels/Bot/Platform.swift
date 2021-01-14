@@ -15,15 +15,27 @@ import Foundation
 struct Platform: Codable {
     var id: String?
     var rev: String?
-    var buildNumber: String? // "17B102",
-    var displayName: String? // "iOS",
-    var identifier: String? // "com.apple.platform.iphoneos",
-    var simulatorIdentifier: String? // "com.apple.platform.iphonesimulator",
-    var version: String? // "13.2.2"
+    var buildNumber: String?
+    var displayName: String?
+    var identifier: String?
+    var simulatorIdentifier: String?
+    var version: String?
     
     enum CodingKeys: String, CodingKey {
         case id = "_id"
         case rev = "_rev"
         case buildNumber, displayName, identifier, simulatorIdentifier, version
+    }
+    
+    static var standard: Platform {
+        return Platform(
+            id: "FBB67329-5AD5-4B89-9CF3-FF99B4B10748",
+            rev: "4-702448a6f15c1a9daeb380d2e7e8c863",
+            buildNumber: "17B102",
+            displayName: "iOS",
+            identifier: "com.apple.platform.iphoneos",
+            simulatorIdentifier: "com.apple.platform.iphonesimulator",
+            version: "13.2.2"
+        )
     }
 }

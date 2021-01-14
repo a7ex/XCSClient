@@ -18,4 +18,11 @@ import Foundation
 struct TestDeviceSpecification: Codable {
     var deviceIdentifiers: [String]?
     var filters: [TestDeviceFilter]?
+    
+    static var standard: TestDeviceSpecification {
+        return TestDeviceSpecification(
+            deviceIdentifiers: [""],
+            filters: [TestDeviceFilter.standard]
+        )
+    }
 }

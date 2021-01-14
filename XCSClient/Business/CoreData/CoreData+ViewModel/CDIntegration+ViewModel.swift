@@ -106,6 +106,13 @@ extension CDIntegration: IntegrationViewModel {
         return ""
     }
     
+    var endedDateString: String {
+        if let date = endedTime {
+            return "\(Self.fullDateFormatter.string(from: date))"
+        }
+        return ""
+    }
+    
     var resultString: String {
         return (IntegrationResult(rawValue: result ?? "") ?? .unknown).rawValue
     }
@@ -298,5 +305,92 @@ extension CDIntegration: IntegrationViewModel {
             return ""
         }
         return scData.branchIdentifierKey ?? ""
+    }
+    
+    var revisionInformation: RevisionInfo {
+        return RevisionInfo(
+            author: revisionInfo?.author ?? "",
+            date: revisionInfo?.date ?? "",
+            comment: revisionInfo?.comment ?? ""
+        )
+    }
+    
+    private func updateRevisionInformation(with revInfo: RevisionInfo) {
+        guard let context = managedObjectContext else {
+            return
+        }
+        let cdRevInfo = CDRevisionInfo(context: context)
+        cdRevInfo.update(with: revInfo)
+        context.insert(cdRevInfo)
+        revisionInfo = cdRevInfo
+        do {
+            try context.save()
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
+    
+    func loadCommitData(completion: @escaping (RevisionInfo?) -> Void) {
+        guard isServerReachable else {
+            completion(nil)
+            return
+        }
+        guard revisionInformation.isEmpty else {
+            completion(revisionInformation)
+            return
+        }
+        let assetPath = sourceControlLog.path
+        guard !assetPath.isEmpty else {
+            completion(nil)
+            return
+        }
+        bot?.server?.connector.loadAsset(at: assetPath) { [weak self] (result) in
+            switch result {
+            case .success(let logData):
+                guard let str = String(data: logData, encoding: .utf8) else {
+                    completion(nil)
+                    return
+                }
+                let substr = str.matches(regex: "log items:\\n\\s*Revision:.+?\\<Info\\>\\: Saving commit history")
+                let revinf: RevisionInfo
+                if let rev = substr.first {
+                    let revString = String(rev.dropFirst(11))
+                        .components(separatedBy: .newlines)
+                        .dropLast()
+                        .joined(separator: "\n")
+                    let oneRevisionMatches = revString.matches(regex: "\\s*Revision:.+?\\n\\s*Revision:")
+                    let oneRevision: String
+                    if let frev = oneRevisionMatches.first {
+                        oneRevision = String(frev.dropLast(10))
+                    } else {
+                        oneRevision = revString
+                    }
+                    revinf = RevisionInfo(snippet: oneRevision)
+                } else {
+                    revinf = RevisionInfo(author: "- No commit data -", date: "", comment: "")
+                }
+                self?.updateRevisionInformation(with: revinf)
+                completion(revinf)
+            case .failure:
+                completion(nil)
+            }
+        }
+    }
+    
+    private var isServerReachable: Bool {
+        guard let server = bot?.server else {
+            return false
+        }
+        return server.reachability == Int16(ServerReachabilty.reachable.rawValue)
+    }
+}
+
+private extension String {
+    func matches(regex: String) -> [String] {
+        guard let regex = try? NSRegularExpression(pattern: regex, options: [.caseInsensitive, .dotMatchesLineSeparators]) else { return [] }
+        let matches  = regex.matches(in: self, options: [], range: NSMakeRange(0, self.count))
+        return matches.map { match in
+            return String(self[Range(match.range, in: self)!])
+        }
     }
 }

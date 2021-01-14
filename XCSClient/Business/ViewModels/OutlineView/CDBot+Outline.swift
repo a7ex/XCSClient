@@ -32,21 +32,49 @@ extension CDBot: OutlineElement {
     }
     
     var lastEventDate: Date {
-        return firstIntegration?.queuedDate ?? .distantPast
+        return firstCDIntegration?.queuedDate ?? .distantPast
     }
     
     var sortedStatus: Int {
-        return firstIntegration?.sortedStatus ?? 0
+        return firstCDIntegration?.sortedStatus ?? 0
     }
     
-    private var firstIntegration: CDIntegration? {
-        guard let integrations = children?.filter({ $0 is CDIntegration }) as? [CDIntegration],
-              let firstIntegration = integrations.first(
-                where: { $0.integrationResult != .canceled }
-              ) else {
-            return nil
+    var firstIntegrationStatus: some View {
+        guard let summary = firstCDIntegration?.buildResultSummary else {
+            return CapsuleText(
+                content: "",
+                color: .clear
+            )
         }
-        return firstIntegration
+        if summary.errorCount > 0 {
+            return CapsuleText(
+                content: "\(summary.errorCount)\(signedNumberString(from: summary.errorChange))",
+                color: Color(Colors.error)
+            )
+        }
+        if summary.testFailureCount > 0 {
+            return CapsuleText(
+                content: "\(summary.testFailureCount)\(signedNumberString(from: summary.testFailureChange))",
+                color: Color(Colors.testFailures)
+            )
+        }
+        if summary.warningCount > 0 {
+            return CapsuleText(
+                content: "\(summary.warningCount)\(signedNumberString(from: summary.warningChange))",
+                color: Color(Colors.warning)
+            )
+        }
+        return CapsuleText(content: "", color: .clear)
+    }
+    
+    private func signedNumberString(from number: Int16) -> String {
+        guard number != 0 else {
+            return ""
+        }
+        guard number > 0 else {
+            return " (\(number))"
+        }
+        return " (+\(number))"
     }
     
     var destination: AnyView {

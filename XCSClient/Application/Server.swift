@@ -292,7 +292,21 @@ struct Server {
         let rslt = copyBotSettingsToServer(fileUrl: fileUrl, fileName: fileName)
         switch rslt {
         case .success(let path):
-            return self.createBotWithSettings(settingsFile: path)
+            let result = self.createBotWithSettings(settingsFile: path)
+            
+            let program: String
+            let args: [String]
+            if !sshEndpoint.isEmpty,
+               sshEndpoint != "@" {
+                program = "/usr/bin/ssh"
+                args = [sshEndpoint, "rm", fileName]
+            } else {
+                program = "rm"
+                args = [fileName]
+            }
+            _ = execute(program: program, with: args)
+            
+            return result
         case .failure(let error):
             return .failure(error)
         }

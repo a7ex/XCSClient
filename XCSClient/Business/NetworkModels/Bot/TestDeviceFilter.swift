@@ -12,4 +12,12 @@ struct TestDeviceFilter: Codable {
     var architectureType: Int?
     var filterType: Int?
     var platform: Platform?
+    
+    static var standard: TestDeviceFilter {
+        return TestDeviceFilter(
+            architectureType: 0,
+            filterType: 3,
+            platform: Platform.standard
+        )
+    }
 }

@@ -17,9 +17,9 @@ struct IntegrationDetailView: View {
     @State private var hasError = false
     @State private var errorMessage = ""
     @State private var activityShowing = false
-    @State private var revisionInfo = RevisionInfo(snippet: "")
     @State private var ipaPath = "loading"
     @State private var machineName = ""
+    @State private var revisionInfo = RevisionInfo(author: "", date: "", comment: "")
     
     @State private var durationInSeconds = "0"
     private let timer = Timer.publish(every: 1, tolerance: 0.5, on: .main, in: .common).autoconnect()
@@ -38,7 +38,6 @@ struct IntegrationDetailView: View {
         let fmt = DateComponentsFormatter()
         return fmt.string(from: interval) ?? ""
     }
-    
     
     var body: some View {
         ZStack {
@@ -86,52 +85,10 @@ struct IntegrationDetailView: View {
                 }
                 if !revisionInfo.isEmpty {
                     Divider()
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text(revisionInfo.author)
-                            Text(revisionInfo.date)
-                            Text(revisionInfo.comment)
-                                .fontWeight(.bold)
-                        }
-                        Spacer()
-                    }
+                    RevisionInfoView(revisionInfo: revisionInfo)
                 }
                 Divider()
-                HStack(alignment: .top) {
-                    Spacer()
-                    VStack {
-                        Text("🐞")
-                            .font(.largeTitle)
-                        Text("\(integration.errorCount) Errors")
-                            .font(.headline)
-                        Text("(\(integration.errorChange))")
-                    }
-                    Spacer()
-                    VStack {
-                        Text("⚠️")
-                            .font(.largeTitle)
-                        Text("\(integration.warningCount) Warnings")
-                            .font(.headline)
-                        Text("(\(integration.warningChange))")
-                    }
-                    Spacer()
-                    VStack {
-                        Text("🛠")
-                            .font(.largeTitle)
-                        Text("\(integration.analyzerWarnings) Issues")
-                            .font(.headline)
-                        Text("(\(integration.analyzerWarningChange))")
-                    }
-                    Spacer()
-                    VStack {
-                        Text(integration.testFailureCount > 0 ? "❌": "✅")
-                            .font(.largeTitle)
-                        Text("Passed/Failed tests: \(integration.passedTestsCount)/\(integration.testFailureCount)")
-                            .font(.headline)
-                        Text("(\(integration.passedTestsChange)/\(integration.testFailureChange))")
-                    }
-                    Spacer()
-                }
+                IntegrationResultsIconView(integration: integration)
                 Divider()
                 Group {
                     if integration.resultString == IntegrationResult.unknown.rawValue {
@@ -199,13 +156,31 @@ struct IntegrationDetailView: View {
             }
         }
         .onAppear {
-            self.loadCommitData()
+            loadCommitData()
             if integration.archive.size > 0 {
-                self.findIpa()
+                findIpa()
             }
         }
         .alert(isPresented: $hasError) {
             Alert(title: Text(errorMessage))
+        }
+    }
+    
+    private func loadCommitData() {
+        let revInfo = integration.revisionInformation
+        if revInfo.isEmpty {
+            integration.loadCommitData() { rInfo in
+                guard let rInfo = rInfo else {
+                    return
+                }
+                revisionInfo = rInfo
+            }
+        } else {
+            revisionInfo = RevisionInfo(
+                author: revInfo.author,
+                date: revInfo.date,
+                comment: revInfo.comment
+            )
         }
     }
     
@@ -231,32 +206,6 @@ struct IntegrationDetailView: View {
             case .failure(let error):
                 self.errorMessage = error.localizedDescription
                 self.hasError = true
-            }
-        }
-    }
-    
-    private func loadCommitData() {
-        guard isServerReachable else {
-            return
-        }
-        let assetPath = integration.sourceControlLog.path
-        guard !assetPath.isEmpty else {
-            return
-        }
-        connector.loadAsset(at: assetPath) { (result) in
-            switch result {
-            case .success(let logData):
-                guard let str = String(data: logData, encoding: .utf8) else {
-                    return
-                    
-                }
-                let substr = str.matches(regex: "log items:\\n\\s*Revision:.+?Revision:")
-                if let rev = substr.first {
-                    let revString = String(rev.dropFirst(11).dropLast(10))
-                    self.revisionInfo = RevisionInfo(snippet: revString)
-                }
-            case .failure:
-                break
             }
         }
     }
@@ -396,7 +345,13 @@ struct IntegrationDetailView: View {
         guard !integrationId.isEmpty else {
             return
         }
+        withAnimation {
+            activityShowing = true
+        }
         connector.cancelIntegration(integrationId) { (result) in
+            withAnimation {
+                activityShowing = false
+            }
             switch result {
             case .success(let success):
                 self.errorMessage = success ? "Integration successfully cancelled": "Failed to cancel integration"
@@ -436,16 +391,6 @@ struct IntegrationDetailView_Previews: PreviewProvider {
         return Group {
             IntegrationDetailView(integration: obj)
                 .environmentObject(XCSConnector.previewServerConnector)
-        }
-    }
-}
-
-private extension String {
-    func matches(regex: String) -> [String] {
-        guard let regex = try? NSRegularExpression(pattern: regex, options: [.caseInsensitive, .dotMatchesLineSeparators]) else { return [] }
-        let matches  = regex.matches(in: self, options: [], range: NSMakeRange(0, self.count))
-        return matches.map { match in
-            return String(self[Range(match.range, in: self)!])
         }
     }
 }

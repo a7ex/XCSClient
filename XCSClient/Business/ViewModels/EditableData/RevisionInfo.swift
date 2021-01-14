@@ -13,6 +13,12 @@ struct RevisionInfo {
     let date: String
     let comment: String
     
+    var isEmpty: Bool {
+        return author.isEmpty && comment.isEmpty
+    }
+}
+
+extension RevisionInfo {
     init(snippet: String) {
         let recStrings = snippet.components(separatedBy: .newlines)
         var revisionLines = Array(recStrings.dropFirst())
@@ -37,9 +43,5 @@ struct RevisionInfo {
                 revisionLines.removeLast()
         }
         comment = revisionLines.joined(separator: "\n")
-    }
-    
-    var isEmpty: Bool {
-        return author.isEmpty && comment.isEmpty
     }
 }

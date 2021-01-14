@@ -38,6 +38,7 @@ protocol BotViewModel {
     var archiveExportOptions: ArchiveExportOptions { get }
     var exportSettings: String { get }
     func applying(_ botEditableData: BotEditorData) -> RequestBodyParameterProvider
+    var firstIntegration: IntegrationViewModel? { get }
 }
 
 protocol RequestBodyParameterProvider {

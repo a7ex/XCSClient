@@ -92,7 +92,7 @@ extension CDBot {
                     }
                 }
             }
-            // update the hierarchical list by making a dummy change
+            // refresh the hierarchical list by making a dummy change
             // to the top level object, CDServer
             self.server?.name = self.server?.name
             do {

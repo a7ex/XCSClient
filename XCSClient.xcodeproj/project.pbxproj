@@ -23,6 +23,9 @@
 		FA26964D249620A500C7F084 /* LabeledTextInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA26964C249620A500C7F084 /* LabeledTextInput.swift */; };
 		FA3E643825ACD47600EDD348 /* CreateNewBotForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA3E643725ACD47600EDD348 /* CreateNewBotForm.swift */; };
 		FA3E643B25AD8BB200EDD348 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FA3E643A25AD8BB200EDD348 /* Colors.xcassets */; };
+		FA3E646125AE134600EDD348 /* CapsuleText.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA3E646025AE134600EDD348 /* CapsuleText.swift */; };
+		FA3E646425AE1CB000EDD348 /* IntegrationResultsIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA3E646325AE1CAF00EDD348 /* IntegrationResultsIconView.swift */; };
+		FA3E646725AE2C4D00EDD348 /* CDRevisionInfo+Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA3E646625AE2C4D00EDD348 /* CDRevisionInfo+Codable.swift */; };
 		FA4A636F2594C3F2006DD873 /* CoreDataPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4A636E2594C3F2006DD873 /* CoreDataPersistence.swift */; };
 		FA4A63742594C44C006DD873 /* XCSClient.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = FA4A63722594C44C006DD873 /* XCSClient.xcdatamodeld */; };
 		FA4A63792594CB76006DD873 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4A63782594CB76006DD873 /* MainView.swift */; };
@@ -54,6 +57,7 @@
 		FA56370A2493BEDC002457DF /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5637092493BEDC002457DF /* Server.swift */; };
 		FA56370C2493BEED002457DF /* NSError+ConvenienceInit.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA56370B2493BEED002457DF /* NSError+ConvenienceInit.swift */; };
 		FA5EBA7924994A660032834B /* UpdatingStatusText.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5EBA7824994A660032834B /* UpdatingStatusText.swift */; };
+		FA607DEB25AF2A2A00DDB562 /* RevisionInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA607DEA25AF2A2A00DDB562 /* RevisionInfoView.swift */; };
 		FA68A95F259E28FE00604BAE /* CDServer+Connectable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA68A95E259E28FE00604BAE /* CDServer+Connectable.swift */; };
 		FA68A962259E2B2700604BAE /* BotViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA68A961259E2B2700604BAE /* BotViewModel.swift */; };
 		FA7B8A472493D10900C26B50 /* BotDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7B8A462493D10900C26B50 /* BotDetailView.swift */; };
@@ -130,6 +134,9 @@
 		FA26964C249620A500C7F084 /* LabeledTextInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledTextInput.swift; sourceTree = "<group>"; };
 		FA3E643725ACD47600EDD348 /* CreateNewBotForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateNewBotForm.swift; sourceTree = "<group>"; };
 		FA3E643A25AD8BB200EDD348 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
+		FA3E646025AE134600EDD348 /* CapsuleText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapsuleText.swift; sourceTree = "<group>"; };
+		FA3E646325AE1CAF00EDD348 /* IntegrationResultsIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationResultsIconView.swift; sourceTree = "<group>"; };
+		FA3E646625AE2C4D00EDD348 /* CDRevisionInfo+Codable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDRevisionInfo+Codable.swift"; sourceTree = "<group>"; };
 		FA4A636E2594C3F2006DD873 /* CoreDataPersistence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataPersistence.swift; sourceTree = "<group>"; };
 		FA4A63732594C44C006DD873 /* XCSClient.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = XCSClient.xcdatamodel; sourceTree = "<group>"; };
 		FA4A63782594CB76006DD873 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
@@ -163,6 +170,7 @@
 		FA5637092493BEDC002457DF /* Server.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
 		FA56370B2493BEED002457DF /* NSError+ConvenienceInit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSError+ConvenienceInit.swift"; sourceTree = "<group>"; };
 		FA5EBA7824994A660032834B /* UpdatingStatusText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatingStatusText.swift; sourceTree = "<group>"; };
+		FA607DEA25AF2A2A00DDB562 /* RevisionInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RevisionInfoView.swift; sourceTree = "<group>"; };
 		FA68A95E259E28FE00604BAE /* CDServer+Connectable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDServer+Connectable.swift"; sourceTree = "<group>"; };
 		FA68A961259E2B2700604BAE /* BotViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BotViewModel.swift; sourceTree = "<group>"; };
 		FA7B8A442493C3C300C26B50 /* XCSClientDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = XCSClientDebug.entitlements; sourceTree = "<group>"; };
@@ -264,6 +272,9 @@
 				FA8683B225A0777A003ED214 /* ShowMoreLessButton.swift */,
 				FA8683B925A0B8C8003ED214 /* ShowLessButton.swift */,
 				FA8683BC25A0C71C003ED214 /* AnimatingIcon.swift */,
+				FA3E646025AE134600EDD348 /* CapsuleText.swift */,
+				FA3E646325AE1CAF00EDD348 /* IntegrationResultsIconView.swift */,
+				FA607DEA25AF2A2A00DDB562 /* RevisionInfoView.swift */,
 			);
 			path = ViewElements;
 			sourceTree = "<group>";
@@ -512,6 +523,7 @@
 				FAD06C612598BA7400AD18A4 /* CDLogFile+Codable.swift */,
 				FA0CE313259A6C28003E9E43 /* CDTriggerConditions+Codable.swift */,
 				FA0CE316259A6D31003E9E43 /* CDEmailConfiguration+Codable.swift */,
+				FA3E646625AE2C4D00EDD348 /* CDRevisionInfo+Codable.swift */,
 			);
 			path = "CoreData+Codable";
 			sourceTree = "<group>";
@@ -672,6 +684,7 @@
 				FAD06C5F2598B79B00AD18A4 /* CDBuildResultSummary+Codable.swift in Sources */,
 				FA4A636F2594C3F2006DD873 /* CoreDataPersistence.swift in Sources */,
 				FA7B8A4A2493E12900C26B50 /* XCSConnector.swift in Sources */,
+				FA3E646425AE1CB000EDD348 /* IntegrationResultsIconView.swift in Sources */,
 				FA4A63742594C44C006DD873 /* XCSClient.xcdatamodeld in Sources */,
 				FAD06C522598ABCD00AD18A4 /* CDRemoteRepository+Codable.swift in Sources */,
 				FA5636FB2493BEC7002457DF /* EmailConfiguration.swift in Sources */,
@@ -705,6 +718,7 @@
 				FAE5B863249FC26800E06155 /* JSONValue.swift in Sources */,
 				FAD06C492598A86300AD18A4 /* CDProvisioningConfiguration+Codable.swift in Sources */,
 				FA5636C62493BC55002457DF /* AppDelegate.swift in Sources */,
+				FA3E646725AE2C4D00EDD348 /* CDRevisionInfo+Codable.swift in Sources */,
 				FA9D479B2596B03C00C38FF5 /* CDIntegrationView.swift in Sources */,
 				FA9D47A42596CFD500C38FF5 /* OutlineElement.swift in Sources */,
 				FA8683A8259FC69C003ED214 /* DataSyncWorker.swift in Sources */,
@@ -717,12 +731,14 @@
 				FAE5B86A249FC3FE00E06155 /* ScheduleType.swift in Sources */,
 				FAD06C592598B4D700AD18A4 /* CDIntegration+Codable.swift in Sources */,
 				FA5637042493BEC7002457DF /* TestDevice.swift in Sources */,
+				FA607DEB25AF2A2A00DDB562 /* RevisionInfoView.swift in Sources */,
 				FAD06C552598ADF800AD18A4 /* CDTrigger+Codable.swift in Sources */,
 				FA9D479E2596B05500C38FF5 /* CDServerView.swift in Sources */,
 				FA17F9132496890C000A149D /* ActivityIndicator.swift in Sources */,
 				FAD06C452598A4DE00AD18A4 /* CDIPAExportOptions+Codable.swift in Sources */,
 				FA68A95F259E28FE00604BAE /* CDServer+Connectable.swift in Sources */,
 				FA56370A2493BEDC002457DF /* Server.swift in Sources */,
+				FA3E646125AE134600EDD348 /* CapsuleText.swift in Sources */,
 				FA5637012493BEC7002457DF /* BotsQueryResponse.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

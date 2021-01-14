@@ -21,6 +21,7 @@ protocol IntegrationViewModel {
     var startTimes: String { get }
     var startedTime: Date? { get }
     var endedTimeString: String { get }
+    var endedDateString: String { get }
     var resultString: String { get }
     var statusColor: Color { get }
     var testedDevices: String { get }
@@ -50,4 +51,7 @@ protocol IntegrationViewModel {
     var hasAssets: Bool { get }
     var sourceControlCommitId: String { get }
     var sourceControlBranch: String { get }
+    var revisionInformation: RevisionInfo { get }
+    
+    func loadCommitData(completion: @escaping (RevisionInfo?) -> Void)
 }

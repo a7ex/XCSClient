@@ -60,14 +60,16 @@ struct ServerOutlineList: View {
                     NavigationLink(destination: item.destination) {
                         HStack {
                             Text(item.title)
-                            if let bot = item as? CDBot,
-                               bot.visibleItems > 2 {
+                            if let bot = item as? CDBot {
                                 Spacer()
-                                Button(action: { resetNumberOfVisibleIntegrations(of: bot) }) {
-                                    Image(systemName: "arrow.up")
-                                        .frame(minWidth: 20)
+                                if bot.visibleItems > 2 {
+                                    Button(action: { resetNumberOfVisibleIntegrations(of: bot) }) {
+                                        Image(systemName: "arrow.up")
+                                            .frame(minWidth: 20)
+                                    }
+                                    .buttonStyle(LinkButtonStyle())
                                 }
-                                .buttonStyle(LinkButtonStyle())
+                                bot.firstIntegrationStatus
                             }
                         }
                     }

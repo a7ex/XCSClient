@@ -27,8 +27,14 @@ struct CreateNewBotForm: View {
     var body: some View {
         ZStack {
             VStack(alignment: .leading, spacing: 8) {
-                Text("Create new Bot")
-                    .font(.title)
+                HStack {
+                    Text("Create new Bot")
+                        .font(.title)
+                    Spacer()
+                    Button(action: importSettingsFromFile) {
+                        Text("Import from .scmblueprint file…")
+                    }
+                }
                 LabeledTextInput(label: "Name", content: $name)
                 LabeledTextInput(label: "Scm Key", content: $scmKey)
                 LabeledTextInput(label: "Relative Path to project or workspace", content: $project)
@@ -45,10 +51,14 @@ struct CreateNewBotForm: View {
                         }
                     }) {
                         Text("Cancel")
+                            .frame(minWidth: 100)
                     }
-                    Button(action: createNewBot) {
+                    .keyboardShortcut(.cancelAction)
+                    Button(action: createBot) {
                         Text("Create")
+                            .frame(minWidth: 100)
                     }
+                    .keyboardShortcut(.defaultAction)
                 }
             }
             .padding()
@@ -71,32 +81,16 @@ struct CreateNewBotForm: View {
         }
     }
     
-    private func createNewBot() {
-        createBot(
-            name: name,
+    private func createBot() {
+        let sourceControlBlueprint = SourceControlBlueprint.standard(
             scmKey: scmKey,
+            branchName: branchName,
             project: project,
             repoUrl: repoUrl,
-            branchName: branchName,
             repoPath: repoPath,
             repoUser: repoUser,
             repoPass: repoPass
         )
-    }
-    
-    private func createBot(
-        name: String,
-        scmKey: String,
-        project: String,
-        repoUrl: String,
-        branchName: String,
-        repoPath: String,
-        repoUser: String,
-        repoPass: String
-    ) {
-        
-        let sourceControlBlueprint = SourceControlBlueprint.standard(scmKey: scmKey, branchName: branchName, project: project, repoUrl: repoUrl, repoPath: repoPath, repoUser: repoUser, repoPass: repoPass)
-        
         let config = BotConfiguration.standard(
             scheme: "DHLPaket_Git",
             sourceControlBlueprint: sourceControlBlueprint
@@ -134,6 +128,28 @@ struct CreateNewBotForm: View {
             }
         } catch {
             print(error.localizedDescription)
+        }
+    }
+    
+    private func importSettingsFromFile() {
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = true
+        panel.allowedFileTypes = ["xcscmblueprint"]
+        let result = panel.runModal()
+        guard result == .OK,
+              let url = panel.url,
+              let data = try? Data(contentsOf: url) else {
+            return
+        }
+        let decoder = JSONDecoder()
+        if let scmBlueprint = try? decoder.decode(SourceControlBlueprint.self, from: data) {
+            let bpId = scmBlueprint.primaryRemoteRepositoryKey ?? ""
+            name = scmBlueprint.nameKey ?? ""
+            scmKey = bpId
+            project = scmBlueprint.relativePathToProjectKey ?? ""
+            repoUrl = scmBlueprint.remoteRepositoriesKey?.first?.urlKey ?? ""
+            branchName = scmBlueprint.locationsKey?[bpId]?.branchIdentifierKey ?? ""
+            repoPath = scmBlueprint.workingCopyPathsKey?[bpId] ?? ""
         }
     }
     

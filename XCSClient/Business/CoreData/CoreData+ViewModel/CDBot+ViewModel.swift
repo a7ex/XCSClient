@@ -146,12 +146,23 @@ extension CDBot: BotViewModel {
     }
     
     var integrationInProgress: Bool {
+        guard let integration = firstCDIntegration else {
+            return false
+        }
+        return integration.currentStepString != "completed"
+    }
+    
+    var firstIntegration: IntegrationViewModel? {
+        return firstCDIntegration
+    }
+    
+    var firstCDIntegration: CDIntegration? {
         guard let integrations = children?.filter({ $0 is CDIntegration }) as? [CDIntegration],
               let firstIntegration = integrations.first(
                 where: { $0.integrationResult != .canceled }
               ) else {
-            return false
+            return nil
         }
-        return firstIntegration.currentStepString != "completed"
+        return firstIntegration
     }
 }

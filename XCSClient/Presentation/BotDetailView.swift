@@ -17,6 +17,7 @@ struct BotDetailView: View {
     @State private var errorMessage = ""
     @State private var deleteConfirm = false
     @State private var activityShowing = false
+    @State private var revisionInfo = RevisionInfo(author: "", date: "", comment: "")
     
     @StateObject private var botEditableData = BotEditorData()
     
@@ -176,12 +177,35 @@ struct BotDetailView: View {
                 Button(action: { self.integrate() }) {
                     ButtonLabel(text: "Start Integration")
                 }
-                Spacer()
+                if let integration = bot.firstIntegration {
+                    Spacer()
+                    Text("Last integration")
+                        .font(.headline)
+                    VStack(alignment: .leading) {
+                        LabeledStringValue(label: "Date", value: integration.endedDateString)
+                        if !integration.sourceControlCommitId.isEmpty {
+                            LabeledStringValue(label: "Commit ID", value: integration.sourceControlCommitId)
+                        }
+                        if !integration.sourceControlBranch.isEmpty {
+                            LabeledStringValue(label: "Branch", value: integration.sourceControlBranch)
+                        }
+                        if !revisionInfo.isEmpty {
+                                Divider()
+                                RevisionInfoView(revisionInfo: revisionInfo)
+                        }
+                        Divider()
+                        IntegrationResultsIconView(integration: integration)
+                    }
+                    .padding()
+                    .background(Color("LighterBackground"))
+                    .cornerRadius(10)
+                }
             }
             .padding()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .onAppear {
-                self.botEditableData.setup(with: self.bot)
+                botEditableData.setup(with: self.bot)
+                loadCommitData()
             }
             .alert(isPresented: $hasError) {
                 if errorMessage == deletConfirmMessage {
@@ -204,6 +228,21 @@ struct BotDetailView: View {
                         .foregroundColor(.white)
                 }
             }
+        }
+    }
+    
+    private func loadCommitData() {
+        let revInfo = bot.firstIntegration?.revisionInformation
+        revisionInfo = RevisionInfo(
+            author: revInfo?.author ?? "",
+            date: revInfo?.date ?? "",
+            comment: revInfo?.comment ?? ""
+        )
+        bot.firstIntegration?.loadCommitData() { revInfo in
+            guard let revInfo = revInfo else {
+                return
+            }
+            revisionInfo = revInfo
         }
     }
     
@@ -245,7 +284,13 @@ struct BotDetailView: View {
             hasError = true
             return
         }
+        withAnimation {
+            activityShowing = true
+        }
         connector.integrate(bot.idString) { (result) in
+            withAnimation {
+                activityShowing = false
+            }
             switch result {
                 case .success(let integration):
                     if let cdBot = bot as? CDBot {
@@ -273,7 +318,13 @@ struct BotDetailView: View {
             hasError = true
             return
         }
+        withAnimation {
+            activityShowing = true
+        }
         connector.deleteBot(with: bot.idString, revId: bot.revIdString) { (result) in
+            withAnimation {
+                activityShowing = false
+            }
             switch result {
                 case .success(let success):
                     if success {
@@ -299,7 +350,13 @@ struct BotDetailView: View {
             hasError = true
             return
         }
+        withAnimation {
+            activityShowing = true
+        }
         connector.duplicateBot(with: bot.idString) { (result) in
+            withAnimation {
+                activityShowing = false
+            }
             switch result {
                 case .success(let codableBot):
                     if let cdBot = bot as? CDBot,
@@ -333,7 +390,13 @@ struct BotDetailView: View {
             let url = panel.url else {
                 return
         }
+        withAnimation {
+            activityShowing = true
+        }
         connector.applySettings(at: url, fileName: "\(bot.tinyIDString).json", toBot: bot.idString) { (result) in
+            withAnimation {
+                activityShowing = false
+            }
             switch result {
                 case .success(let codableBot):
                     if let cdBot = bot as? CDBot {
@@ -364,13 +427,13 @@ struct BotDetailView: View {
             try Data(newJSON.utf8).write(to: tempFileUrl)
             
             withAnimation {
-                self.activityShowing = true
+                activityShowing = true
             }
             
             connector.applySettings(at: tempFileUrl, fileName: "\(bot.tinyIDString).json", toBot: bot.idString) { (result) in
                 
                 withAnimation {
-                    self.activityShowing = false
+                    activityShowing = false
                 }
                 
                 switch result {
@@ -419,8 +482,14 @@ struct BotDetailView: View {
         guard let cdBot = bot as? CDBot else {
             return
         }
+        withAnimation {
+            activityShowing = true
+        }
         cdBot.server?.reachability = Int16(ServerReachabilty.connecting.rawValue)
         cdBot.server?.connector.getBotList { (result) in
+            withAnimation {
+                activityShowing = false
+            }
             if case let .success(bots) = result {
                 cdBot.server?.reachability = Int16(ServerReachabilty.reachable.rawValue)
                 bots.forEach { (bot) in

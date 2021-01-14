@@ -16,4 +16,16 @@ struct TriggerConditions: Codable {
     var onSuccess: Bool?
     var onWarnings: Bool?
     var status: Int?
+    
+    static var allOn: TriggerConditions {
+        return TriggerConditions(
+            onAllIssuesResolved: true,
+            onAnalyzerWarnings: true,
+            onBuildErrors: true,
+            onFailingTests: true,
+            onSuccess: true,
+            onWarnings: true,
+            status: 0
+        )
+    }
 }
