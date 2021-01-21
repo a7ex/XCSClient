@@ -9,6 +9,7 @@
 import SwiftUI
 
 extension CDIntegration: IntegrationViewModel {
+    
     private static let timeFormatter: DateComponentsFormatter = {
         let formatter = DateComponentsFormatter()
         formatter.allowedUnits = [.hour, .minute, .second]
@@ -374,6 +375,67 @@ extension CDIntegration: IntegrationViewModel {
             case .failure:
                 completion(nil)
             }
+        }
+    }
+    
+    var buildServiceSummaryItems: [BuildSummaryItem] {
+        guard let cdItems = buildSummaryItems,
+            let items = Array(cdItems) as? [CDBuildServiceSummaryItem] else {
+            return [BuildSummaryItem]()
+        }
+        return items.map { $0.asCodableObject }
+    }
+    
+    func loadBuildSummaryData(completion: @escaping ([BuildSummaryItem]) -> Void) {
+        guard isServerReachable else {
+            completion([BuildSummaryItem]())
+            return
+        }
+        guard buildServiceSummaryItems.isEmpty else {
+            completion(buildServiceSummaryItems)
+            return
+        }
+        let assetPath = buildServiceLog.path
+        guard !assetPath.isEmpty else {
+            completion([BuildSummaryItem]())
+            return
+        }
+        bot?.server?.connector.loadAsset(at: assetPath) { [weak self] (result) in
+            switch result {
+            case .success(let logData):
+                guard let str = String(data: logData, encoding: .utf8) else {
+                    completion([BuildSummaryItem]())
+                    return
+                }
+                let items = BuildSummaryItem.itemsFromLog(str)
+                if let context = self?.managedObjectContext {
+                    let mapped = items.map { context.summaryItem(from: $0) }
+                    self?.addToBuildSummaryItems(Set(mapped) as NSSet)
+                    do {
+                        try context.save()
+                    } catch {
+                        print(error.localizedDescription)
+                    }
+                }
+                completion(items)
+            case .failure:
+                completion([BuildSummaryItem]())
+            }
+        }
+    }
+    
+    private func updateBuildSummaryItems(with revInfo: RevisionInfo) {
+        guard let context = managedObjectContext else {
+            return
+        }
+        let cdRevInfo = CDRevisionInfo(context: context)
+        cdRevInfo.update(with: revInfo)
+        context.insert(cdRevInfo)
+        revisionInfo = cdRevInfo
+        do {
+            try context.save()
+        } catch {
+            print(error.localizedDescription)
         }
     }
     

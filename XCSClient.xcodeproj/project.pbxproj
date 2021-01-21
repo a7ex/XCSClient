@@ -73,6 +73,9 @@
 		FA8A3593259E6273001559A8 /* IntegrationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8A3592259E6273001559A8 /* IntegrationViewModel.swift */; };
 		FA8A3599259E735E001559A8 /* CDBot+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8A3598259E735E001559A8 /* CDBot+ViewModel.swift */; };
 		FA8A359D259E7374001559A8 /* CDIntegration+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8A359C259E7374001559A8 /* CDIntegration+ViewModel.swift */; };
+		FA96289825B47D0E00DFC244 /* SideBarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA96289725B47D0E00DFC244 /* SideBarViewModel.swift */; };
+		FA96289C25B48E2600DFC244 /* SideBarSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA96289B25B48E2600DFC244 /* SideBarSplitView.swift */; };
+		FA9628A125B4922300DFC244 /* ServerOutlineListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9628A025B4922300DFC244 /* ServerOutlineListViewModel.swift */; };
 		FA9D478E2596816000C38FF5 /* CDServer+Outline.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9D478D2596816000C38FF5 /* CDServer+Outline.swift */; };
 		FA9D479725968B2C00C38FF5 /* CDBotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9D479625968B2C00C38FF5 /* CDBotView.swift */; };
 		FA9D479B2596B03C00C38FF5 /* CDIntegrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9D479A2596B03C00C38FF5 /* CDIntegrationView.swift */; };
@@ -80,6 +83,8 @@
 		FA9D47A42596CFD500C38FF5 /* OutlineElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9D47A32596CFD500C38FF5 /* OutlineElement.swift */; };
 		FA9D47A72596D02700C38FF5 /* CDBot+Outline.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9D47A62596D02700C38FF5 /* CDBot+Outline.swift */; };
 		FA9D47AA2596D05900C38FF5 /* CDIntegration+Outline.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9D47A92596D05900C38FF5 /* CDIntegration+Outline.swift */; };
+		FAB4FC6525B5D60800F2BCE9 /* BuildSummaryItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB4FC6425B5D60800F2BCE9 /* BuildSummaryItem.swift */; };
+		FAB4FC6825B5D97800F2BCE9 /* CDBuildServiceSummaryItem+Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB4FC6725B5D97800F2BCE9 /* CDBuildServiceSummaryItem+Codable.swift */; };
 		FAB8576924F5D65100C646AC /* RevisionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB8576824F5D65100C646AC /* RevisionInfo.swift */; };
 		FABB718325A1E8BD00D1CFFD /* CDIntegration+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = FABB717F25A1E8BD00D1CFFD /* CDIntegration+CoreDataClass.swift */; };
 		FABB718525A1E8BD00D1CFFD /* CDBot+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = FABB718125A1E8BD00D1CFFD /* CDBot+CoreDataClass.swift */; };
@@ -190,6 +195,9 @@
 		FA8A3592259E6273001559A8 /* IntegrationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationViewModel.swift; sourceTree = "<group>"; };
 		FA8A3598259E735E001559A8 /* CDBot+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDBot+ViewModel.swift"; sourceTree = "<group>"; };
 		FA8A359C259E7374001559A8 /* CDIntegration+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDIntegration+ViewModel.swift"; sourceTree = "<group>"; };
+		FA96289725B47D0E00DFC244 /* SideBarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideBarViewModel.swift; sourceTree = "<group>"; };
+		FA96289B25B48E2600DFC244 /* SideBarSplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideBarSplitView.swift; sourceTree = "<group>"; };
+		FA9628A025B4922300DFC244 /* ServerOutlineListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerOutlineListViewModel.swift; sourceTree = "<group>"; };
 		FA9D478D2596816000C38FF5 /* CDServer+Outline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDServer+Outline.swift"; sourceTree = "<group>"; };
 		FA9D479625968B2C00C38FF5 /* CDBotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CDBotView.swift; sourceTree = "<group>"; };
 		FA9D479A2596B03C00C38FF5 /* CDIntegrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CDIntegrationView.swift; sourceTree = "<group>"; };
@@ -197,6 +205,8 @@
 		FA9D47A32596CFD500C38FF5 /* OutlineElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutlineElement.swift; sourceTree = "<group>"; };
 		FA9D47A62596D02700C38FF5 /* CDBot+Outline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDBot+Outline.swift"; sourceTree = "<group>"; };
 		FA9D47A92596D05900C38FF5 /* CDIntegration+Outline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDIntegration+Outline.swift"; sourceTree = "<group>"; };
+		FAB4FC6425B5D60800F2BCE9 /* BuildSummaryItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildSummaryItem.swift; sourceTree = "<group>"; };
+		FAB4FC6725B5D97800F2BCE9 /* CDBuildServiceSummaryItem+Codable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDBuildServiceSummaryItem+Codable.swift"; sourceTree = "<group>"; };
 		FAB8576824F5D65100C646AC /* RevisionInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RevisionInfo.swift; sourceTree = "<group>"; };
 		FABB717F25A1E8BD00D1CFFD /* CDIntegration+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDIntegration+CoreDataClass.swift"; sourceTree = "<group>"; };
 		FABB718125A1E8BD00D1CFFD /* CDBot+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDBot+CoreDataClass.swift"; sourceTree = "<group>"; };
@@ -251,10 +261,13 @@
 		FA2696362495FC6700C7F084 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				FA96289725B47D0E00DFC244 /* SideBarViewModel.swift */,
+				FA9628A025B4922300DFC244 /* ServerOutlineListViewModel.swift */,
 				FA68A961259E2B2700604BAE /* BotViewModel.swift */,
 				FA8A3592259E6273001559A8 /* IntegrationViewModel.swift */,
 				FAD06C032598549D00AD18A4 /* OutlineView */,
 				FA68A95B259E283B00604BAE /* EditableData */,
+				FAB4FC6425B5D60800F2BCE9 /* BuildSummaryItem.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -334,6 +347,7 @@
 			isa = PBXGroup;
 			children = (
 				FA4A63782594CB76006DD873 /* MainView.swift */,
+				FA96289B25B48E2600DFC244 /* SideBarSplitView.swift */,
 				FAD06C652598DC3800AD18A4 /* ServerOutlineList.swift */,
 				FA9D479D2596B05500C38FF5 /* CDServerView.swift */,
 				FA9D479625968B2C00C38FF5 /* CDBotView.swift */,
@@ -352,6 +366,7 @@
 				FA7B8A492493E12900C26B50 /* XCSConnector.swift */,
 				FA8683A7259FC69C003ED214 /* DataSyncWorker.swift */,
 				FA8683BF25A0DD51003ED214 /* IntegrationUpdateWorker.swift */,
+				FA96289625B47C8000DFC244 /* Models */,
 				FA4A63712594C429006DD873 /* CoreData */,
 				FA5636E02493BEC7002457DF /* NetworkModels */,
 				FA2696362495FC6700C7F084 /* ViewModels */,
@@ -368,7 +383,6 @@
 				FA56370D2493C16E002457DF /* Extensions */,
 				FAC759C6249E6AEF0028BBFA /* FileHelper.swift */,
 				FA12063725A28E7600E8190E /* Colors.swift */,
-				FAF924B725A38E5300F59978 /* XcodeServer.swift */,
 			);
 			path = Application;
 			sourceTree = "<group>";
@@ -469,6 +483,14 @@
 			path = "CoreData+ViewModel";
 			sourceTree = "<group>";
 		};
+		FA96289625B47C8000DFC244 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				FAF924B725A38E5300F59978 /* XcodeServer.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
 		FABB70CC25A1E38A00D1CFFD /* ForSwiftUIPreview */ = {
 			isa = PBXGroup;
 			children = (
@@ -524,6 +546,7 @@
 				FA0CE313259A6C28003E9E43 /* CDTriggerConditions+Codable.swift */,
 				FA0CE316259A6D31003E9E43 /* CDEmailConfiguration+Codable.swift */,
 				FA3E646625AE2C4D00EDD348 /* CDRevisionInfo+Codable.swift */,
+				FAB4FC6725B5D97800F2BCE9 /* CDBuildServiceSummaryItem+Codable.swift */,
 			);
 			path = "CoreData+Codable";
 			sourceTree = "<group>";
@@ -670,6 +693,7 @@
 				FAD06C3325988F8500AD18A4 /* CDBotConfiguration+Codable.swift in Sources */,
 				FA20876824BBAD5B0013CC21 /* TriggerScript.swift in Sources */,
 				FA8683B025A07614003ED214 /* ShowMoreLessCellModel.swift in Sources */,
+				FAB4FC6525B5D60800F2BCE9 /* BuildSummaryItem.swift in Sources */,
 				FAE5B87A249FC4FD00E06155 /* TriggerPhase.swift in Sources */,
 				FAD06C662598DC3800AD18A4 /* ServerOutlineList.swift in Sources */,
 				FA5636F52493BEC7002457DF /* IntegrationAssets.swift in Sources */,
@@ -689,6 +713,7 @@
 				FAD06C522598ABCD00AD18A4 /* CDRemoteRepository+Codable.swift in Sources */,
 				FA5636FB2493BEC7002457DF /* EmailConfiguration.swift in Sources */,
 				FA5637002493BEC7002457DF /* Bot.swift in Sources */,
+				FA96289825B47D0E00DFC244 /* SideBarViewModel.swift in Sources */,
 				FA26964124960E9900C7F084 /* InfoLabel.swift in Sources */,
 				FAE5B86C249FC40B00E06155 /* PeriodicScheduleInterval.swift in Sources */,
 				FA9D479725968B2C00C38FF5 /* CDBotView.swift in Sources */,
@@ -721,15 +746,18 @@
 				FA3E646725AE2C4D00EDD348 /* CDRevisionInfo+Codable.swift in Sources */,
 				FA9D479B2596B03C00C38FF5 /* CDIntegrationView.swift in Sources */,
 				FA9D47A42596CFD500C38FF5 /* OutlineElement.swift in Sources */,
+				FA9628A125B4922300DFC244 /* ServerOutlineListViewModel.swift in Sources */,
 				FA8683A8259FC69C003ED214 /* DataSyncWorker.swift in Sources */,
 				FAD06C09259855FB00AD18A4 /* CDBot+Codable.swift in Sources */,
 				FA5637062493BEC7002457DF /* TestDeviceSpecification.swift in Sources */,
+				FA96289C25B48E2600DFC244 /* SideBarSplitView.swift in Sources */,
 				FA20876A24BBB5410013CC21 /* FileDescriptor.swift in Sources */,
 				FA8683B325A0777A003ED214 /* ShowMoreLessButton.swift in Sources */,
 				FA8683B725A0B82C003ED214 /* ShowLessCellModel.swift in Sources */,
 				FA8683BA25A0B8C8003ED214 /* ShowLessButton.swift in Sources */,
 				FAE5B86A249FC3FE00E06155 /* ScheduleType.swift in Sources */,
 				FAD06C592598B4D700AD18A4 /* CDIntegration+Codable.swift in Sources */,
+				FAB4FC6825B5D97800F2BCE9 /* CDBuildServiceSummaryItem+Codable.swift in Sources */,
 				FA5637042493BEC7002457DF /* TestDevice.swift in Sources */,
 				FA607DEB25AF2A2A00DDB562 /* RevisionInfoView.swift in Sources */,
 				FAD06C552598ADF800AD18A4 /* CDTrigger+Codable.swift in Sources */,

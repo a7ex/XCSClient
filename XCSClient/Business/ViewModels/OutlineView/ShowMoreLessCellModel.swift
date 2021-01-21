@@ -16,4 +16,11 @@ struct ShowMoreLessCellModel: OutlineElement {
     var destination: AnyView = AnyView(Text("Dummy"))
     let systemIconName = ""
     let bot: CDBot
+    
+    var isShowMoreDisabled: Bool {
+        return bot.visibleItemsCount >= (bot.integrationCounterInt - 1)
+    }
+    var isShowLessDisabled: Bool {
+        return bot.visibleItemsCount < 3
+    }
 }

@@ -59,6 +59,13 @@
         <attribute name="warningCount" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="integration" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDIntegration" inverseName="buildResultSummary" inverseEntity="CDIntegration"/>
     </entity>
+    <entity name="CDBuildServiceSummaryItem" representedClassName="CDBuildServiceSummaryItem" syncable="YES" codeGenerationType="class">
+        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="duration" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="error" optional="YES" attributeType="String"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <relationship name="integration" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDIntegration" inverseName="buildSummaryItems" inverseEntity="CDIntegration"/>
+    </entity>
     <entity name="CDEmailConfiguration" representedClassName="CDEmailConfiguration" syncable="YES" codeGenerationType="class">
         <attribute name="additionalRecipients" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[String]"/>
         <attribute name="allowedDomainNames" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[String]"/>
@@ -93,6 +100,7 @@
         <relationship name="assets" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CDIntegrationAssets" inverseName="integration" inverseEntity="CDIntegrationAssets"/>
         <relationship name="bot" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDBot" inverseName="items" inverseEntity="CDBot"/>
         <relationship name="buildResultSummary" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CDBuildResultSummary" inverseName="integration" inverseEntity="CDBuildResultSummary"/>
+        <relationship name="buildSummaryItems" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CDBuildServiceSummaryItem" inverseName="integration" inverseEntity="CDBuildServiceSummaryItem"/>
         <relationship name="items" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDIntegration" inverseName="items" inverseEntity="CDIntegration"/>
         <relationship name="revisionBlueprint" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CDSourceControlBlueprint" inverseName="integration" inverseEntity="CDSourceControlBlueprint"/>
         <relationship name="revisionInfo" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CDRevisionInfo" inverseName="integration" inverseEntity="CDRevisionInfo"/>
@@ -231,14 +239,16 @@
         <element name="CDBot" positionX="-491.1072998046875" positionY="-219.3464813232422" width="128" height="164"/>
         <element name="CDBotConfiguration" positionX="38.507568359375" positionY="-71.05398559570312" width="128" height="374"/>
         <element name="CDBuildResultSummary" positionX="-243" positionY="-27" width="128" height="254"/>
+        <element name="CDBuildServiceSummaryItem" positionX="-297" positionY="-63" width="128" height="104"/>
         <element name="CDEmailConfiguration" positionX="-54" positionY="18" width="128" height="284"/>
-        <element name="CDIntegration" positionX="-86.988525390625" positionY="-211.8628845214844" width="128" height="284"/>
+        <element name="CDIntegration" positionX="-86.988525390625" positionY="-211.8628845214844" width="128" height="299"/>
         <element name="CDIntegrationAssets" positionX="-297" positionY="-81" width="128" height="134"/>
         <element name="CDIPAExportOptions" positionX="-54" positionY="18" width="128" height="179"/>
         <element name="CDLogFile" positionX="-288" positionY="-72" width="128" height="194"/>
         <element name="CDPlatform" positionX="-72" positionY="0" width="128" height="149"/>
         <element name="CDProvisioningConfiguration" positionX="-45" positionY="27" width="128" height="74"/>
         <element name="CDRemoteRepository" positionX="-225.8842163085938" positionY="141.7715148925781" width="128" height="89"/>
+        <element name="CDRevisionInfo" positionX="-297" positionY="-63" width="128" height="89"/>
         <element name="CDServer" positionX="-313.3782958984375" positionY="21.42233276367188" width="128" height="164"/>
         <element name="CDSingleSourceControlLocation" positionX="-288" positionY="-54" width="128" height="74"/>
         <element name="CDSourceControlBlueprint" positionX="-45" positionY="27" width="128" height="209"/>
@@ -247,6 +257,5 @@
         <element name="CDTestDeviceSpecification" positionX="-81" positionY="-9" width="128" height="74"/>
         <element name="CDTrigger" positionX="-72" positionY="0" width="128" height="134"/>
         <element name="CDTriggerConditions" positionX="-63" positionY="9" width="128" height="149"/>
-        <element name="CDRevisionInfo" positionX="-297" positionY="-63" width="128" height="89"/>
     </elements>
 </model>

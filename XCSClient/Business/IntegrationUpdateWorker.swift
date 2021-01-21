@@ -41,7 +41,6 @@ class IntegrationUpdateWorker {
     
     private func checkUpdate(for botUpdater: BotUpdater) {
         guard !botUpdater.isUpdating else {
-            print("Bot \(botUpdater.bot.tinyIDString) is updating")
             return
         }
         let bot = botUpdater.bot
@@ -50,7 +49,6 @@ class IntegrationUpdateWorker {
             updatingBots.remove(botUpdater)
             return
         }
-        print("Start updating bot \(bot.tinyIDString)")
         botUpdater.isUpdating = true
         server.connector.getIntegrationsList(for: bot.idString, last: 2 ) { [weak self] (result) in
             botUpdater.isUpdating = false

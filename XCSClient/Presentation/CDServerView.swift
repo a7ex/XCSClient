@@ -31,6 +31,7 @@ struct CDServerView: View {
             predicate: NSPredicate(format: "id == %@", serverID)
         )
     }
+    
     var body: some View {
         ZStack {
             VStack {

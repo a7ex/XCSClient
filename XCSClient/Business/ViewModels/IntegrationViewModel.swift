@@ -13,7 +13,6 @@ protocol IntegrationViewModel {
     var tinyIDString: String { get }
     var botName: String { get }
     var botId: String { get }
-//    var botVM: BotViewModel? { get }
     var currentStepString: String { get }
     var durationString: String { get }
     var listTitle: String { get }
@@ -52,6 +51,7 @@ protocol IntegrationViewModel {
     var sourceControlCommitId: String { get }
     var sourceControlBranch: String { get }
     var revisionInformation: RevisionInfo { get }
-    
+    var buildServiceSummaryItems: [BuildSummaryItem] { get }
     func loadCommitData(completion: @escaping (RevisionInfo?) -> Void)
+    func loadBuildSummaryData(completion: @escaping ([BuildSummaryItem]) -> Void)
 }

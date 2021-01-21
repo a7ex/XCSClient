@@ -25,184 +25,104 @@ struct BotDetailView: View {
     
     var body: some View {
         ZStack {
-            VStack {
-                HStack {
-                    Spacer()
-                    Text(bot.nameString)
-                        .font(.headline)
-                    Text("- \(bot.tinyIDString) (\(bot.integrationCounterInt))")
-                    Spacer()
-                    MenuButton(label: Text("⚙️").font(.headline)) {
-                        Button(action: { self.integrate() }) {
-                            Text("Start Integration")
-                        }
-                        Button(action: { self.duplicate() }) {
-                            Text("Duplicate Bot")
-                        }
-                        Button(action: { self.export() }) {
-                            Text("Export settings…")
-                        }
-                        Button(action: { self.applySettings() }) {
-                            Text("Apply settings…")
-                        }
-                        Button(action: {
-                            hasError = true
-                            errorMessage = deletConfirmMessage
-                        }) {
-                            Text("Delete Bot")
-                                .foregroundColor(.red)
-                        }
+            ScrollView {
+                VStack {
+                    HStack {
+                        Spacer()
+                        Text(bot.nameString)
+                            .font(.headline)
+                        Text("- \(bot.tinyIDString) (\(bot.integrationCounterInt))")
+                        Spacer()
+                        settingsMenu
                     }
-                    .menuButtonStyle(BorderlessButtonMenuButtonStyle())
-                    .frame(width: 20)
-                }
-                HStack {
-                    Spacer()
-                    Text(bot.idString)
-                        .font(.footnote)
-                        .contextMenu {
-                            Button(action: {
-                                let pb = NSPasteboard.general
-                                pb.declareTypes([.string], owner: nil)
-                                pb.setString(bot.idString, forType: .string)
-                            }) {
-                                Text("Copy")
-                            }
-                        }
-                    Spacer()
-                }
-                Divider()
-                VStack(alignment: .leading, spacing: 8) {
-                    Group {
-                        LabeledTextInput(label: "Name", content: $botEditableData.name)
-                        LabeledTextInput(label: "Additional Build Arguments", content: $botEditableData.additionalBuildArguments)
-                        LabeledTextInput(label: "Scheme", content: $botEditableData.scheme)
-                        LabeledTextInput(label: "Build Configuration", content: $botEditableData.buildConfig)
-                        LabeledTextInput(label: "Branch", content: $botEditableData.branch)
+                    HStack {
+                        Spacer()
+                        copyableId
+                        Spacer()
                     }
-                    Group {
-                        HStack(alignment: .top) {
-                            InfoLabel(content: "ScheduleType")
-                                .frame(minWidth: 100, maxWidth: 160, alignment: .leading)
-                                .padding([.bottom], 4)
-                            MenuButton(label: Text(botEditableData.scheduleType)) {
-                                ForEach(ScheduleType.allStringValues, id: \.self) { scheduleType in
-                                    Button(action: { self.botEditableData.scheduleType = scheduleType }) {
-                                            Text(scheduleType)
-                                        }
+                    Divider()
+                    VStack(alignment: .leading, spacing: 8) {
+                        Group {
+                            LabeledTextInput(label: "Name", content: $botEditableData.name)
+                            LabeledTextInput(label: "Additional Build Arguments", content: $botEditableData.additionalBuildArguments)
+                            LabeledTextInput(label: "Scheme", content: $botEditableData.scheme)
+                            LabeledTextInput(label: "Build Configuration", content: $botEditableData.buildConfig)
+                            LabeledTextInput(label: "Branch", content: $botEditableData.branch)
+                        }
+                        Group {
+                            scheduleTypeMenu
+                            if bot.scheduleType == ScheduleType.periodically {
+                                if bot.periodicScheduleInterval == .weekly {
+                                    LabeledStringValue(
+                                        label: "Periodic Schedule",
+                                        value: "Every \(bot.weeklyScheduleDay) at \(bot.integrationTimeSchedule):00"
+                                    )
+                                } else if bot.periodicScheduleInterval == .daily {
+                                    LabeledStringValue(
+                                        label: "Periodic Schedule",
+                                        value: "\(bot.periodicScheduleIntervalString) at \(bot.integrationTimeSchedule):00"
+                                    )
+                                } else if bot.periodicScheduleInterval == .hourly {
+                                    LabeledStringValue(
+                                        label: "Periodic Schedule",
+                                        value: "Every hour at minute \(bot.integrationMinuteSchedule)"
+                                    )
                                 }
                             }
                         }
-                        if bot.scheduleType == ScheduleType.periodically {
-                            if bot.periodicScheduleInterval == .weekly {
-                                LabeledStringValue(
-                                    label: "Periodic Schedule",
-                                    value: "Every \(bot.weeklyScheduleDay) at \(bot.integrationTimeSchedule):00"
-                                )
-                            } else if bot.periodicScheduleInterval == .daily {
-                                LabeledStringValue(
-                                    label: "Periodic Schedule",
-                                    value: "\(bot.periodicScheduleIntervalString) at \(bot.integrationTimeSchedule):00"
-                                )
-                            } else if bot.periodicScheduleInterval == .hourly {
-                                LabeledStringValue(
-                                    label: "Periodic Schedule",
-                                    value: "Every hour at minute \(bot.integrationMinuteSchedule)"
-                                )
-                            }
+                        if !bot.buildEnvironmentVariables.isEmpty {
+                            environmentVariables
                         }
-                    }
-                    if !bot.buildEnvironmentVariables.isEmpty {
-                        HStack(alignment: .top) {
-                            InfoLabel(content: "Environment vars")
-                                .frame(minWidth: 100, maxWidth: 160, alignment: .leading)
-                                .padding([.bottom], 4)
-                            VStack(alignment: .leading, spacing: 4) {
-                                ForEach(self.botEditableData.environmentVariables) { pair in
-                                    Text("\(pair.id) = \(pair.value)")
-                                }
-                            }
+                        if !botEditableData.triggerScripts.isEmpty {
+                            triggerScripts
                         }
-                    }
-                    if !botEditableData.triggerScripts.isEmpty {
-                        HStack {
-                            InfoLabel(content: "Triggers")
-                                .frame(minWidth: 100, maxWidth: 160, alignment: .leading)
-                                .padding([.bottom], 4)
-                            ForEach(botEditableData.triggerScripts, id: \.name) { triggerScript in
-                                Button(action: { self.editTrigger(triggerScript) }) {
-                                    Text("\(triggerScript.name) {…}")
-                                }
-                            }
-                        }
-                    }
-                    Group {
-                        Divider()
-                        HStack {
-                            Group {
-                            Toggle("Analyze", isOn: $botEditableData.performsAnalyzeAction)
-                            Toggle("Test", isOn: $botEditableData.performsTestAction)
-                            Toggle("Integrate on Upgrade", isOn: $botEditableData.performsUpgradeIntegration)
-                            }
-                            .padding(.trailing)
-                        }
-                        Divider()
-                        HStack {
-                            Toggle("Archive", isOn: $botEditableData.performsArchiveAction)
-                            Toggle("Disable App Thinning", isOn: $botEditableData.disableAppThinning)
-                                .disabled(!botEditableData.performsArchiveAction)
-                            Toggle("Exports Product From Archive", isOn: $botEditableData.exportsProductFromArchive)
-                                .disabled(!botEditableData.performsArchiveAction)
-                        }
-                        if botEditableData.exportsProductFromArchive {
+                        Group {
                             Divider()
                             HStack {
-                                InfoLabel(content: "Archive Options")
-                                    .frame(minWidth: 100, maxWidth: 160, alignment: .leading)
-                                    .padding([.bottom], 4)
-                                Button(action: { self.selectExportOptions() }) {
-                                    Text("\(bot.archiveExportOptionsName) {…}")
+                                Group {
+                                    Toggle("Analyze", isOn: $botEditableData.performsAnalyzeAction)
+                                    Toggle("Test", isOn: $botEditableData.performsTestAction)
+                                    Toggle("Integrate on Upgrade", isOn: $botEditableData.performsUpgradeIntegration)
+                                }
+                                .padding(.trailing)
+                            }
+                            Divider()
+                            HStack {
+                                Toggle("Archive", isOn: $botEditableData.performsArchiveAction)
+                                Toggle("Disable App Thinning", isOn: $botEditableData.disableAppThinning)
+                                    .disabled(!botEditableData.performsArchiveAction)
+                                Toggle("Exports Product From Archive", isOn: $botEditableData.exportsProductFromArchive)
+                                    .disabled(!botEditableData.performsArchiveAction)
+                            }
+                            if botEditableData.exportsProductFromArchive {
+                                Divider()
+                                archiveOptions
+                                if !bot.archiveExportOptionsName.isEmpty {
+                                    LabeledStringValue(label: "Provisioning Profile", value: "\(bot.archiveExportOptionsProvisioningProfiles)")
                                 }
                             }
-                            if !bot.archiveExportOptionsName.isEmpty {
-                                LabeledStringValue(label: "Provisioning Profile", value: "\(bot.archiveExportOptionsProvisioningProfiles)")
-                            }
                         }
                     }
-                }
-                Divider()
-                Button(action: { self.uploadChanges() }) {
-                    ButtonLabel(text: "Save changes")
-                }
-                Button(action: { self.integrate() }) {
-                    ButtonLabel(text: "Start Integration")
-                }
-                if let integration = bot.firstIntegration {
-                    Spacer()
-                    Text("Last integration")
-                        .font(.headline)
-                    VStack(alignment: .leading) {
-                        LabeledStringValue(label: "Date", value: integration.endedDateString)
-                        if !integration.sourceControlCommitId.isEmpty {
-                            LabeledStringValue(label: "Commit ID", value: integration.sourceControlCommitId)
-                        }
-                        if !integration.sourceControlBranch.isEmpty {
-                            LabeledStringValue(label: "Branch", value: integration.sourceControlBranch)
-                        }
-                        if !revisionInfo.isEmpty {
-                                Divider()
-                                RevisionInfoView(revisionInfo: revisionInfo)
-                        }
-                        Divider()
-                        IntegrationResultsIconView(integration: integration)
+                    Divider()
+                    Button(action: uploadChanges) {
+                        ButtonLabel(text: "Save changes")
                     }
-                    .padding()
-                    .background(Color("LighterBackground"))
-                    .cornerRadius(10)
+                    Button(action: reloadIntegrations) {
+                        ButtonLabel(text: "Reload integrations")
+                    }
+                    Button(action: integrate) {
+                        ButtonLabel(text: "Start Integration")
+                    }
+                    if let integration = bot.firstIntegration {
+                        Spacer()
+                        Text("Last integration")
+                            .font(.headline)
+                        integrationPreview(for: integration)
+                    }
                 }
+                .padding()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .padding()
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .onAppear {
                 botEditableData.setup(with: self.bot)
                 loadCommitData()
@@ -210,8 +130,8 @@ struct BotDetailView: View {
             .alert(isPresented: $hasError) {
                 if errorMessage == deletConfirmMessage {
                     return Alert(title: Text(errorMessage),
-                          primaryButton: .default(Text("Delete")) { self.delete() },
-                          secondaryButton: .cancel()
+                                 primaryButton: .default(Text("Delete")) { self.delete() },
+                                 secondaryButton: .cancel()
                     )
                 } else {
                     return Alert(title: Text(errorMessage))
@@ -231,6 +151,117 @@ struct BotDetailView: View {
         }
     }
     
+    // MARK: View elements
+    
+    private var settingsMenu: some View {
+        MenuButton(label: Text("⚙️").font(.headline)) {
+            Button(action: integrate) {
+                Text("Start Integration")
+            }
+            Button(action: duplicate) {
+                Text("Duplicate Bot")
+            }
+            Button(action: export) {
+                Text("Export settings…")
+            }
+            Button(action: applySettings) {
+                Text("Apply settings…")
+            }
+            Button(action: {
+                hasError = true
+                errorMessage = deletConfirmMessage
+            }) {
+                Text("Delete Bot")
+                    .foregroundColor(.red)
+            }
+        }
+        .menuButtonStyle(BorderlessButtonMenuButtonStyle())
+        .frame(width: 20)
+    }
+    private var copyableId: some View {
+        Text(bot.idString)
+            .font(.footnote)
+            .contextMenu {
+                Button(action: {
+                    let pb = NSPasteboard.general
+                    pb.declareTypes([.string], owner: nil)
+                    pb.setString(bot.idString, forType: .string)
+                }) {
+                    Text("Copy")
+                }
+            }
+    }
+    private var scheduleTypeMenu: some View {
+        HStack(alignment: .top) {
+            InfoLabel(content: "ScheduleType")
+                .frame(minWidth: 100, maxWidth: 160, alignment: .leading)
+                .padding([.bottom], 4)
+            MenuButton(label: Text(botEditableData.scheduleType)) {
+                ForEach(ScheduleType.allStringValues, id: \.self) { scheduleType in
+                    Button(action: { self.botEditableData.scheduleType = scheduleType }) {
+                        Text(scheduleType)
+                    }
+                }
+            }
+        }
+    }
+    private var environmentVariables: some View {
+        HStack(alignment: .top) {
+            InfoLabel(content: "Environment vars")
+                .frame(minWidth: 100, maxWidth: 160, alignment: .leading)
+                .padding([.bottom], 4)
+            VStack(alignment: .leading, spacing: 4) {
+                ForEach(self.botEditableData.environmentVariables) { pair in
+                    Text("\(pair.id) = \(pair.value)")
+                }
+            }
+        }
+    }
+    private var triggerScripts: some View {
+        HStack {
+            InfoLabel(content: "Triggers")
+                .frame(minWidth: 100, maxWidth: 160, alignment: .leading)
+                .padding([.bottom], 4)
+            ForEach(botEditableData.triggerScripts, id: \.name) { triggerScript in
+                Button(action: { self.editTrigger(triggerScript) }) {
+                    Text("\(triggerScript.name) {…}")
+                }
+            }
+        }
+    }
+    private var archiveOptions: some View {
+        HStack {
+            InfoLabel(content: "Archive Options")
+                .frame(minWidth: 100, maxWidth: 160, alignment: .leading)
+                .padding([.bottom], 4)
+            Button(action: { self.selectExportOptions() }) {
+                Text("\(bot.archiveExportOptionsName) {…}")
+            }
+        }
+    }
+    private func integrationPreview(for integration: IntegrationViewModel) -> some View {
+        VStack(alignment: .leading) {
+            LabeledStringValue(label: "Date", value: integration.endedDateString)
+            if !integration.sourceControlCommitId.isEmpty {
+                LabeledStringValue(label: "Commit ID", value: integration.sourceControlCommitId)
+            }
+            if !integration.sourceControlBranch.isEmpty {
+                LabeledStringValue(label: "Branch", value: integration.sourceControlBranch)
+            }
+            if !revisionInfo.isEmpty {
+                Divider()
+                RevisionInfoView(revisionInfo: revisionInfo)
+            }
+            Divider()
+            IntegrationResultsIconView(integration: integration)
+        }
+        .padding()
+        .background(Color("LighterBackground"))
+        .cornerRadius(10)
+    }
+    
+    // MARK: Actions
+    
     private func loadCommitData() {
         let revInfo = bot.firstIntegration?.revisionInformation
         revisionInfo = RevisionInfo(
@@ -238,12 +269,13 @@ struct BotDetailView: View {
             date: revInfo?.date ?? "",
             comment: revInfo?.comment ?? ""
         )
-        bot.firstIntegration?.loadCommitData() { revInfo in
-            guard let revInfo = revInfo else {
-                return
-            }
+        bot.loadCommitData { revInfo in
             revisionInfo = revInfo
         }
+    }
+    
+    private func reloadIntegrations() {
+        bot.updateIntegrationsFromBackend()
     }
     
     private func selectExportOptions() {
@@ -252,29 +284,21 @@ struct BotDetailView: View {
         panel.allowedFileTypes = ["plist"]
         let result = panel.runModal()
         guard result == .OK,
-            let url = panel.url,
-            let data = try? Data(contentsOf: url) else {
-                return
+              let url = panel.url,
+              let data = try? Data(contentsOf: url) else {
+            return
         }
-        let decoder = PropertyListDecoder()
-        if let exportOptions = try? decoder.decode(IPAExportOptions.self, from: data) {
-            let expOptions = ArchiveExportOptions(name: url.lastPathComponent, createdAt: Date(), exportOptions: exportOptions)
-            botEditableData.exportOptions = expOptions
-        }
+        botEditableData.updateExportOptions(with: data, at: url)
+        
     }
     
     private func editTrigger(_ triggerScript: TriggerScript) {
         openTextEditorWindow(with: triggerScript.script, title: triggerScript.name) { newText in
-            guard let newTriggerScript = TriggerScript(name: triggerScript.name, script: newText) else {
-                return
-            }
-            self.botEditableData.triggerScripts = self.botEditableData.triggerScripts.map { script in
-                if script.name == newTriggerScript.name {
-                    return newTriggerScript
-                } else {
-                    return script
-                }
-            }
+            
+            botEditableData.updateTriggerScript(
+                with: triggerScript.name,
+                scriptText: newText
+            )
         }
     }
     
@@ -292,17 +316,14 @@ struct BotDetailView: View {
                 activityShowing = false
             }
             switch result {
-                case .success(let integration):
-                    if let cdBot = bot as? CDBot {
-                        if let cdIntegration = cdBot.managedObjectContext?.integration(from: integration) {
-                            cdBot.addToItems(cdIntegration)
-                            saveContext(of: cdBot)
-                        }
-                        IntegrationUpdateWorker.add(cdBot)
-                    }
-                case .failure(let error):
-                    errorMessage = error.localizedDescription
-                    hasError = true
+            case .success(let integration):
+                bot.addIntegration(integration)
+                if let cdBot = bot as? CDBot {
+                    IntegrationUpdateWorker.add(cdBot)
+                }
+            case .failure(let error):
+                errorMessage = error.localizedDescription
+                hasError = true
             }
         }
     }
@@ -326,20 +347,16 @@ struct BotDetailView: View {
                 activityShowing = false
             }
             switch result {
-                case .success(let success):
-                    if success {
-                        if let cdBot = bot as? CDBot,
-                           let server = cdBot.server {
-                            server.removeFromItems(cdBot)
-                            saveContext(of: cdBot)
-                        }
-                    } else {
-                        errorMessage = "Unable to delete bot with ID: \(bot.idString)"
-                        hasError = true
-                    }
-                case .failure(let error):
-                    errorMessage = error.localizedDescription
+            case .success(let success):
+                if success {
+                    bot.deleteBot()
+                } else {
+                    errorMessage = "Unable to delete bot with ID: \(bot.idString)"
                     hasError = true
+                }
+            case .failure(let error):
+                errorMessage = error.localizedDescription
+                hasError = true
             }
         }
     }
@@ -358,16 +375,11 @@ struct BotDetailView: View {
                 activityShowing = false
             }
             switch result {
-                case .success(let codableBot):
-                    if let cdBot = bot as? CDBot,
-                       let context = cdBot.managedObjectContext,
-                       let newBot = context.bot(from: codableBot) {
-                        cdBot.server?.addToItems(newBot)
-                        saveContext(of: cdBot)
-                    }
-                case .failure(let error):
-                    errorMessage = error.localizedDescription
-                    hasError = true
+            case .success(let codableBot):
+                bot.duplicate(bot: codableBot)
+            case .failure(let error):
+                errorMessage = error.localizedDescription
+                hasError = true
             }
         }
     }
@@ -387,8 +399,8 @@ struct BotDetailView: View {
         panel.allowedFileTypes = ["json"]
         let result = panel.runModal()
         guard result == .OK,
-            let url = panel.url else {
-                return
+              let url = panel.url else {
+            return
         }
         withAnimation {
             activityShowing = true
@@ -398,18 +410,14 @@ struct BotDetailView: View {
                 activityShowing = false
             }
             switch result {
-                case .success(let codableBot):
-                    if let cdBot = bot as? CDBot {
-                        cdBot.update(with: codableBot)
-                        saveContext(of: cdBot)
-                    }
-                case .failure(let error):
-                    self.errorMessage = error.localizedDescription
-                    self.hasError = true
+            case .success(let codableBot):
+                bot.updateBot(with: codableBot)
+            case .failure(let error):
+                self.errorMessage = error.localizedDescription
+                self.hasError = true
             }
         }
     }
-    
     private func applyChanges(_ newJSON: String, to bot: BotViewModel) {
         guard isServerReachable else {
             errorMessage = "No connection to server."
@@ -438,10 +446,7 @@ struct BotDetailView: View {
                 
                 switch result {
                 case .success(let codableBot):
-                    if let cdBot = bot as? CDBot {
-                        cdBot.update(with: codableBot)
-                        saveContext(of: cdBot)
-                    }
+                    bot.updateBot(with: codableBot)
                 case .failure(let error):
                     errorMessage = error.localizedDescription
                     hasError = true
@@ -462,7 +467,7 @@ struct BotDetailView: View {
     private func openTextEditorWindow(with textContent: String, title: String, completion: @escaping (String) -> Void) {
         let sb = NSStoryboard(name: "Main", bundle: nil)
         if let windowController = sb.instantiateController(withIdentifier: "TextEditorWindow") as? NSWindowController,
-            let controller = windowController.contentViewController as? SimpleTextViewController {
+           let controller = windowController.contentViewController as? SimpleTextViewController {
             controller.stringContent = textContent
             controller.editableText = true
             controller.onUploadChanges(completion: completion)
@@ -479,22 +484,23 @@ struct BotDetailView: View {
     }
     
     private func reloadBots() {
-        guard let cdBot = bot as? CDBot else {
+        guard let cdBot = bot as? CDBot,
+              let cdServer = cdBot.server else {
             return
         }
         withAnimation {
             activityShowing = true
         }
-        cdBot.server?.reachability = Int16(ServerReachabilty.connecting.rawValue)
-        cdBot.server?.connector.getBotList { (result) in
+        cdServer.reachability = Int16(ServerReachabilty.connecting.rawValue)
+        cdServer.connector.getBotList { (result) in
             withAnimation {
                 activityShowing = false
             }
             if case let .success(bots) = result {
-                cdBot.server?.reachability = Int16(ServerReachabilty.reachable.rawValue)
+                cdServer.reachability = Int16(ServerReachabilty.reachable.rawValue)
                 bots.forEach { (bot) in
                     if let bot = cdBot.managedObjectContext?.bot(from: bot) {
-                        cdBot.server?.addToItems(bot)
+                        cdServer.addToItems(bot)
                     }
                 }
                 saveContext(of: cdBot)

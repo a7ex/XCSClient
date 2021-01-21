@@ -24,6 +24,30 @@ class BotEditorData: ObservableObject {
     @Published var triggerScripts = [TriggerScript]()
     @Published var environmentVariables = [VariablePair]()
     @Published var exportOptions = ArchiveExportOptions(name: "", createdAt: Date.distantPast, exportOptions: nil)
+    
+    func updateExportOptions(with data: Data, at url: URL) {
+        let decoder = PropertyListDecoder()
+        if let exportOpts = try? decoder.decode(IPAExportOptions.self, from: data) {
+            let expOptions = ArchiveExportOptions(name: url.lastPathComponent, createdAt: Date(), exportOptions: exportOpts)
+            exportOptions = expOptions
+        }
+    }
+    
+    func updateTriggerScript(with name: String, scriptText: String) {
+        guard let newTriggerScript = TriggerScript(
+                name: name,
+                script: scriptText
+        ) else {
+            return
+        }
+        triggerScripts = triggerScripts.map { script in
+            if script.name == newTriggerScript.name {
+                return newTriggerScript
+            } else {
+                return script
+            }
+        }
+    }
 }
 
 extension BotEditorData {

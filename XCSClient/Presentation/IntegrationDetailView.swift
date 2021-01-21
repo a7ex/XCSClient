@@ -20,6 +20,7 @@ struct IntegrationDetailView: View {
     @State private var ipaPath = "loading"
     @State private var machineName = ""
     @State private var revisionInfo = RevisionInfo(author: "", date: "", comment: "")
+    @State private var buildSummaryItems = [BuildSummaryItem]()
     
     @State private var durationInSeconds = "0"
     private let timer = Timer.publish(every: 1, tolerance: 0.5, on: .main, in: .common).autoconnect()
@@ -41,108 +42,116 @@ struct IntegrationDetailView: View {
     
     var body: some View {
         ZStack {
-            VStack() {
-                HStack {
-                    Image(systemName: "largecircle.fill.circle")
-                        .foregroundColor(integration.statusColor)
-                    Text("Integration \(integration.tinyIDString) (\(integration.numberInt)) - \(integration.resultString)")
-                        .font(.headline)
-                }
-                Divider()
-                Group {
-                    UpdatingStatusText(currentStatus: integration.currentStepString, botId: integration.botId)
-                        .font(.subheadline)
-                        .padding(.bottom, 8)
-                    LabeledStringValue(label: "ID", value: integration.idString)
-                    LabeledStringValue(label: "Bot", value: integration.botName)
-                    LabeledStringValue(label: "Date", value: integration.startDate)
-                    if !integration.startTimes.isEmpty {
-                        LabeledStringValue(label: "Start time", value: integration.startTimes)
+            ScrollView {
+                VStack() {
+                    HStack {
+                        Image(systemName: "largecircle.fill.circle")
+                            .foregroundColor(integration.statusColor)
+                        Text("Integration \(integration.tinyIDString) (\(integration.numberInt)) - \(integration.resultString)")
+                            .font(.headline)
                     }
-                }
-                Group {
-                    if !integration.endedTimeString.isEmpty {
-                        LabeledStringValue(label: "End time", value: integration.endedTimeString)
-                    }
-                    if integration.startedTime != nil {
-                        LabeledStringValue(label: "Duration", value: durationInSeconds)
-                            .onReceive(timer) { (timer) in
-                                self.durationInSeconds = self.timeSpanFromNow(to: self.integration.startedTime)
-                            }
-                    }
-                    if !integration.codeCoverage.isEmpty {
-                        LabeledStringValue(label: "Code Coverage percentage", value: integration.codeCoverage)
-                    }
-                    if !integration.performanceTests.isEmpty {
-                        LabeledStringValue(label: "Performance Test changes", value: integration.performanceTests)
-                    }
-                    if !integration.sourceControlCommitId.isEmpty {
-                        LabeledStringValue(label: "Commit ID", value: integration.sourceControlCommitId)
-                    }
-                    if !integration.sourceControlBranch.isEmpty {
-                        LabeledStringValue(label: "Branch", value: integration.sourceControlBranch)
-                    }
-                }
-                if !revisionInfo.isEmpty {
                     Divider()
-                    RevisionInfoView(revisionInfo: revisionInfo)
-                }
-                Divider()
-                IntegrationResultsIconView(integration: integration)
-                Divider()
-                Group {
-                    if integration.resultString == IntegrationResult.unknown.rawValue {
-                        Button(action: { self.cancelIntegration(self.integration.idString) }) {
-                            ButtonLabel(text: "Cancel integration")
+                    Group {
+                        UpdatingStatusText(currentStatus: integration.currentStepString, botId: integration.botId)
+                            .font(.subheadline)
+                            .padding(.bottom, 8)
+                        LabeledStringValue(label: "ID", value: integration.idString)
+                        LabeledStringValue(label: "Bot", value: integration.botName)
+                        LabeledStringValue(label: "Date", value: integration.startDate)
+                        if !integration.startTimes.isEmpty {
+                            LabeledStringValue(label: "Start time", value: integration.startTimes)
                         }
                     }
-                    if integration.buildServiceLog.size > 0 {
-                        Button(action: { self.downloadAsset(self.integration.buildServiceLog) }) {
-                            ButtonLabel(text: integration.buildServiceLog.title)
+                    Group {
+                        if !integration.endedTimeString.isEmpty {
+                            LabeledStringValue(label: "End time", value: integration.endedTimeString)
+                        }
+                        if integration.startedTime != nil {
+                            LabeledStringValue(label: "Duration", value: durationInSeconds)
+                                .onReceive(timer) { (timer) in
+                                    self.durationInSeconds = self.timeSpanFromNow(to: self.integration.startedTime)
+                                }
+                        }
+                        if !integration.codeCoverage.isEmpty {
+                            LabeledStringValue(label: "Code Coverage percentage", value: integration.codeCoverage)
+                        }
+                        if !integration.performanceTests.isEmpty {
+                            LabeledStringValue(label: "Performance Test changes", value: integration.performanceTests)
+                        }
+                        if !integration.sourceControlCommitId.isEmpty {
+                            LabeledStringValue(label: "Commit ID", value: integration.sourceControlCommitId)
+                        }
+                        if !integration.sourceControlBranch.isEmpty {
+                            LabeledStringValue(label: "Branch", value: integration.sourceControlBranch)
                         }
                     }
-                    if integration.sourceControlLog.size > 0 {
-                        Button(action: { self.downloadAsset(self.integration.sourceControlLog) }) {
-                            ButtonLabel(text: integration.sourceControlLog.title)
+                    Group {
+                        if !revisionInfo.isEmpty {
+                            Divider()
+                            RevisionInfoView(revisionInfo: revisionInfo)
                         }
+                        Divider()
+                        IntegrationResultsIconView(integration: integration)
+                        Divider()
                     }
-                    if integration.xcodebuildLog.size > 0 {
-                        Button(action: { self.downloadAsset(self.integration.xcodebuildLog) }) {
-                            ButtonLabel(text: integration.xcodebuildLog.title)
-                        }
-                    }
-                    ForEach(integration.triggerAssets, id: \.path) { asset in
-                        Button(action: { self.downloadAsset(asset) }) {
-                            ButtonLabel(text: asset.title)
-                        }
-                    }
-                    if integration.hasAssets {
-                        Button(action: { self.export(self.integration) }) {
-                            if integration.archive.size > 0 {
-                                ButtonLabel(text: integration.archive.title)
-                            } else {
-                                ButtonLabel(text: "Logs and Test Results")
+                    HStack {
+                        buildSummaryWithDuration
+                        Spacer()
+                        VStack(alignment: .trailing) {
+                            if integration.resultString == IntegrationResult.unknown.rawValue {
+                                Button(action: { self.cancelIntegration(self.integration.idString) }) {
+                                    ButtonLabel(text: "Cancel integration")
+                                }
                             }
-                        }
-                        if integration.archive.size > 0 {
-                            if ipaPath == "loading" {
-                                Text("Loading path to ipa…")
-                            } else {
-                                if !ipaPath.isEmpty {
-                                    Button(action: { self.downloadIPA() }) {
-                                        ButtonLabel(text: "Download ipa")
+                            if integration.buildServiceLog.size > 0 {
+                                Button(action: { self.downloadAsset(self.integration.buildServiceLog) }) {
+                                    ButtonLabel(text: integration.buildServiceLog.title)
+                                }
+                            }
+                            if integration.sourceControlLog.size > 0 {
+                                Button(action: { self.downloadAsset(self.integration.sourceControlLog) }) {
+                                    ButtonLabel(text: integration.sourceControlLog.title)
+                                }
+                            }
+                            if integration.xcodebuildLog.size > 0 {
+                                Button(action: { self.downloadAsset(self.integration.xcodebuildLog) }) {
+                                    ButtonLabel(text: integration.xcodebuildLog.title)
+                                }
+                            }
+                            ForEach(integration.triggerAssets, id: \.path) { asset in
+                                Button(action: { self.downloadAsset(asset) }) {
+                                    ButtonLabel(text: asset.title)
+                                }
+                            }
+                            if integration.hasAssets {
+                                Button(action: { self.export(self.integration) }) {
+                                    if integration.archive.size > 0 {
+                                        ButtonLabel(text: integration.archive.title)
+                                    } else {
+                                        ButtonLabel(text: "Logs and Test Results")
                                     }
-                                } else {
-                                    Text("No ipa available.")
+                                }
+                                if integration.archive.size > 0 {
+                                    if ipaPath == "loading" {
+                                        Text("Loading path to ipa…")
+                                    } else {
+                                        if !ipaPath.isEmpty {
+                                            Button(action: { self.downloadIPA() }) {
+                                                ButtonLabel(text: "Download ipa")
+                                            }
+                                        } else {
+                                            Text("No ipa available.")
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
+                    Spacer()
                 }
-                Spacer()
+                .padding()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .padding()
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
             if activityShowing {
                 Color.black
                     .opacity(0.5)
@@ -157,12 +166,35 @@ struct IntegrationDetailView: View {
         }
         .onAppear {
             loadCommitData()
+            loadBuildSummaryData()
             if integration.archive.size > 0 {
                 findIpa()
             }
         }
         .alert(isPresented: $hasError) {
             Alert(title: Text(errorMessage))
+        }
+    }
+    
+    private var buildSummaryWithDuration: some View {
+        VStack(alignment: .leading) {
+            Text("Integration steps:")
+                .font(.headline)
+            if !buildSummaryItems.isEmpty {
+                ForEach(buildSummaryItems, id: \.dateAndName) { item in
+                    VStack(alignment: .leading) {
+                        Text(item.nameAndDuration)
+                        if !item.error.isEmpty {
+                            Text("Error: \(item.error)")
+                                .padding(.leading)
+                        }
+                    }
+                    .font(.caption)
+                    .foregroundColor(item.error.isEmpty ? Color.primary: Color.red)
+                    .padding(.leading, 8)
+                }
+            }
+            Spacer()
         }
     }
     
@@ -176,12 +208,29 @@ struct IntegrationDetailView: View {
                 revisionInfo = rInfo
             }
         } else {
-            revisionInfo = RevisionInfo(
-                author: revInfo.author,
-                date: revInfo.date,
-                comment: revInfo.comment
-            )
+            revisionInfo = revInfo
         }
+    }
+    
+    private func loadBuildSummaryData() {
+        let items = integration.buildServiceSummaryItems
+        guard items.isEmpty else {
+            updateBuildSummaryItems(with: items)
+            return
+        }
+        integration.loadBuildSummaryData { (items) in
+            updateBuildSummaryItems(with: items)
+        }
+    }
+    
+    private func updateBuildSummaryItems(with items: [BuildSummaryItem]) {
+        buildSummaryItems = items
+            .sorted { item1, item2 in
+                if item1.date == item2.date {
+                    return item1.name < item2.name
+                }
+                return item1.date < item2.date
+            }
     }
     
     private func export(_ integration: IntegrationViewModel) {
@@ -366,7 +415,7 @@ struct IntegrationDetailView: View {
     private func openTextWindow(with textContent: String, windowTitle: String = "Unnamed") {
         let sb = NSStoryboard(name: "Main", bundle: nil)
         if let windowController = sb.instantiateController(withIdentifier: "TextEditorWindow") as? NSWindowController,
-            let controller = windowController.contentViewController as? SimpleTextViewController {
+           let controller = windowController.contentViewController as? SimpleTextViewController {
             controller.stringContent = textContent
             windowController.window?.title = windowTitle
             windowController.showWindow(nil)
@@ -383,7 +432,7 @@ struct IntegrationDetailView: View {
 
 struct IntegrationDetailView_Previews: PreviewProvider {
     static var previews: some View {
-     
+        
         let moc = PersistenceController.preview.container.viewContext
         let request: NSFetchRequest<CDIntegration> = CDIntegration.fetchRequest()
         let obj = (try? moc.fetch(request).first)!

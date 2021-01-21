@@ -21,37 +21,36 @@ struct ServerOutlineList: View {
     }
     private let timer = Timer.publish(every: 300, on: .main, in: .common).autoconnect()
     
-    @State private var serverIterator: IndexingIterator<FetchedResults<CDServer>>?
-    @State private var botIterator: NSFastEnumerationIterator?
+    private let viewModel = ServerOutlineListViewModel()
     
     var body: some View {
         List(xcodeServersArray, id: \.id, children: \.children) { item in
             HStack {
                 if let cell = item as? ShowMoreLessCellModel {
                     ShowMoreLessButton(
-                        showMoreDisabled: (cell.bot.visibleItemsCount >= (cell.bot.integrationCounterInt - 1)),
-                        showLessDisabled: (cell.bot.visibleItemsCount < 3),
+                        showMoreDisabled: cell.isShowMoreDisabled,
+                        showLessDisabled: cell.isShowLessDisabled,
                         showMoreTapped: {
-                            changeNumberOfVisibleIntegrations(of: cell, change: 5)
+                            viewModel.changeNumberOfVisibleIntegrations(of: cell, change: 5)
                         },
                         showLessTapped: {
-                            resetNumberOfVisibleIntegrations(of: cell)
+                            viewModel.resetNumberOfVisibleIntegrations(of: cell)
                         },
                         showAllTapped: {
-                            showAllIntegrations(of: cell)
+                            viewModel.showAllIntegrations(of: cell)
                         }
                     )
                 } else if let cell = item as? ShowLessCellModel {
                     ShowLessButton(
                         showLessTapped: {
-                            resetNumberOfVisibleIntegrations(of: cell)
+                            viewModel.resetNumberOfVisibleIntegrations(of: cell)
                         }
                     )
                 } else {
                     if item.statusColor == .clear {
                         AnimatingIcon()
                             .onAppear {
-                                refreshIntegrationStatus(of: item)
+                                viewModel.refreshIntegrationStatus(of: item)
                             }
                     } else {
                         Image(systemName: item.systemIconName)
@@ -63,7 +62,8 @@ struct ServerOutlineList: View {
                             if let bot = item as? CDBot {
                                 Spacer()
                                 if bot.visibleItems > 2 {
-                                    Button(action: { resetNumberOfVisibleIntegrations(of: bot) }) {
+                                    Button(action: { viewModel.resetNumberOfVisibleIntegrations(of: bot)
+                                    }) {
                                         Image(systemName: "arrow.up")
                                             .frame(minWidth: 20)
                                     }
@@ -83,50 +83,6 @@ struct ServerOutlineList: View {
         .onReceive(timer) { _ in
             DataSyncWorker.updateData(in: viewContext)
         }
-    }
-    
-    private func refreshIntegrationStatus(of item: OutlineElement) {
-        guard let bot = item as? CDBot else {
-            return
-        }
-        IntegrationUpdateWorker.add(bot)
-    }
-    
-    private func checkIntegrationStatus() {
-        
-    }
-    
-    private func changeNumberOfVisibleIntegrations(of model: ShowMoreLessCellModel, change: Int) {
-        model.bot.visibleItemsCount += change
-        saveContextAndRefresh(model.bot.server)
-    }
-    
-    private func showAllIntegrations(of model: ShowMoreLessCellModel) {
-        model.bot.visibleItemsCount = model.bot.integrationCounterInt - 1
-        saveContextAndRefresh(model.bot.server)
-    }
-    
-    private func resetNumberOfVisibleIntegrations(of model: ShowMoreLessCellModel) {
-        resetNumberOfVisibleIntegrations(of: model.bot)
-    }
-    
-    private func resetNumberOfVisibleIntegrations(of model: ShowLessCellModel) {
-        resetNumberOfVisibleIntegrations(of: model.bot)
-    }
-    
-    private func resetNumberOfVisibleIntegrations(of bot: CDBot) {
-        bot.visibleItemsCount = 2
-        saveContextAndRefresh(bot.server)
-    }
-    
-    private func saveContextAndRefresh(_ server: CDServer?) {
-        server?.name = server?.name
-        do {
-            try viewContext.save()
-        } catch {
-            print("ServerOutlineList error: \(error.localizedDescription)")
-        }
-        
     }
 }
 

@@ -165,4 +165,51 @@ extension CDBot: BotViewModel {
         }
         return firstIntegration
     }
+    
+    func loadCommitData(completion: @escaping (RevisionInfo) -> Void) {
+        firstIntegration?.loadCommitData() { revInfo in
+            guard let revInfo = revInfo else {
+                return
+            }
+            completion(revInfo)
+        }
+    }
+    
+    func addIntegration(_ integration: Integration) {
+        if let cdIntegration = managedObjectContext?.integration(from: integration) {
+            addToItems(cdIntegration)
+            saveContext()
+        }
+    }
+    
+    func deleteBot() {
+        if let server = server {
+            server.removeFromItems(self)
+            saveContext()
+        }
+    }
+    
+    func duplicate(bot: Bot) {
+        if let context = managedObjectContext,
+           let newBot = context.bot(from: bot) {
+            server?.addToItems(newBot)
+            saveContext()
+        }
+    }
+    
+    func updateBot(with bot: Bot) {
+        update(with: bot)
+        saveContext()
+    }
+    
+    private func saveContext() {
+        guard let moc = managedObjectContext else {
+            return
+        }
+        do {
+            try moc.save()
+        } catch {
+            print("Save context error: \(error.localizedDescription)")
+        }
+    }
 }

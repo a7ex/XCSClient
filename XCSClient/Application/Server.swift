@@ -433,8 +433,14 @@ extension DateFormatter {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd'T'hh:mm:ss.SSSZZZZZ"
         formatter.calendar = Calendar(identifier: .iso8601)
-        formatter.timeZone = TimeZone(secondsFromGMT: 0)
-        formatter.locale = Locale(identifier: "de_DE")
+        formatter.timeZone = TimeZone.current
+        return formatter
+    }()
+    
+    static let buildLogDate: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy MMM dd hh:mm:ss"
+        formatter.calendar = Calendar.current
         return formatter
     }()
 }
