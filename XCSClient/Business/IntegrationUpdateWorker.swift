@@ -52,7 +52,6 @@ class IntegrationUpdateWorker {
         botUpdater.isUpdating = true
         server.connector.getIntegrationsList(for: bot.idString, last: 2 ) { [weak self] (result) in
             botUpdater.isUpdating = false
-            print("End updating bot \(bot.tinyIDString)")
             if case let .success(integrations) = result {
                 integrations.forEach { (integration) in
                     let obj = context.integration(from: integration)
