@@ -90,7 +90,3 @@ update-static-ressources-prod.log
 # SonarQube's sonar-scanner
 .scannerwork
 sonarqube-coverage.xml
-.gitsecret/keys/random_seed
-!*.secret
-XCSClient/mySecret.txt
-XCSClient/TODO.md
