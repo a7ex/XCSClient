@@ -123,14 +123,12 @@ extension CDIntegration: IntegrationViewModel {
             return .clear
         }
         switch integrationResult {
-        case .analyzerWarnings, .warnings:
+        case .analyzerWarnings, .warnings, .internalProcessingError:
             return Color(Colors.warning)
         case .buildErrors, .buildFailed, .checkoutError, .internalBuildError, .internalCheckoutError, .internalError, .triggerError:
             return Color(Colors.error)
         case .canceled:
             return Color(Colors.canceled)
-        case .internalProcessingError:
-            return Color(Colors.warning)
         case .succeeded:
             return Color(Colors.success)
         case .testFailures:
