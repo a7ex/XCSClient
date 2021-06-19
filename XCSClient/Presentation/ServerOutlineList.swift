@@ -83,7 +83,7 @@ struct ServerOutlineList: View {
                 }
             }
         }
-        .listStyle(.sidebar)
+        .listStyle(SidebarListStyle())
         .onAppear {
             DataSyncWorker.updateData(in: viewContext)
         }
