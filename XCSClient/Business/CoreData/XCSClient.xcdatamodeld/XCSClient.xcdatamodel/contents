@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17709" systemVersion="20C69" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17709" systemVersion="20D91" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="CDArchiveExportOptions" representedClassName="CDArchiveExportOptions" syncable="YES" codeGenerationType="class">
         <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="name" optional="YES" attributeType="String"/>
@@ -12,6 +12,7 @@
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="rev" optional="YES" attributeType="String"/>
         <attribute name="tinyID" optional="YES" attributeType="String"/>
+        <attribute name="updateInProgress" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="visibleItems" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="configuration" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CDBotConfiguration" inverseName="bot" inverseEntity="CDBotConfiguration"/>
         <relationship name="items" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDIntegration" inverseName="bot" inverseEntity="CDIntegration"/>
@@ -236,7 +237,7 @@
     </entity>
     <elements>
         <element name="CDArchiveExportOptions" positionX="-63" positionY="9" width="128" height="89"/>
-        <element name="CDBot" positionX="-491.1072998046875" positionY="-219.3464813232422" width="128" height="164"/>
+        <element name="CDBot" positionX="-491.1072998046875" positionY="-219.3464813232422" width="128" height="179"/>
         <element name="CDBotConfiguration" positionX="38.507568359375" positionY="-71.05398559570312" width="128" height="374"/>
         <element name="CDBuildResultSummary" positionX="-243" positionY="-27" width="128" height="254"/>
         <element name="CDBuildServiceSummaryItem" positionX="-297" positionY="-63" width="128" height="104"/>

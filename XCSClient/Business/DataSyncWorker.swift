@@ -112,6 +112,11 @@ private class SyncWorker {
             refreshNextServerIntegrations()
             return
         }
+        bots.forEach { (bot) in
+            if let cdbot = bot as? CDBot {
+                cdbot.updateInProgress = true
+            }
+        }
         botIterator = (Array(bots) as! [CDBot]).makeIterator()
         refreshNextBotIntegrations()
     }
@@ -123,7 +128,12 @@ private class SyncWorker {
             refreshNextServerIntegrations()
             return
         }
+        
         server.connector.getIntegrationsList(for: bot.idString, last: 2) { [weak self] (result) in
+            
+            bot.updateInProgress = false
+            bot.server?.name = bot.server?.name // force update of outline list
+            
             guard let done = self?.isDone,
                   !done else {
                 return

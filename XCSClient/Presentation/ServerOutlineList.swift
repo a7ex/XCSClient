@@ -69,14 +69,21 @@ struct ServerOutlineList: View {
                                     }
                                     .buttonStyle(LinkButtonStyle())
                                 }
-                                bot.firstIntegrationStatus
+                                if bot.updateInProgress {
+                                    ProgressView()
+                                        .frame(width: 20, height: 10)
+                                        .progressViewStyle(CircularProgressViewStyle())
+                                        .scaleEffect(0.5, anchor: .center)
+                                } else {
+                                    bot.firstIntegrationStatus
+                                }
                             }
                         }
                     }
                 }
             }
         }
-        .listStyle(SidebarListStyle())
+        .listStyle(.sidebar)
         .onAppear {
             DataSyncWorker.updateData(in: viewContext)
         }

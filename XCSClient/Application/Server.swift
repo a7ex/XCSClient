@@ -118,6 +118,16 @@ struct Server {
         case .success:
             if !sshEndpoint.isEmpty {
                 let newRslt = execute(program: secureCopy, with: ["\(sshEndpoint):logResults.tgz", "\(targetUrl.path)"])
+                
+                // cleanup temp file
+                if let userName = try? currentUserName(for: "", orFromPath: targetUrl.path) {
+                    var rmArguments = ["\(userName)@\(xcodeServerAddress)", "rm", "logResults.tgz"]
+                    if !sshEndpoint.isEmpty {
+                        rmArguments = [sshEndpoint, "/usr/bin/ssh"] + rmArguments
+                    }
+                    _ = execute(program: "/usr/bin/ssh", with: rmArguments)
+                }
+                
                 switch newRslt {
                 case .success:
                     return .success(true)
@@ -139,6 +149,16 @@ struct Server {
         case .success:
             if !sshEndpoint.isEmpty {
                 let newRslt = execute(program: secureCopy, with: ["\(sshEndpoint):tmpFile", "\(targetUrl.path)"])
+                
+                // cleanup temp file
+                if let userName = try? currentUserName(for: "", orFromPath: targetUrl.path) {
+                    var rmArguments = ["\(userName)@\(xcodeServerAddress)", "rm", "tmpFile"]
+                    if !sshEndpoint.isEmpty {
+                        rmArguments = [sshEndpoint, "/usr/bin/ssh"] + rmArguments
+                    }
+                    _ = execute(program: "/usr/bin/ssh", with: rmArguments)
+                }
+                
                 switch newRslt {
                 case .success:
                     return .success(true)
@@ -178,15 +198,8 @@ struct Server {
     }
     
     func scpFromBot(_ absolutePath: String, to targetUrl: URL, machineName: String) -> Result<Bool, Error> {
-        let userName: String
-        if machineName.isEmpty {
-            let userNameAndPatch = getUsernameFrom(absolutePath: absolutePath)
-            guard let uname = userNameAndPatch.username else {
-                return .failure(ServerError.parameterError)
-            }
-            userName = uname
-        } else {
-            userName = machineName
+        guard let userName = try? currentUserName(for: machineName, orFromPath: absolutePath) else {
+            return .failure(ServerError.parameterError)
         }
         var rmArguments = ["\(userName)@\(xcodeServerAddress)", "rm", "tmp.zip"]
         var zipArguments = ["\(userName)@\(xcodeServerAddress)", "zip", "-r", "tmp.zip", absolutePath]
@@ -198,7 +211,7 @@ struct Server {
         _ = execute(program: "/usr/bin/ssh", with: zipArguments)
         let scpAddress: String
         if !sshEndpoint.isEmpty {
-            let r1 = execute(program: "/usr/bin/ssh", with: [sshEndpoint, "/usr/bin/scp", "\(userName)@\(xcodeServerAddress):tmp.zip", "tmp.zip"])
+            let r1 = execute(program: "/usr/bin/ssh", with: [sshEndpoint, secureCopy, "\(userName)@\(xcodeServerAddress):tmp.zip", "tmp.zip"])
             switch r1 {
             case .success(let data):
                 print(String(decoding: data, as: UTF8.self))
@@ -210,6 +223,14 @@ struct Server {
             scpAddress = "\(userName)@\(xcodeServerAddress)"
         }
         let result = execute(program: secureCopy, with: ["\(scpAddress):tmp.zip", "\(targetUrl.path)"])
+        
+        // cleanup temp file
+        rmArguments = ["\(userName)@\(xcodeServerAddress)", "rm", "tmp.zip"]
+        if !sshEndpoint.isEmpty {
+            rmArguments = [sshEndpoint, "/usr/bin/ssh"] + rmArguments
+        }
+        _ = execute(program: "/usr/bin/ssh", with: rmArguments)
+        
         switch result {
         case .success:
             return .success(true)
@@ -275,61 +296,13 @@ struct Server {
         }
     }
     
-    /// Modify a bot using settings from a json file
-    /// The file is expected to be at the rootlevel of the ssh user on the jumphost!
-    private func modifyBot(_ botId: String, settingsFile: String) -> Result<Bot, Error> {
-        let arguments = defaultArguments + [
-            "--request", "PATCH",
-            "-H", "\"Content-Type: application/json; charset=utf-8\"",
-            "-H", "\"X-XCSClientVersion: 7\"",
-            "--data", "\"@\(settingsFile)\"",
-            "\(apiUrl)/bots/\(botId)?overwriteBlueprint=true"
-        ]
-        return executeJSONTask(with: arguments)
-    }
-    
     func createBot(fileUrl: URL, fileName: String) -> Result<Bot, Error> {
         let rslt = copyBotSettingsToServer(fileUrl: fileUrl, fileName: fileName)
         switch rslt {
         case .success(let path):
             let result = self.createBotWithSettings(settingsFile: path)
-            
-            let program: String
-            let args: [String]
-            if !sshEndpoint.isEmpty,
-               sshEndpoint != "@" {
-                program = "/usr/bin/ssh"
-                args = [sshEndpoint, "rm", fileName]
-            } else {
-                program = "rm"
-                args = [fileName]
-            }
-            _ = execute(program: program, with: args)
-            
+            removeFileOnHost(fileName: fileName)
             return result
-        case .failure(let error):
-            return .failure(error)
-        }
-    }
-    
-    private func createBotWithSettings(settingsFile: String) -> Result<Bot, Error> {
-        let arguments = defaultArguments + [
-            "--request", "POST",
-            "-H", "\"Content-Type: application/json; charset=utf-8\"",
-            "--data", "\"@\(settingsFile)\"",
-            "\(apiUrl)/bots"
-        ]
-        return executeJSONTask(with: arguments)
-    }
-    
-    private func copyBotSettingsToServer(fileUrl: URL, fileName: String) -> Result<String, Error> {
-        guard !sshEndpoint.isEmpty else {
-            return .success(fileUrl.path)
-        }
-        let rslt = execute(program: secureCopy, with: ["\(fileUrl.path)", "\(sshEndpoint):\(fileName)"])
-        switch rslt {
-        case .success:
-            return .success(fileName)
         case .failure(let error):
             return .failure(error)
         }
@@ -355,6 +328,40 @@ struct Server {
     }
     
     // MARK: - Private interface
+    
+    /// Modify a bot using settings from a json file
+    /// The file is expected to be at the rootlevel of the ssh user on the jumphost!
+    private func modifyBot(_ botId: String, settingsFile: String) -> Result<Bot, Error> {
+        let arguments = defaultArguments + [
+            "--request", "PATCH",
+            "-H", "\"Content-Type: application/json; charset=utf-8\"",
+            "-H", "\"X-XCSClientVersion: 7\"",
+            "--data", "\"@\(settingsFile)\"",
+            "\(apiUrl)/bots/\(botId)?overwriteBlueprint=true"
+        ]
+        return executeJSONTask(with: arguments)
+    }
+    
+    private func createBotWithSettings(settingsFile: String) -> Result<Bot, Error> {
+        let arguments = defaultArguments + [
+            "--request", "POST",
+            "-H", "\"Content-Type: application/json; charset=utf-8\"",
+            "--data", "\"@\(settingsFile)\"",
+            "\(apiUrl)/bots"
+        ]
+        return executeJSONTask(with: arguments)
+    }
+    
+    private func currentUserName(for machine: String, orFromPath absolutePath: String) throws -> String {
+        guard machine.isEmpty else {
+            return machine
+        }
+        let userNameAndPatch = getUsernameFrom(absolutePath: absolutePath)
+        guard let uname = userNameAndPatch.username else {
+            throw ServerError.parameterError
+        }
+        return uname
+    }
     
     private func executeJSONTask<T: Decodable>(with arguments: [String]) -> Result<T, Error> {
         let rslt = execute(program: curlToBot, with: arguments)
@@ -424,6 +431,33 @@ struct Server {
             return str ?? ""
         case.failure:
             return ""
+        }
+    }
+    
+    private func removeFileOnHost(fileName: String) {
+        let program: String
+        let args: [String]
+        if !sshEndpoint.isEmpty,
+           sshEndpoint != "@" {
+            program = "/usr/bin/ssh"
+            args = [sshEndpoint, "rm", fileName]
+        } else {
+            program = "rm"
+            args = [fileName]
+        }
+        _ = execute(program: program, with: args)
+    }
+    
+    private func copyBotSettingsToServer(fileUrl: URL, fileName: String) -> Result<String, Error> {
+        guard !sshEndpoint.isEmpty else {
+            return .success(fileUrl.path)
+        }
+        let rslt = execute(program: secureCopy, with: ["\(fileUrl.path)", "\(sshEndpoint):\(fileName)"])
+        switch rslt {
+        case .success:
+            return .success(fileName)
+        case .failure(let error):
+            return .failure(error)
         }
     }
 }
