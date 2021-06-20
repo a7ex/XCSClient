@@ -34,12 +34,12 @@ private class SyncWorker {
     private let fetchRequest: NSFetchRequest<CDServer> = CDServer.fetchRequest()
     private var servers = [CDServer]()
     private var serverIterator: IndexingIterator<[CDServer]>
-    private var botIterator: IndexingIterator<[CDBot]>
+    
+    private var queue = OperationQueue()
     
     init(context: NSManagedObjectContext) {
         currentContext = context
         serverIterator = servers.makeIterator()
-        botIterator = [CDBot]().makeIterator()
         
         fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \CDServer.name, ascending: true)]
         loadAllBots(in: context)
@@ -100,7 +100,9 @@ private class SyncWorker {
     private func refreshAllIntegrations() {
         guard !isDone else { return }
         serverIterator = servers.makeIterator()
-        refreshNextServerIntegrations()
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            self?.refreshNextServerIntegrations()
+        }
     }
     
     private func refreshNextServerIntegrations() {
@@ -112,41 +114,40 @@ private class SyncWorker {
             refreshNextServerIntegrations()
             return
         }
-        bots.forEach { (bot) in
-            if let cdbot = bot as? CDBot {
-                cdbot.updateInProgress = true
+        
+        queue = OperationQueue()
+        queue.maxConcurrentOperationCount = 8 //Deadlock if this is = 1
+        queue.qualityOfService = .userInitiated
+        
+        bots.compactMap { $0 as? CDBot }
+        .forEach { bot in
+            bot.updateInProgress = true
+            queue.addOperation { [weak self] in
+                self?.refreshIntegrations(of: bot)
             }
         }
-        botIterator = (Array(bots) as! [CDBot]).makeIterator()
-        refreshNextBotIntegrations()
+        queue.waitUntilAllOperationsAreFinished()
+        refreshNextServerIntegrations()
     }
     
-    private func refreshNextBotIntegrations() {
-        guard !isDone else { return }
-        guard let bot = botIterator.next(),
-              let server = bot.server else {
-            refreshNextServerIntegrations()
+    private func refreshIntegrations(of bot: CDBot) {
+        guard let server = bot.server else {
             return
         }
-        
         server.connector.getIntegrationsList(for: bot.idString, last: 2) { [weak self] (result) in
-            
             bot.updateInProgress = false
             bot.server?.name = bot.server?.name // force update of outline list
             
             guard let done = self?.isDone,
                   !done else {
-                return
-            }
+                      return
+                  }
             if case let .success(integrations) = result {
                 integrations.forEach { (integration) in
                     if let obj = self?.currentContext.integration(from: integration) {
                         bot.addToItems(obj)
                     }
                 }
-            }
-            defer {
-                self?.refreshNextBotIntegrations()
             }
             do {
                 try self?.currentContext.save()
