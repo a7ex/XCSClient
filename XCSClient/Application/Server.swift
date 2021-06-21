@@ -120,11 +120,8 @@ struct Server {
                 let newRslt = execute(program: secureCopy, with: ["\(sshEndpoint):logResults.tgz", "\(targetUrl.path)"])
                 
                 // cleanup temp file
-                if let userName = try? currentUserName(for: "", orFromPath: targetUrl.path) {
-                    var rmArguments = ["\(userName)@\(xcodeServerAddress)", "rm", "logResults.tgz"]
-                    if !sshEndpoint.isEmpty {
-                        rmArguments = [sshEndpoint, "/usr/bin/ssh"] + rmArguments
-                    }
+                if !sshEndpoint.isEmpty {
+                    let rmArguments = [sshEndpoint, "rm", "logResults.tgz"]
                     _ = execute(program: "/usr/bin/ssh", with: rmArguments)
                 }
                 
@@ -151,11 +148,8 @@ struct Server {
                 let newRslt = execute(program: secureCopy, with: ["\(sshEndpoint):tmpFile", "\(targetUrl.path)"])
                 
                 // cleanup temp file
-                if let userName = try? currentUserName(for: "", orFromPath: targetUrl.path) {
-                    var rmArguments = ["\(userName)@\(xcodeServerAddress)", "rm", "tmpFile"]
-                    if !sshEndpoint.isEmpty {
-                        rmArguments = [sshEndpoint, "/usr/bin/ssh"] + rmArguments
-                    }
+                if !sshEndpoint.isEmpty {
+                    let rmArguments = [sshEndpoint, "rm", "tmpFile"]
                     _ = execute(program: "/usr/bin/ssh", with: rmArguments)
                 }
                 
@@ -225,11 +219,10 @@ struct Server {
         let result = execute(program: secureCopy, with: ["\(scpAddress):tmp.zip", "\(targetUrl.path)"])
         
         // cleanup temp file
-        rmArguments = ["\(userName)@\(xcodeServerAddress)", "rm", "tmp.zip"]
         if !sshEndpoint.isEmpty {
-            rmArguments = [sshEndpoint, "/usr/bin/ssh"] + rmArguments
+            let rmArguments = [sshEndpoint, "rm", "tmp.zip"]
+            _ = execute(program: "/usr/bin/ssh", with: rmArguments)
         }
-        _ = execute(program: "/usr/bin/ssh", with: rmArguments)
         
         switch result {
         case .success:
