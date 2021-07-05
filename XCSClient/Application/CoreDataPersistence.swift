@@ -18,10 +18,7 @@ struct PersistenceController {
             container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
         }
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
-            if let error = error as NSError? {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                
+            if let error = error {
                 /*
                  Typical reasons for an error here include:
                  * The parent directory does not exist, cannot be created, or disallows writing.
@@ -30,9 +27,20 @@ struct PersistenceController {
                  * The store could not be migrated to the current model version.
                  Check the error message to determine what the actual problem was.
                  */
-                fatalError("Unresolved error \(error), \(error.userInfo)")
+                fatalError("Error: \(error.localizedDescription)")
             }
         })
+    }
+    
+    func save() {
+        let context = container.viewContext
+        if context.hasChanges {
+            do {
+                try context.save()
+            } catch {
+                print("ERROR SAVING PERSISTENCE: \(error.localizedDescription),")
+            }
+        }
     }
 }
 
@@ -76,14 +84,64 @@ extension PersistenceController {
         
         cdServer.addToItems(cdBot)
         
-        do {
-            try viewContext.save()
-        } catch {
-            // Replace this implementation with code to handle the error appropriately.
-            // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-            let nsError = error as NSError
-            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+        let iPhone12Pro = Device(
+            id: "d206b637628008bdeeac9b84f700b7e5",
+            name: "iPhone 12 Pro",
+            identifier: "60D88D7C-7E8D-4F9F-8CB7-51C0D6CA77A3",
+            udid: nil,
+            ecid: nil,
+            serial: nil,
+            type: "com.apple.iphone-simulator",
+            model: "iPhone 12 Pro (iPhone13,3)",
+            arch: "arm64",
+            os: "14.5",
+            processor: nil,
+            uti: "com.apple.iphone-12-pro-1",
+            platform: "com.apple.platform.iphonesimulator",
+            simulator: true,
+            connected: true,
+            supported: true,
+            development: true,
+            trusted: true,
+            additionalInfos: ["(Proxying Apple Watch Series 6 - 40mm [33AA86E4-E80C-452A-A788-3903008361C8])"]
+        )
+        if let obj = viewContext.device(from: iPhone12Pro) {
+            cdServer.addToDevices(obj)
         }
+        
+        let iPad11Pro = Device(
+            id: "d206b637628008bdeeac9b84f70062a8",
+            name: "iPad Pro (11-inch) (3rd generation)",
+            identifier: "B1D953DD-C5C9-45A2-B7BB-16F21CD4F974",
+            udid: nil,
+            ecid: nil,
+            serial: nil,
+            type: "com.apple.iphone-simulator",
+            model: "iPad Pro (11-inch) (3rd generation) (iPad13,5)",
+            arch: "arm64",
+            os: "14.5",
+            processor: nil,
+            uti: "com.apple.ipad-pro-11-3rd-1",
+            platform: "com.apple.platform.iphonesimulator",
+            simulator: true,
+            connected: true,
+            supported: true,
+            development: true,
+            trusted: true,
+            additionalInfos: [String]()
+        )
+        if let obj = viewContext.device(from: iPad11Pro) {
+            cdServer.addToDevices(obj)
+        }
+        
+//        do {
+//            try viewContext.save()
+//        } catch {
+//            // Replace this implementation with code to handle the error appropriately.
+//            // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+//            let nsError = error as NSError
+//            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+//        }
         return result
     }()
 }

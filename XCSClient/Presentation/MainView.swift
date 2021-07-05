@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct MainView: View {
+    @StateObject private var credentialsEditorPresentationData = CredentialsEditorData()
     
     var body: some View {
         NavigationView {
@@ -16,6 +17,13 @@ struct MainView: View {
             initialDetailView
         }
         .navigationViewStyle(DoubleColumnNavigationViewStyle())
+        .environmentObject(credentialsEditorPresentationData)
+        .overlay(dialogOverlay.environmentObject(credentialsEditorPresentationData))
+    }
+    
+    var dialogOverlay: some View {
+        return credentialsEditorPresentationData.dialog
+            .opacity(credentialsEditorPresentationData.shouldShow ? 1.0: 0.0)
     }
     
     private var initialDetailView: some View {

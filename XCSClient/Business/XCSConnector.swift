@@ -28,6 +28,10 @@ class XCSConnector: ObservableObject {
         )
     }
     
+    var authenticatesWithNetRC: Bool {
+        return server.authenticatesWithNetRC
+    }
+    
     func findIpa(
         machineName: String,
         botID: String,
@@ -120,13 +124,22 @@ class XCSConnector: ObservableObject {
         }
     }
     
-    func applySettings(at fileUrl: URL, fileName: String, toBot botId: String, completion: @escaping (Result<Bot, Error>) -> Void) {
+    func applySettings(at fileUrl: URL, fileName: String, toBot botId: String, credentials: SecureCredentials? = nil, completion: @escaping (Result<Bot, Error>) -> Void) {
         guard !botId.isEmpty else {
             completion(.failure(NSError(message: "Parameter error")))
             return
         }
+        let authenticationStrategy: AuthenticationStrategy
+        if authenticatesWithNetRC {
+            authenticationStrategy = .netrc
+        } else if let credentials = credentials {
+            authenticationStrategy = .credentials(credentials)
+        } else {
+            completion(.failure(NSError(message: "Authentication required", status: -1017)))
+            return
+        }
         DispatchQueue.global(qos: .userInitiated).async {
-            let rslt = self.server.applySettings(at: fileUrl, fileName: fileName, toBot: botId)
+            let rslt = self.server.applySettings(at: fileUrl, fileName: fileName, toBot: botId, authenticationStrategy: authenticationStrategy)
             DispatchQueue.main.async {
                 completion(rslt)
             }
@@ -171,6 +184,15 @@ class XCSConnector: ObservableObject {
     func scpAsset(at path: String, to targetUrl: URL, machineName: String, completion: @escaping (Result<Bool, Error>) -> Void) {
         DispatchQueue.global(qos: .userInitiated).async {
             let rslt = self.server.scpFromBot(path, to: targetUrl, machineName: machineName)
+            DispatchQueue.main.async {
+                completion(rslt)
+            }
+        }
+    }
+    
+    func listOfAvailableSimulators(strategy: AuthenticationStrategy, completion: @escaping (Result<String, Error>) -> Void) {
+        DispatchQueue.global(qos: .userInitiated).async {
+            let rslt = self.server.listOfAvailableSimulators(authenticationStrategy: strategy)
             DispatchQueue.main.async {
                 completion(rslt)
             }

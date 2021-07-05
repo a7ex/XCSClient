@@ -18,6 +18,21 @@ struct SideBarViewModel {
         DataSyncWorker.updateData(in: ctx)
     }
     
+    func addServer(in ctx: NSManagedObjectContext, server: XcodeServer? = nil) {
+        let srv = CDServer(context: ctx)
+        srv.name = server?.name ?? "Local"
+        srv.ipAddress = server?.ipAddress ?? "127.0.0.1"
+        srv.id = UUID().uuidString
+        srv.sshAddress = server?.sshAddress
+        srv.sshUser = server?.sshUser
+        srv.netRCFilename = server?.netRCFilename
+        do {
+            try ctx.save()
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
+    
     func migrateServersFromPreviousVersionIfNeccessary(in ctx: NSManagedObjectContext) {
         if numberOfServers(in: ctx) < 1 {
             // the previous version stored the infos about the servers
@@ -46,20 +61,5 @@ struct SideBarViewModel {
             print(error.localizedDescription)
         }
         return 0
-    }
-    
-    func addServer(in ctx: NSManagedObjectContext, server: XcodeServer? = nil) {
-        let srv = CDServer(context: ctx)
-        srv.name = server?.name ?? "Local"
-        srv.ipAddress = server?.ipAddress ?? "127.0.0.1"
-        srv.id = UUID().uuidString
-        srv.sshAddress = server?.sshAddress
-        srv.sshUser = server?.sshUser
-        srv.netRCFilename = server?.netRCFilename
-        do {
-            try ctx.save()
-        } catch {
-            print(error.localizedDescription)
-        }
     }
 }

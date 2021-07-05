@@ -8,6 +8,11 @@
 
 import Foundation
 
+enum AuthenticationStrategy {
+    case netrc
+    case credentials(SecureCredentials)
+}
+
 struct Server {
     
     // MARK: - Types
@@ -17,15 +22,18 @@ struct Server {
         case jsonDecodingError(_ error: Error)
         case noResult
         case parameterError
+        case credentialsRequired
     }
     
     // MARK: - Private instance variables
     
     private let xcodeServerAddress: String
     private let sshEndpoint: String
+    private let netrcFilename: String
     
     private let curlToBot: String
     private let sshToBotArguments: [String]
+    
     
     private let secureCopy = "/usr/bin/scp"
     
@@ -45,6 +53,7 @@ struct Server {
         self.xcodeServerAddress = xcodeServerAddress
         self.sshEndpoint = sshEndpoint == "@" ? "": sshEndpoint
         decoder.dateDecodingStrategy = .formatted(DateFormatter.backendDate)
+        self.netrcFilename = netrcFilename
         
         let defaultArgs: [String]
         if !sshEndpoint.isEmpty,
@@ -65,6 +74,10 @@ struct Server {
     }
     
     // MARK: - Public interface
+    
+    var authenticatesWithNetRC: Bool {
+        return !netrcFilename.isEmpty
+    }
     
     func getBotList() -> Result<[Bot], Error> {
         let arguments = defaultArguments + ["--request", "GET", "\(apiUrl)/bots"]
@@ -168,11 +181,12 @@ struct Server {
     }
     
     func findIpaPath(machineName: String, botID: String, botName: String, integrationNumber: Int) -> String {
-        // Unfortunately we need hardcoded paths here! :-(
-        // Once Apple changes the paths this won't work anymore
-        // But the API only allows us to download the whole Archive with all results:
+        // The API only allows us to download the whole Archive with all results:
         // xcarchive AND ipa.
         // That's often a pretty huge archive, when all we want is the ipa...
+        
+        // For now we use the hardcoded path to the default location here! :-(
+        // TODO: Wuery the install path from the server OR make that a property of CDServer
         var directory = "\"/Library/Developer/XcodeServer/IntegrationAssets/\(botID)-\(botName)/\(integrationNumber)\""
         let ipaPath = findIpaInDirectory(machineName: machineName, fullPath: directory)
         guard ipaPath.isEmpty else {
@@ -192,6 +206,16 @@ struct Server {
     }
     
     func scpFromBot(_ absolutePath: String, to targetUrl: URL, machineName: String) -> Result<Bool, Error> {
+        guard !isLocalServer else {
+            let result = execute(program: "cp", with: ["-R", absolutePath, targetUrl.path])
+            switch result {
+            case .success:
+                return .success(true)
+            case .failure(let error):
+                return .failure(error)
+            }
+        }
+        
         guard let userName = try? currentUserName(for: machineName, orFromPath: absolutePath) else {
             return .failure(ServerError.parameterError)
         }
@@ -230,6 +254,23 @@ struct Server {
         case .failure(let error):
             return .failure(error)
         }
+    }
+    
+    func listOfAvailableSimulators(authenticationStrategy: AuthenticationStrategy) -> Result<String, Error> {
+        guard let (username, password) = credentials(for: authenticationStrategy, skipNetRCParsing: false) else {
+            return .failure(ServerError.credentialsRequired)
+        }
+        let program = isLocalServer ? "sudo": "/usr/bin/ssh"
+        var xcsCommand = ["-S", "xcrun", "xcscontrol", "--list-simulators"]
+        if !isLocalServer {
+            xcsCommand = ["\(username)@\(xcodeServerAddress)", "sudo"] + xcsCommand
+            if !sshEndpoint.isEmpty {
+                xcsCommand = [sshEndpoint, "/usr/bin/ssh"] + xcsCommand
+            }
+        }
+        let result = execute(program: program, with: xcsCommand, dataInput: (password + "\n").data(using: .utf8))
+            .map { String(data: $0, encoding: .utf8) ?? "" }
+        return result
     }
     
     func loadAsset(_ path: String) -> Result<Data, Error> {
@@ -279,11 +320,11 @@ struct Server {
         return executeJSONTask(with: arguments)
     }
     
-    func applySettings(at fileUrl: URL, fileName: String, toBot botId: String) -> Result<Bot, Error> {
+    func applySettings(at fileUrl: URL, fileName: String, toBot botId: String, authenticationStrategy: AuthenticationStrategy) -> Result<Bot, Error> {
         let rslt = copyBotSettingsToServer(fileUrl: fileUrl, fileName: fileName)
         switch rslt {
         case .success(let path):
-            return self.modifyBot(botId, settingsFile: path)
+            return self.modifyBot(botId, settingsFile: path, authenticationStrategy: authenticationStrategy)
         case .failure(let error):
             return .failure(error)
         }
@@ -322,16 +363,92 @@ struct Server {
     
     // MARK: - Private interface
     
+    private var isLocalServer: Bool {
+        if xcodeServerAddress.isEmpty {
+            return true
+        }
+        return ["localhost", "127.0.0.1"].contains(xcodeServerAddress)
+    }
+    
+    private func credentials(for strategy: AuthenticationStrategy, skipNetRCParsing: Bool = true) -> (String, String)? {
+        switch strategy {
+        case .netrc:
+            guard !netrcFilename.isEmpty else {
+                return nil
+            }
+            guard !skipNetRCParsing else {
+                return ("", "")
+            }
+            guard let rslt = credentialsFromNetRCFile(netrcFilename, for: xcodeServerAddress) else {
+                return nil
+            }
+            return rslt
+        case .credentials(let credentials):
+            guard let rslt = credentials.loginData else {
+                return nil
+            }
+            return rslt
+        }
+    }
+    
+    private func credentialsFromNetRCFile(_ netrcFilename: String, for ipAddress: String) -> (String, String)? {
+        let program = isLocalServer ? "cat": "/usr/bin/ssh"
+        var args = [netrcFilename]
+        if !isLocalServer,
+           !sshEndpoint.isEmpty {
+                args = [sshEndpoint, "cat"] + args
+        }
+        let result = execute(program: program, with: args)
+            .map { String(data: $0, encoding: .utf8) ?? "" }
+        switch result {
+        case .success(let netrcContents):
+            guard let line = netrcContents.components(separatedBy: "\n")
+                    .filter({ !$0.trimmingCharacters(in: .whitespaces).starts(with: "#") })
+                    .first(where: { $0.contains(ipAddress) }) else {
+                return nil
+            }
+            let parts = line.components(separatedBy: .whitespaces)
+            guard let machinePos = parts.firstIndex(of: "machine"),
+                  parts.count > machinePos else {
+                return nil
+            }
+            let machine = parts[machinePos + 1]
+            guard let loginPos = parts.firstIndex(of: "login"),
+                  parts.count > loginPos else {
+                return nil
+            }
+            let login = parts[loginPos + 1]
+            guard let passPos = parts.firstIndex(of: "password"),
+                  parts.count > passPos else {
+                return nil
+            }
+            let password = parts.dropFirst(passPos + 1).joined(separator: " ")
+            guard machine == ipAddress else {
+                return nil
+            }
+            return (login, password)
+        case .failure:
+            return nil
+        }
+    }
+    
     /// Modify a bot using settings from a json file
     /// The file is expected to be at the rootlevel of the ssh user on the jumphost!
-    private func modifyBot(_ botId: String, settingsFile: String) -> Result<Bot, Error> {
-        let arguments = defaultArguments + [
+    private func modifyBot(_ botId: String, settingsFile: String, authenticationStrategy: AuthenticationStrategy) -> Result<Bot, Error> {
+        guard let (username, secret) = credentials(for: authenticationStrategy, skipNetRCParsing: true) else {
+            return .failure(ServerError.credentialsRequired)
+        }
+        var arguments = defaultArguments + [
             "--request", "PATCH",
             "-H", "\"Content-Type: application/json; charset=utf-8\"",
             "-H", "\"X-XCSClientVersion: 7\"",
-            "--data", "\"@\(settingsFile)\"",
-            "\(apiUrl)/bots/\(botId)?overwriteBlueprint=true"
+            "--data", "\"@\(settingsFile)\""
         ]
+        if !authenticatesWithNetRC {
+            arguments.append("-u")
+            arguments.append("\(username):\(secret)")
+        }
+        arguments.append("\(apiUrl)/bots/\(botId)?overwriteBlueprint=true")
         return executeJSONTask(with: arguments)
     }
     
@@ -364,7 +481,7 @@ struct Server {
         }
     }
     
-    private func execute(program: String, with arguments: [String]) -> Result<Data, Error> {
+    private func execute(program: String, with arguments: [String], dataInput: Data? = nil) -> Result<Data, Error> {
         let task = Process()
         task.launchPath = program
         task.arguments = arguments
@@ -372,6 +489,12 @@ struct Server {
         // // comment out for debugging purposes:
         // print("executing now:\n\(program) \(arguments.joined(separator: " "))")
         
+        if let dataInput = dataInput {
+            let inPipe = Pipe()
+            task.standardInput = inPipe
+            let inHandle = inPipe.fileHandleForWriting
+            inHandle.write(dataInput)
+        }
         let outPipe = Pipe()
         task.standardOutput = outPipe // to capture standard error, use task.standardError = outPipe
         let errorPipe = Pipe()
@@ -415,9 +538,10 @@ struct Server {
     }
     
     private func findIpaInDirectory(machineName: String, fullPath: String) -> String {
-        let machine = "\(machineName)@\(xcodeServerAddress)"
-        let args = sshToBotArguments + [machine, "find", fullPath, "-name", "\"*.ipa\""]
-        let result = execute(program: "/usr/bin/ssh", with: args)
+        let program = isLocalServer ? "find": "/usr/bin/ssh"
+        let cmd = isLocalServer ? [String](): ["\(machineName)@\(xcodeServerAddress)", "find"]
+        let args = sshToBotArguments + cmd + [fullPath, "-name", "\"*.ipa\""]
+        let result = execute(program: program, with: args)
         switch result {
         case .success(let data):
             let str = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines)

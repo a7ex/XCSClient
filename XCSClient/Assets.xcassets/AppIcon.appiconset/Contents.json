@@ -1,60 +1,61 @@
 {
   "images" : [
     {
-      "filename" : "BotIcon16.png",
+      "filename" : "XCSClientIcon16.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "16x16"
     },
     {
-      "filename" : "BotIcon32.png",
+      "filename" : "XCSClientIcon32.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "16x16"
     },
     {
-      "filename" : "BotIcon32-1.png",
+      "filename" : "XCSClientIcon32-1.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "32x32"
     },
     {
-      "filename" : "BotIcon64.png",
+      "filename" : "XCSClientIcon64.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "32x32"
     },
     {
-      "filename" : "BotIcon128.png",
+      "filename" : "XCSClientIcon128.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "128x128"
     },
     {
-      "filename" : "BotIcon256.png",
+      "filename" : "XCSClientIcon256.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "128x128"
     },
     {
-      "filename" : "BotIcon256-1.png",
+      "filename" : "XCSClientIcon256-1.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "256x256"
     },
     {
-      "filename" : "BotIcon512.png",
+      "filename" : "XCSClientIcon512.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "256x256"
     },
     {
-      "filename" : "BotIcon512-1.png",
+      "filename" : "XCSClientIcon512-1.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "512x512"
     },
     {
+      "filename" : "XCSClientIcon1024.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "512x512"

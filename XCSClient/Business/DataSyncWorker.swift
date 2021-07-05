@@ -77,11 +77,7 @@ private class SyncWorker {
                 return
             }
             if case let .success(bots) = result {
-                bots.forEach { (bot) in
-                    if let bot = self?.currentContext.bot(from: bot) {
-                        server.addToItems(bot)
-                    }
-                }
+                server.synchronize(with: bots)
                 server.reachability = Int16(ServerReachabilty.reachable.rawValue)
             } else {
                 server.reachability = Int16(ServerReachabilty.unreachable.rawValue)

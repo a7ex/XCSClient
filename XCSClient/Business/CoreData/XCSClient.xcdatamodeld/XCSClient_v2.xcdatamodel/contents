@@ -176,6 +176,7 @@
         <attribute name="reachability" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="sshAddress" optional="YES" attributeType="String"/>
         <attribute name="sshUser" optional="YES" attributeType="String"/>
+        <relationship name="devices" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDTestDevice" inverseName="server" inverseEntity="CDTestDevice"/>
         <relationship name="items" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDBot" inverseName="server" inverseEntity="CDBot"/>
     </entity>
     <entity name="CDSingleSourceControlLocation" representedClassName="CDSingleSourceControlLocation" syncable="YES" codeGenerationType="class">
@@ -204,6 +205,19 @@
         <attribute name="pathIdentifierKey" optional="YES" attributeType="String"/>
         <attribute name="workspaceBlueprintLocationTypeKeyValue" optional="YES" attributeType="String"/>
         <relationship name="container" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDSingleSourceControlLocation" inverseName="value" inverseEntity="CDSingleSourceControlLocation"/>
+    </entity>
+    <entity name="CDTestDevice" representedClassName="CDTestDevice" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="YES" attributeType="String"/>
+        <attribute name="identifier" optional="YES" attributeType="String"/>
+        <attribute name="model" optional="YES" attributeType="String"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="os" optional="YES" attributeType="String"/>
+        <attribute name="pairedWatch" optional="YES" attributeType="String"/>
+        <attribute name="platform" optional="YES" attributeType="String"/>
+        <attribute name="simulator" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="type" optional="YES" attributeType="String"/>
+        <attribute name="udid" optional="YES" attributeType="String"/>
+        <relationship name="server" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDServer" inverseName="devices" inverseEntity="CDServer"/>
     </entity>
     <entity name="CDTestDeviceFilter" representedClassName="CDTestDeviceFilter" syncable="YES" codeGenerationType="class">
         <attribute name="architectureType" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
@@ -241,6 +255,7 @@
         <element name="CDBotConfiguration" positionX="38.507568359375" positionY="-71.05398559570312" width="128" height="374"/>
         <element name="CDBuildResultSummary" positionX="-243" positionY="-27" width="128" height="254"/>
         <element name="CDBuildServiceSummaryItem" positionX="-297" positionY="-63" width="128" height="104"/>
+        <element name="CDTestDevice" positionX="-297" positionY="-63" width="128" height="194"/>
         <element name="CDEmailConfiguration" positionX="-54" positionY="18" width="128" height="284"/>
         <element name="CDIntegration" positionX="-86.988525390625" positionY="-211.8628845214844" width="128" height="299"/>
         <element name="CDIntegrationAssets" positionX="-297" positionY="-81" width="128" height="134"/>
@@ -250,6 +265,7 @@
         <element name="CDProvisioningConfiguration" positionX="-45" positionY="27" width="128" height="74"/>
         <element name="CDRemoteRepository" positionX="-225.8842163085938" positionY="141.7715148925781" width="128" height="89"/>
         <element name="CDRevisionInfo" positionX="-297" positionY="-63" width="128" height="89"/>
+        <element name="CDServer" positionX="-313.3782958984375" positionY="21.42233276367188" width="128" height="179"/>
         <element name="CDSingleSourceControlLocation" positionX="-288" positionY="-54" width="128" height="74"/>
         <element name="CDSourceControlBlueprint" positionX="-45" positionY="27" width="128" height="209"/>
         <element name="CDSourceControlLocation" positionX="-36" positionY="36" width="128" height="119"/>
@@ -257,6 +273,5 @@
         <element name="CDTestDeviceSpecification" positionX="-81" positionY="-9" width="128" height="74"/>
         <element name="CDTrigger" positionX="-72" positionY="0" width="128" height="134"/>
         <element name="CDTriggerConditions" positionX="-63" positionY="9" width="128" height="149"/>
-        <element name="CDServer" positionX="-288" positionY="-117" width="128" height="164"/>
     </elements>
 </model>

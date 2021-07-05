@@ -12,6 +12,7 @@ struct BotDetailView: View {
     let bot: BotViewModel
     
     @EnvironmentObject var connector: XCSConnector
+    @EnvironmentObject var presentationData: CredentialsEditorData
     
     @State private var hasError = false
     @State private var errorMessage = ""
@@ -105,7 +106,7 @@ struct BotDetailView: View {
                     }
                     Divider()
                     Button(action: uploadChanges) {
-                        ButtonLabel(text: "Save changes")
+                        ButtonLabel(text: "Upload changes to server")
                     }
                     Button(action: reloadIntegrations) {
                         ButtonLabel(text: "Reload integrations")
@@ -293,7 +294,12 @@ struct BotDetailView: View {
     }
     
     private func editTrigger(_ triggerScript: TriggerScript) {
-        openTextEditorWindow(with: triggerScript.script, title: triggerScript.name) { newText in
+        openTextEditorWindow(
+            with: triggerScript.script,
+            title: triggerScript.name,
+            saveAlertMessage: "Do you want to save changes?",
+            saveAlertInfoText: "Note, that you still need to upload the changes to the server."
+        ) { newText in
             
             botEditableData.updateTriggerScript(
                 with: triggerScript.name,
@@ -394,6 +400,12 @@ struct BotDetailView: View {
             hasError = true
             return
         }
+        ensureServerHasCredentials { credentials in
+            applySettingsFinally(serverCredentials: credentials)
+        }
+    }
+    
+    private func applySettingsFinally(serverCredentials: SecureCredentials?) {
         let panel = NSOpenPanel()
         panel.canChooseFiles = true
         panel.allowedFileTypes = ["json"]
@@ -405,7 +417,7 @@ struct BotDetailView: View {
         withAnimation {
             activityShowing = true
         }
-        connector.applySettings(at: url, fileName: "\(bot.tinyIDString).json", toBot: bot.idString) { (result) in
+        connector.applySettings(at: url, fileName: "\(bot.tinyIDString).json", toBot: bot.idString, credentials: serverCredentials) { (result) in
             withAnimation {
                 activityShowing = false
             }
@@ -413,6 +425,9 @@ struct BotDetailView: View {
             case .success(let codableBot):
                 bot.updateBot(with: codableBot)
             case .failure(let error):
+                if (error as NSError).code == 401 {
+                    try? serverCredentials?.deleteItem()
+                }
                 self.errorMessage = error.localizedDescription
                 self.hasError = true
             }
@@ -424,6 +439,12 @@ struct BotDetailView: View {
             hasError = true
             return
         }
+        ensureServerHasCredentials { credentials in
+            applyChangesFinally(newJSON, to: bot, serverCredentials: credentials)
+        }
+    }
+    
+    private func applyChangesFinally(_ newJSON: String, to bot: BotViewModel, serverCredentials: SecureCredentials?) {
         let fileManager = FileManager.default
         guard let cachesDirectory = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first else {
             return
@@ -438,7 +459,7 @@ struct BotDetailView: View {
                 activityShowing = true
             }
             
-            connector.applySettings(at: tempFileUrl, fileName: "\(bot.tinyIDString).json", toBot: bot.idString) { (result) in
+            connector.applySettings(at: tempFileUrl, fileName: "\(bot.tinyIDString).json", toBot: bot.idString, credentials: serverCredentials) { (result) in
                 
                 withAnimation {
                     activityShowing = false
@@ -448,6 +469,9 @@ struct BotDetailView: View {
                 case .success(let codableBot):
                     bot.updateBot(with: codableBot)
                 case .failure(let error):
+                    if (error as NSError).code == 401 {
+                        try? serverCredentials?.deleteItem()
+                    }
                     errorMessage = error.localizedDescription
                     hasError = true
                 }
@@ -458,16 +482,70 @@ struct BotDetailView: View {
         }
     }
     
+    private func ensureServerHasCredentials(completion: @escaping (SecureCredentials?) -> Void) {
+        guard let serverCredentials = serverCredentials else {
+            errorMessage = "Xcode server has no id! This should not happen. Try to reload the servers."
+            hasError = true
+            completion(nil)
+            return
+        }
+        guard !connector.authenticatesWithNetRC else {
+            completion(nil)
+            return
+        }
+        if let secret = try? serverCredentials.readSecret(),
+           !secret.isEmpty {
+            completion(serverCredentials)
+        } else {
+            presentationData.dialog = CredentialsEditorDialog() { (success, user, pass) -> Bool in
+                guard success else {
+                    completion(nil)
+                    return true
+                }
+                guard user.count * pass.count > 0 else {
+                    errorMessage = "Please enter a username an password."
+                    hasError = true
+                    return false
+                }
+                do {
+                    try serverCredentials.saveSecret("\(user):\(pass)")
+                    completion(serverCredentials)
+                } catch {
+                    errorMessage = "Error while saving password: \(error.localizedDescription)"
+                    hasError = true
+                    completion(nil)
+                }
+                return true
+            }
+            withAnimation {
+                presentationData.shouldShow = true
+            }
+        }
+    }
+    
     private func openBotSettingsEditorWindow(with textContent: String, for bot: BotViewModel) {
-        openTextEditorWindow(with: textContent, title: "\(bot.tinyIDString).json") { newText in
+        openTextEditorWindow(
+            with: textContent,
+            title: "\(bot.tinyIDString).json",
+            saveAlertMessage: "Do you want to upload the changes to the server?",
+            saveAlertInfoText: ""
+        ) { newText in
             self.applyChanges(newText, to: bot)
         }
     }
     
-    private func openTextEditorWindow(with textContent: String, title: String, completion: @escaping (String) -> Void) {
+    private func openTextEditorWindow(
+        with textContent: String,
+        title: String,
+        saveAlertMessage: String,
+        saveAlertInfoText: String,
+        completion: @escaping (String) -> Void
+    ) {
         let sb = NSStoryboard(name: "Main", bundle: nil)
         if let windowController = sb.instantiateController(withIdentifier: "TextEditorWindow") as? NSWindowController,
            let controller = windowController.contentViewController as? SimpleTextViewController {
+            controller.saveAlertMessage = saveAlertMessage
+            controller.saveAlertInfoText = saveAlertInfoText
             controller.stringContent = textContent
             controller.editableText = true
             controller.onUploadChanges(completion: completion)
@@ -481,6 +559,14 @@ struct BotDetailView: View {
             return false
         }
         return server.reachability == Int16(ServerReachabilty.reachable.rawValue)
+    }
+    
+    private var serverCredentials: SecureCredentials? {
+        guard let server = (bot as? CDBot)?.server,
+              let credentials = server.secureCredentials else {
+            return nil
+        }
+        return credentials
     }
     
     private func reloadBots() {

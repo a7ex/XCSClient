@@ -28,6 +28,9 @@ class SimpleTextViewController: NSViewController, NSWindowDelegate {
             textView.isEditable = editableText
         }
     }
+    var saveAlertMessage = "Do you want to save changes? Note, that you still need to upload the changes to the server."
+    var saveAlertInfoText = ""
+    
     private var uploadClosure: ((String) -> Void)?
     private let fileHelper = FileHelper()
     
@@ -55,9 +58,10 @@ class SimpleTextViewController: NSViewController, NSWindowDelegate {
             return true
         } else {
             let alrt = NSAlert()
-            alrt.addButton(withTitle: "Upload settings")
+            alrt.addButton(withTitle: "Save Changes")
             alrt.addButton(withTitle: "Cancel")
-            alrt.messageText = "Do you want to upload changes to the server?"
+            alrt.messageText = saveAlertMessage
+            alrt.informativeText = saveAlertInfoText
             alrt.beginSheetModal(for: view.window!) { [weak self] (result) in
                 switch result {
                 case .alertFirstButtonReturn:
