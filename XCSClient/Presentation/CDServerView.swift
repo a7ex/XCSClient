@@ -100,23 +100,6 @@ struct CDServerView: View {
             sshAddress = server?.sshAddress ?? ""
             sshUser = server?.sshUser ?? ""
             netRCFilename = server?.netRCFilename ?? ""
-            
-//            server?.connector.listOfAvailableSimulators(
-//                credentials: SecureCredentials(
-//                    userName: "miniagent-05",
-//                    password: "mobile"
-//                )
-//            ) { result in
-//                switch result {
-//                case .success(let listString):
-//                    let devs = Device.getRecordList(from: listString)
-//                    let devices = devs.map { Device(dictionary: $0) }
-//                        .filter { $0.id != nil }
-//                case .failure(let error):
-//                    print("listOfAvailableSimulators error:")
-//                    print(error.localizedDescription)
-//                }
-//            }
         }
     }
     
