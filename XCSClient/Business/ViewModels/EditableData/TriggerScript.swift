@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct TriggerScript {
+struct TriggerScript: Equatable {
     let name: String
     let script: String
     

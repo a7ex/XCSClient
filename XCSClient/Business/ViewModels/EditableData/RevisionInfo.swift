@@ -16,6 +16,17 @@ struct RevisionInfo {
     var isEmpty: Bool {
         return author.isEmpty && comment.isEmpty
     }
+    
+    var commentHeader: String {
+        return comment.components(separatedBy: .newlines)
+            .first ?? ""
+    }
+    var commentBody: String {
+        return comment.components(separatedBy: .newlines)
+            .dropFirst()
+            .filter( { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty } )
+            .joined(separator: "\n")
+    }
 }
 
 extension RevisionInfo {

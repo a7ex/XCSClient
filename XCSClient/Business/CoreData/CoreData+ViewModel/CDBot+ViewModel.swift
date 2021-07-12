@@ -121,6 +121,17 @@ extension CDBot: BotViewModel {
         return triggers?.compactMap({ $0.asTriggerScript }) ?? [TriggerScript]()
     }
     
+    var testDevices: [String: String] {
+        guard let deviceIdentifiers = configuration?.deviceSpecification?.deviceIdentifiers else {
+            return [String: String]()
+        }
+        return deviceIdentifiers.reduce([String: String]()) { devicesList, identifier in
+            var devicesList = devicesList
+            devicesList[identifier] = managedObjectContext?.deviceName(for: identifier) ?? identifier
+            return devicesList
+        }
+    }
+    
     var archiveExportOptions: ArchiveExportOptions {
         return configuration?.archiveExportOptions?.asCodableObject ??
             ArchiveExportOptions(name: "", createdAt: Date.distantPast, exportOptions: nil)

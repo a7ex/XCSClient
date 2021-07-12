@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct ArchiveExportOptions: Codable {
+struct ArchiveExportOptions: Codable, Equatable {
     var name: String?
     var createdAt: Date?
     var exportOptions: IPAExportOptions?
@@ -16,7 +16,7 @@ struct ArchiveExportOptions: Codable {
 
 // This is the content of the exportOptions.plist
 // which is used to create the IPA from the archive
-struct IPAExportOptions: Codable {
+struct IPAExportOptions: Codable, Equatable {
     var compileBitcode: Bool? // true,
     var destination: String? // "export",
     var method: String? // "enterprise",

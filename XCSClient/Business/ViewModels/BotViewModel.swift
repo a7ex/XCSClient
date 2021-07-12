@@ -39,6 +39,7 @@ protocol BotViewModel {
     var exportSettings: String { get }
     func applying(_ botEditableData: BotEditorData) -> RequestBodyParameterProvider
     var firstIntegration: IntegrationViewModel? { get }
+    var testDevices: [String: String] { get }
     
     func loadCommitData(completion: @escaping (RevisionInfo) -> Void)
     func addIntegration(_ integration: Integration)

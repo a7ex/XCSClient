@@ -19,6 +19,8 @@ struct BotDetailView: View {
     @State private var deleteConfirm = false
     @State private var activityShowing = false
     @State private var revisionInfo = RevisionInfo(author: "", date: "", comment: "")
+    @State private var showingDeviceEditor = false
+    @State private var loadingDevices = false
     
     @StateObject private var botEditableData = BotEditorData()
     
@@ -29,17 +31,27 @@ struct BotDetailView: View {
             ScrollView {
                 VStack {
                     HStack {
+                        Button(action: integrate) {
+                            VStack {
+                                Image(systemName: "play.circle.fill")
+                                    .font(.largeTitle)
+                                    .foregroundColor(.success)
+                                Text("Start Integration")
+                                    .font(.footnote)
+                            }
+                        }
+                        .buttonStyle(BorderlessButtonStyle())
                         Spacer()
-                        Text(bot.nameString)
-                            .font(.headline)
-                        Text("- \(bot.tinyIDString) (\(bot.integrationCounterInt))")
+                        VStack {
+                            HStack {
+                                Text(bot.nameString)
+                                    .font(.headline)
+                                Text("- \(bot.tinyIDString) (\(bot.integrationCounterInt))")
+                            }
+                            copyableId
+                        }
                         Spacer()
                         settingsMenu
-                    }
-                    HStack {
-                        Spacer()
-                        copyableId
-                        Spacer()
                     }
                     Divider()
                     VStack(alignment: .leading, spacing: 8) {
@@ -87,6 +99,17 @@ struct BotDetailView: View {
                                 }
                                 .padding(.trailing)
                             }
+                            if botEditableData.performsTestAction,
+                               !bot.testDevices.isEmpty {
+                                Divider()
+                                HStack {
+                                    testDevices
+                                    Button(action: { showingDeviceEditor = true }, label: {
+                                        Text("+")
+                                    })
+
+                                }
+                            }
                             Divider()
                             HStack {
                                 Toggle("Archive", isOn: $botEditableData.performsArchiveAction)
@@ -105,15 +128,6 @@ struct BotDetailView: View {
                         }
                     }
                     Divider()
-                    Button(action: uploadChanges) {
-                        ButtonLabel(text: "Upload changes to server")
-                    }
-                    Button(action: reloadIntegrations) {
-                        ButtonLabel(text: "Reload integrations")
-                    }
-                    Button(action: integrate) {
-                        ButtonLabel(text: "Start Integration")
-                    }
                     if let integration = bot.firstIntegration {
                         Spacer()
                         Text("Last integration")
@@ -128,6 +142,11 @@ struct BotDetailView: View {
                 botEditableData.setup(with: self.bot)
                 loadCommitData()
             }
+            .onDisappear {
+                if botEditableData.hasChanges {
+                    uploadChanges()
+                }
+            }
             .alert(isPresented: $hasError) {
                 if errorMessage == deletConfirmMessage {
                     return Alert(title: Text(errorMessage),
@@ -137,6 +156,9 @@ struct BotDetailView: View {
                 } else {
                     return Alert(title: Text(errorMessage))
                 }
+            }
+            .sheet(isPresented: $showingDeviceEditor) {
+                simulatorEditorPanel
             }
             if activityShowing {
                 Color.black
@@ -155,9 +177,9 @@ struct BotDetailView: View {
     // MARK: View elements
     
     private var settingsMenu: some View {
-        MenuButton(label: Text("⚙️").font(.headline)) {
-            Button(action: integrate) {
-                Text("Start Integration")
+        Menu {
+            Button(action: reloadIntegrations) {
+                Text("Reload integrations")
             }
             Button(action: duplicate) {
                 Text("Duplicate Bot")
@@ -175,9 +197,23 @@ struct BotDetailView: View {
                 Text("Delete Bot")
                     .foregroundColor(.red)
             }
+        } label: {
+            Image(systemName: "gearshape")
         }
         .menuButtonStyle(BorderlessButtonMenuButtonStyle())
-        .frame(width: 20)
+        .frame(width: 50)
+    }
+    private var simulatorEditorPanel: some View {
+        DeviceSheetView(
+            deviceIDs: Array(botEditableData.testDevices.keys),
+            serverID: (bot as? CDBot)?.server?.id ?? "",
+            isLoading: $loadingDevices,
+            refreshDeviceListCall: updateAvailableSimulators,
+            completion: { newTestDevices in
+                botEditableData.testDevices = newTestDevices
+            }
+        )
+        .frame(minWidth: 320, idealWidth: 400, maxWidth: 600, minHeight: 240, idealHeight: 320, maxHeight: 400, alignment: .top)
     }
     private var copyableId: some View {
         Text(bot.idString)
@@ -240,9 +276,23 @@ struct BotDetailView: View {
             }
         }
     }
+    private var testDevices: some View {
+        LabeledStringValue(label: "Test devices", value: bot.testDevices.values.joined(separator: ", "))
+    }
     private func integrationPreview(for integration: IntegrationViewModel) -> some View {
         VStack(alignment: .leading) {
-            LabeledStringValue(label: "Date", value: integration.endedDateString)
+            if !integration.endedDateString.isEmpty {
+                LabeledStringValue(label: "Date", value: "\(integration.endedDateString) (\(integration.durationString))")
+            } else {
+                LabeledStringValue(label: "Date", value: "\(integration.startDate) \(integration.startTimes)")
+            }
+            labeledColoredValue(
+                label: "Status",
+                value: integration.currentStepString == "completed" ?
+                    integration.resultString:
+                    "- in Progress - \(integration.currentStepString)",
+                color: integration.statusColor
+            )
             if !integration.sourceControlCommitId.isEmpty {
                 LabeledStringValue(label: "Commit ID", value: integration.sourceControlCommitId)
             }
@@ -259,6 +309,18 @@ struct BotDetailView: View {
         .padding()
         .background(Color("LighterBackground"))
         .cornerRadius(10)
+    }
+    
+    private func labeledColoredValue(label: String, value: String, color: Color) -> some View {
+        return HStack(alignment: .top) {
+            InfoLabel(content: label)
+                .frame(minWidth: 100, maxWidth: 160, alignment: .leading)
+                .padding([.bottom], 4)
+            Text(value)
+                .fontWeight(.bold)
+                .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                .foregroundColor(color)
+        }
     }
     
     // MARK: Actions
@@ -430,6 +492,42 @@ struct BotDetailView: View {
                 }
                 self.errorMessage = error.localizedDescription
                 self.hasError = true
+            }
+        }
+    }
+    
+    private func updateAvailableSimulators() {
+        guard isServerReachable else {
+            errorMessage = "No connection to server."
+            hasError = true
+            return
+        }
+        ensureServerHasCredentials { credentials in
+            withAnimation {
+                loadingDevices = true
+            }
+            connector.listOfAvailableSimulators(credentials: credentials) { result in
+                withAnimation {
+                    loadingDevices = false
+                }
+                switch result {
+                case .success(let listString):
+                    let devs = Device.getRecordList(from: listString)
+                    let devices = devs.map { Device(dictionary: $0) }
+                        .filter { $0.id != nil }
+                    
+                    if let cdBot = bot as? CDBot,
+                       let server = cdBot.server,
+                       let moc = cdBot.managedObjectContext {
+                        server.addToDevices(
+                            Set(devices.map({ moc.device(from: $0) })) as NSSet
+                        )
+                        saveContext(of: cdBot)
+                    }
+                case .failure(let error):
+                    print("listOfAvailableSimulators error:")
+                    print(error.localizedDescription)
+                }
             }
         }
     }

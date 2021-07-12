@@ -190,9 +190,21 @@ class XCSConnector: ObservableObject {
         }
     }
     
-    func listOfAvailableSimulators(strategy: AuthenticationStrategy, completion: @escaping (Result<String, Error>) -> Void) {
+    func listOfAvailableSimulators(
+        credentials: SecureCredentials? = nil,
+        completion: @escaping (Result<String, Error>) -> Void
+    ) {
+        let authenticationStrategy: AuthenticationStrategy
+        if authenticatesWithNetRC {
+            authenticationStrategy = .netrc
+        } else if let credentials = credentials {
+            authenticationStrategy = .credentials(credentials)
+        } else {
+            completion(.failure(NSError(message: "Authentication required", status: -1017)))
+            return
+        }
         DispatchQueue.global(qos: .userInitiated).async {
-            let rslt = self.server.listOfAvailableSimulators(authenticationStrategy: strategy)
+            let rslt = self.server.listOfAvailableSimulators(authenticationStrategy: authenticationStrategy)
             DispatchQueue.main.async {
                 completion(rslt)
             }

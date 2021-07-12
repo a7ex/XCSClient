@@ -29,6 +29,24 @@ extension NSManagedObjectContext {
         }
     }
     
+    func deviceName(for deviceIdentifier: String) -> String? {
+        guard let device = device(with: deviceIdentifier) else {
+            return nil
+        }
+        return device.name
+    }
+    
+    func device(with deviceIdentifier: String) -> CDTestDevice? {
+        let request: NSFetchRequest<CDTestDevice> = CDTestDevice.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", deviceIdentifier)
+        do {
+            let items = try fetch(request)
+            return items.first
+        } catch {
+            return nil
+        }
+    }
+    
     private func createAndInsert(device: Device) -> CDTestDevice {
         let newItem = CDTestDevice(context: self)
         newItem.update(with: device)

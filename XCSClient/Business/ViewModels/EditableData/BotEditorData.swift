@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-class BotEditorData: ObservableObject {
+class BotEditorData: ObservableObject, Equatable {
     @Published var branch = ""
     @Published var scheme = ""
     @Published var buildConfig = ""
@@ -24,6 +24,13 @@ class BotEditorData: ObservableObject {
     @Published var triggerScripts = [TriggerScript]()
     @Published var environmentVariables = [VariablePair]()
     @Published var exportOptions = ArchiveExportOptions(name: "", createdAt: Date.distantPast, exportOptions: nil)
+    @Published var testDevices = [String: String]()
+    
+    private var snapShot: BotEditorData?
+    
+    var hasChanges: Bool {
+        return self != snapShot
+    }
     
     func updateExportOptions(with data: Data, at url: URL) {
         let decoder = PropertyListDecoder()
@@ -51,7 +58,28 @@ class BotEditorData: ObservableObject {
 }
 
 extension BotEditorData {
-    func setup(with bot: BotViewModel) {
+    static func == (lhs: BotEditorData, rhs: BotEditorData) -> Bool {
+        return lhs.branch == rhs.branch &&
+            lhs.scheme == rhs.scheme &&
+            lhs.buildConfig == rhs.buildConfig &&
+            lhs.additionalBuildArguments == rhs.additionalBuildArguments &&
+            lhs.name == rhs.name &&
+            lhs.performsAnalyzeAction == rhs.performsAnalyzeAction &&
+            lhs.performsTestAction == rhs.performsTestAction &&
+            lhs.performsArchiveAction == rhs.performsArchiveAction &&
+            lhs.performsUpgradeIntegration == rhs.performsUpgradeIntegration &&
+            lhs.disableAppThinning == rhs.disableAppThinning &&
+            lhs.exportsProductFromArchive == rhs.exportsProductFromArchive &&
+            lhs.scheduleType == rhs.scheduleType &&
+            lhs.triggerScripts == rhs.triggerScripts &&
+            lhs.environmentVariables == rhs.environmentVariables &&
+            lhs.exportOptions == rhs.exportOptions &&
+            lhs.testDevices == rhs.testDevices
+    }
+}
+
+extension BotEditorData {
+    func setup(with bot: BotViewModel, updateSnapshot: Bool = true) {
         branch = bot.sourceControlBranch
         scheme = bot.schemeName
         buildConfig = bot.buildConfiguration
@@ -71,6 +99,13 @@ extension BotEditorData {
         }
         environmentVariables = vars
         exportOptions = bot.archiveExportOptions
+        testDevices = bot.testDevices
+        
+        if updateSnapshot {
+            let newSnapShot = BotEditorData()
+            newSnapShot.setup(with: bot, updateSnapshot: false)
+            snapShot = newSnapShot
+        }
     }
 }
 
@@ -129,6 +164,12 @@ extension Bot {
             vars[pair.id] = pair.value
         }
         duplicate.configuration?.buildEnvironmentVariables = vars
+        
+        let oldfilters = duplicate.configuration?.deviceSpecification?.filters
+        duplicate.configuration?.deviceSpecification = TestDeviceSpecification(
+            deviceIdentifiers: Array(editableData.testDevices.keys),
+            filters: oldfilters
+        )
         
         return duplicate
     }

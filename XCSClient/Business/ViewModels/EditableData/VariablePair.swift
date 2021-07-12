@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct VariablePair: Identifiable {
+struct VariablePair: Identifiable, Equatable {
     var id: String
     var value: String
     

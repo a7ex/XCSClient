@@ -16,8 +16,12 @@ struct RevisionInfoView: View {
             VStack(alignment: .leading) {
                 Text(revisionInfo.author)
                 Text(revisionInfo.date)
-                Text(revisionInfo.comment)
+                Text(revisionInfo.commentHeader)
                     .fontWeight(.bold)
+                    .padding(.top, 8)
+                    .padding(.bottom, 2)
+                Text(revisionInfo.commentBody)
+                    .padding(.bottom, 4)
             }
             Spacer()
         }

@@ -189,9 +189,10 @@ struct IntegrationDetailView: View {
                                 .padding(.leading)
                         }
                     }
-                    .font(.caption)
+                    .font(.caption2)
                     .foregroundColor(item.error.isEmpty ? Color.primary: Color.red)
                     .padding(.leading, 8)
+                    .padding(.top, 1)
                 }
             }
             Spacer()

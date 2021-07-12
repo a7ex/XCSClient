@@ -49,9 +49,7 @@ struct ServerOutlineList: View {
                 } else {
                     if item.statusColor == .clear {
                         AnimatingIcon()
-                            .onAppear {
-                                viewModel.refreshIntegrationStatus(of: item)
-                            }
+                            .onAppear { viewModel.refreshIntegrationStatus(of: item) }
                     } else {
                         Image(systemName: item.systemIconName)
                             .foregroundColor(item.statusColor)
@@ -62,8 +60,7 @@ struct ServerOutlineList: View {
                             if let bot = item as? CDBot {
                                 Spacer()
                                 if bot.visibleItems > 2 {
-                                    Button(action: { viewModel.resetNumberOfVisibleIntegrations(of: bot)
-                                    }) {
+                                    Button(action: { viewModel.resetNumberOfVisibleIntegrations(of: bot) }) {
                                         Image(systemName: "arrow.up")
                                             .frame(minWidth: 20)
                                     }

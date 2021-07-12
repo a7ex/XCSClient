@@ -21,6 +21,9 @@
 		FA26964324960F2600C7F084 /* LabeledStringValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA26964224960F2600C7F084 /* LabeledStringValue.swift */; };
 		FA26964B24961F6200C7F084 /* Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA26964A24961F6200C7F084 /* Platform.swift */; };
 		FA26964D249620A500C7F084 /* LabeledTextInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA26964C249620A500C7F084 /* LabeledTextInput.swift */; };
+		FA3D636A269BB3AD00E2A019 /* CDTestDevice+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA3D6369269BB3AD00E2A019 /* CDTestDevice+ViewModel.swift */; };
+		FA3D636C269BBE3D00E2A019 /* DeviceSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA3D636B269BBE3D00E2A019 /* DeviceSheetView.swift */; };
+		FA3D636E269BBE4F00E2A019 /* SelectableListRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA3D636D269BBE4F00E2A019 /* SelectableListRow.swift */; };
 		FA3E643825ACD47600EDD348 /* CreateNewBotForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA3E643725ACD47600EDD348 /* CreateNewBotForm.swift */; };
 		FA3E643B25AD8BB200EDD348 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FA3E643A25AD8BB200EDD348 /* Colors.xcassets */; };
 		FA3E646125AE134600EDD348 /* CapsuleText.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA3E646025AE134600EDD348 /* CapsuleText.swift */; };
@@ -144,6 +147,9 @@
 		FA26964224960F2600C7F084 /* LabeledStringValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledStringValue.swift; sourceTree = "<group>"; };
 		FA26964A24961F6200C7F084 /* Platform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Platform.swift; sourceTree = "<group>"; };
 		FA26964C249620A500C7F084 /* LabeledTextInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledTextInput.swift; sourceTree = "<group>"; };
+		FA3D6369269BB3AD00E2A019 /* CDTestDevice+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDTestDevice+ViewModel.swift"; sourceTree = "<group>"; };
+		FA3D636B269BBE3D00E2A019 /* DeviceSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceSheetView.swift; sourceTree = "<group>"; };
+		FA3D636D269BBE4F00E2A019 /* SelectableListRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectableListRow.swift; sourceTree = "<group>"; };
 		FA3E643725ACD47600EDD348 /* CreateNewBotForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateNewBotForm.swift; sourceTree = "<group>"; };
 		FA3E643A25AD8BB200EDD348 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
 		FA3E646025AE134600EDD348 /* CapsuleText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapsuleText.swift; sourceTree = "<group>"; };
@@ -304,6 +310,7 @@
 				FA3E646325AE1CAF00EDD348 /* IntegrationResultsIconView.swift */,
 				FA607DEA25AF2A2A00DDB562 /* RevisionInfoView.swift */,
 				FA4E2C3D26931812000B99BA /* CredentialsEditorDialog.swift */,
+				FA3D636D269BBE4F00E2A019 /* SelectableListRow.swift */,
 			);
 			path = ViewElements;
 			sourceTree = "<group>";
@@ -372,6 +379,7 @@
 				FA9D479A2596B03C00C38FF5 /* CDIntegrationView.swift */,
 				FA7B8A462493D10900C26B50 /* BotDetailView.swift */,
 				FA190BF0249545B500B70206 /* IntegrationDetailView.swift */,
+				FA3D636B269BBE3D00E2A019 /* DeviceSheetView.swift */,
 				FA26963F24960E7200C7F084 /* ViewElements */,
 				FABF8764249D20C7005A9D48 /* AppKitViews */,
 			);
@@ -500,6 +508,7 @@
 			children = (
 				FA8A3598259E735E001559A8 /* CDBot+ViewModel.swift */,
 				FA8A359C259E7374001559A8 /* CDIntegration+ViewModel.swift */,
+				FA3D6369269BB3AD00E2A019 /* CDTestDevice+ViewModel.swift */,
 			);
 			path = "CoreData+ViewModel";
 			sourceTree = "<group>";
@@ -736,6 +745,7 @@
 				FA68A962259E2B2700604BAE /* BotViewModel.swift in Sources */,
 				FA4E2C402693199E000B99BA /* CredentialsEditorData.swift in Sources */,
 				FAF98FCE2691DE650089A715 /* CDDevice+Codable.swift in Sources */,
+				FA3D636A269BB3AD00E2A019 /* CDTestDevice+ViewModel.swift in Sources */,
 				FAE5B875249FC4AE00E06155 /* BranchOptionsKey.swift in Sources */,
 				FA3E643825ACD47600EDD348 /* CreateNewBotForm.swift in Sources */,
 				FAD06C5F2598B79B00AD18A4 /* CDBuildResultSummary+Codable.swift in Sources */,
@@ -750,6 +760,7 @@
 				FA26964124960E9900C7F084 /* InfoLabel.swift in Sources */,
 				FAE5B86C249FC40B00E06155 /* PeriodicScheduleInterval.swift in Sources */,
 				FA9D479725968B2C00C38FF5 /* CDBotView.swift in Sources */,
+				FA3D636C269BBE3D00E2A019 /* DeviceSheetView.swift in Sources */,
 				FA5636FC2493BEC7002457DF /* Trigger.swift in Sources */,
 				FA8A3599259E735E001559A8 /* CDBot+ViewModel.swift in Sources */,
 				FA5EBA7924994A660032834B /* UpdatingStatusText.swift in Sources */,
@@ -796,6 +807,7 @@
 				FAB4FC6825B5D97800F2BCE9 /* CDBuildServiceSummaryItem+Codable.swift in Sources */,
 				FAB7E6BA2690696C00EF3991 /* Device.swift in Sources */,
 				FA5637042493BEC7002457DF /* TestDevice.swift in Sources */,
+				FA3D636E269BBE4F00E2A019 /* SelectableListRow.swift in Sources */,
 				FA607DEB25AF2A2A00DDB562 /* RevisionInfoView.swift in Sources */,
 				FAD06C552598ADF800AD18A4 /* CDTrigger+Codable.swift in Sources */,
 				FA9D479E2596B05500C38FF5 /* CDServerView.swift in Sources */,
