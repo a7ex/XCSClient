@@ -51,6 +51,7 @@ protocol IntegrationViewModel {
     var sourceControlCommitId: String { get }
     var sourceControlBranch: String { get }
     var revisionInformation: RevisionInfo { get }
+    var isInProgress: Bool { get }
     var buildServiceSummaryItems: [BuildSummaryItem] { get }
     func loadCommitData(completion: @escaping (RevisionInfo?) -> Void)
     func loadBuildSummaryData(completion: @escaping ([BuildSummaryItem]) -> Void)

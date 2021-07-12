@@ -15,4 +15,5 @@ protocol OutlineElement {
     var statusColor: Color { get } 
     var destination: AnyView { get }
     var systemIconName: String { get }
+    var isInProgress: Bool { get }
 }

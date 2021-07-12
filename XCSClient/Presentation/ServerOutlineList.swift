@@ -47,7 +47,7 @@ struct ServerOutlineList: View {
                         }
                     )
                 } else {
-                    if item.statusColor == .clear {
+                    if item.isInProgress {
                         AnimatingIcon()
                             .onAppear { viewModel.refreshIntegrationStatus(of: item) }
                     } else {

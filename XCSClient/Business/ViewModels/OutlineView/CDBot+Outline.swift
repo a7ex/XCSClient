@@ -31,6 +31,10 @@ extension CDBot: OutlineElement {
         return firstIntegration?.statusColor ?? .gray
     }
     
+    var isInProgress: Bool {
+        return firstIntegration?.isInProgress ?? false
+    }
+    
     var lastEventDate: Date {
         return firstCDIntegration?.queuedDate ?? .distantPast
     }

@@ -119,9 +119,6 @@ extension CDIntegration: IntegrationViewModel {
     }
     
     var statusColor: Color {
-        guard currentStepString == "completed" else {
-            return .clear
-        }
         switch integrationResult {
         case .analyzerWarnings, .warnings, .internalProcessingError:
             return Color(Colors.warning)
@@ -138,8 +135,12 @@ extension CDIntegration: IntegrationViewModel {
         }
     }
     
+    var isInProgress: Bool {
+        return currentStepString != "completed"
+    }
+    
     var sortedStatus: Int {
-        guard currentStepString == "completed" else {
+        guard !isInProgress else {
             return 0
         }
         switch integrationResult {

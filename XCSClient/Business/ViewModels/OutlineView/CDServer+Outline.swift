@@ -49,6 +49,10 @@ extension CDServer: OutlineElement {
         }
     }
     
+    var isInProgress: Bool {
+        return false
+    }
+    
     var destination: AnyView {
         AnyView(CDServerView(serverID: self.id ?? ""))
     }
