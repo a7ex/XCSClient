@@ -186,7 +186,7 @@ struct Server {
         // That's often a pretty huge archive, when all we want is the ipa...
         
         // For now we use the hardcoded path to the default location here! :-(
-        // TODO: Wuery the install path from the server OR make that a property of CDServer
+        // TODO: Query the install path from the server OR make that a property of CDServer
         var directory = "\"/Library/Developer/XcodeServer/IntegrationAssets/\(botID)-\(botName)/\(integrationNumber)\""
         let ipaPath = findIpaInDirectory(machineName: machineName, fullPath: directory)
         guard ipaPath.isEmpty else {
@@ -196,10 +196,14 @@ struct Server {
         // So now we try the directory, where some after-trigger scripts
         // create the ipa to using the xcodebuild commandline tool from the xcarchive...
         let botNameWithoutSpaces = botName.replacingOccurrences(of: " ", with: "_")
-        directory = "\"/Users/\(machineName)/Desktop/XcodeServerBuilds/\(botNameWithoutSpaces)_\(integrationNumber)\""
-        let customIpaPath = findIpaInDirectory(machineName: machineName, fullPath: directory)
-        guard !customIpaPath.isEmpty else {
-            return ""
+        directory = "\"/Users/\(machineName)/XcodeServerBuilds/\(botNameWithoutSpaces)_\(integrationNumber)\""
+        var customIpaPath = findIpaInDirectory(machineName: machineName, fullPath: directory)
+        if customIpaPath.isEmpty {
+            directory = "\"/Users/\(machineName)/Desktop/XcodeServerBuilds/\(botNameWithoutSpaces)_\(integrationNumber)\""
+            customIpaPath = findIpaInDirectory(machineName: machineName, fullPath: directory)
+            guard !customIpaPath.isEmpty else {
+                return ""
+            }
         }
         let comps = customIpaPath.components(separatedBy: "/").dropLast()
         return comps.joined(separator: "/")
